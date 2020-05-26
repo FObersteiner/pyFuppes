@@ -1,0 +1,154 @@
+# -*- coding: utf-8 -*-
+r"""
+Created on Thu Dec 20 11:18:46 2018
+
+@author: F. Obersteiner, florian\obersteiner\\kit\edu
+"""
+
+import operator
+import os
+from pathlib import Path
+
+import numpy as np
+
+
+###############################################################################
+
+
+def print_progressbar(iteration, total,
+                      prefix='', suffix='', decimals=1, length=100, fill='█'):
+    """
+    https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
+    access: 2018-12-20
+    Call in a loop to create terminal progress bar
+    @params:
+        iteration   - Required  : current iteration (Int)
+        total       - Required  : total iterations (Int)
+        prefix      - Optional  : prefix string (Str)
+        suffix      - Optional  : suffix string (Str)
+        decimals    - Optional  : positive number of decimals in percent complete (Int)
+        length      - Optional  : character length of bar (Int)
+        fill        - Optional  : bar fill character (Str)
+    """
+    percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
+    filledLength = int(length * iteration // total)
+    progBar = fill * filledLength + '-' * (length - filledLength)
+    print('\r%s |%s| %s%% %s' % (prefix, progBar, percent, suffix), end='\r')
+    # Print New Line on Complete
+    if iteration == total:
+        print('\n')
+##
+## Sample Usage
+##
+#
+#from time import sleep
+#
+## A List of Items
+#items = list(range(0, 57))
+#l = len(items)
+#
+## Initial call to print 0% progress
+#printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+#for i, item in enumerate(items):
+#    # Do stuff...
+#    sleep(0.1)
+#    # Update Progress Bar
+#    printProgressBar(i + 1, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+
+
+###############################################################################
+
+
+def find_youngest_file(path, pattern, n=1):
+    """
+    find the file that matches a pattern and has the highest modification
+        timestamp if there are multiple files that match the pattern.
+    input:
+        path, string or pathlib.Path, where to look for the file(s)
+        pattern, string, pattern to look for in files (see pathlib.Path.glob)
+        n, integer, how many to return. defaults to 1
+    returns
+        filename(s) of youngest file(s), including path
+        None if no file
+    """
+    assert n >= 1, "n must be greater equal 1."
+
+    path = Path(path)
+    files = [Path(f) for f in path.glob(pattern) if os.path.isfile(f)]
+    sortfiles = sorted(files, key=lambda x: os.path.getmtime(x), reverse=True)
+
+    if sortfiles:
+        return sortfiles[:n]
+    return None
+
+
+###############################################################################
+
+
+def checkbytes_lt128(file):
+    """
+    Check if all bytes of a file are less than decimal 128.
+    Returns True for an ASCII encoded text file.
+    """
+    with open(file, 'rb') as f:
+        content = f.read()
+    return all(b<128 for b in content)
+
+
+###############################################################################
+
+
+def find_fist_elem(arr, val, condition):
+    """
+    Find the first element in arr that gives (arr[ix] condition val) == True.
+    Inputs:
+        arr: numeric numpy 1d array or python list
+        val: scalar value
+        condition: e.g. 'operator.ge' (operator package)
+    Returns:
+        index of value matching the condition or None if no match is found.
+    """
+    if isinstance(arr, list):
+        return next((ix for ix, v in enumerate(arr) if condition(v, val)), None)
+    result = np.argmax(condition(arr, val))
+    return result if condition(arr[result], val) else None
+
+
+###############################################################################
+
+
+def list_chng_elem_index(l, element, new_index):
+    """
+    change the index of an element in a list.
+    ! modifies the list in-place !
+    see https://stackoverflow.com/a/3173159/10197418
+    """
+    if new_index >= len(l) or new_index < 0:
+        raise IndexError("new index is out of range")
+
+    if element in l:
+        l.insert(new_index, l.pop(l.index(element)))
+
+
+###############################################################################
+
+
+def set_compare(a, b):
+    """
+    Compare two iterables a and b. set() is used for comparison, so only
+    unique elements will be considered.
+
+    Parameters
+    ----------
+    a : iterable
+    b : iterable
+
+    Returns
+    -------
+    tuple with 3 elements:
+        (what is only in a (not in b),
+         what is only in b (not in a),
+         what is common in a and b)
+    """
+    a, b = set(a), set(b)
+    return (a-b, b-a, a.intersection(b))
