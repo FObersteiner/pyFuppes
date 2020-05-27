@@ -69,3 +69,39 @@ def get_plot_range(v, add_percent=5, v_min_lim=False, v_max_lim=False,
 
 
 ###############################################################################
+
+
+def nticks_yrange(yrange, nticks, to_multiples_of=10):
+    """
+    update a plot yrange so that it fits nicely into a certain number of
+    ticks
+
+    Parameters
+    ----------
+    yrange : 2-element tuple or list
+        the yrange to modify.
+    nticks : int
+        number of ticks along y-axis.
+    to_multiples_of : int, optional
+        make the yrange a multiple of .... The default is 10.
+
+    Returns
+    -------
+    result : 2-element list
+        updated yrange.
+
+    """
+
+    result = [np.floor(yrange[0]/to_multiples_of)*to_multiples_of,
+              np.ceil(yrange[1]/to_multiples_of)*to_multiples_of]
+
+    size = np.lcm(nticks-1, to_multiples_of)
+    n, r = divmod((result[1]-result[0]), size)
+
+    add = 1 if r > to_multiples_of else 0
+    result[1] = result[0] + (n + add)*size
+
+    return result
+
+
+###############################################################################
