@@ -9,8 +9,6 @@ MrFuppes' collection of Python tools.
 Installation
 ============
 
-    pip install pyfuppes
+    pip install pyfuppes-0.0.1-py3-none-any.whl
 
-You can also install the in-development version with::
-
-    pip install git+ssh://git@https://github.com/MrFuppes/pyfuppes/MrFuppes/pyfuppes.git@master
+Wheel file can be found in the /dist folder.

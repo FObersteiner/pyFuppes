@@ -5,18 +5,15 @@ Created on Thu Aug  9 09:46:55 2018
 @author: F. Obersteiner, florian\obersteiner\\kit\edu
 """
 
-import statistics as stat
 from cmath import rect, phase
-from math import radians, degrees, floor
-from datetime import datetime, date
+from math import radians, degrees
+from datetime import timedelta
 from copy import deepcopy
 
 import numpy as np
 import pandas as pd
 from numba import njit
 from scipy.interpolate import interp1d
-
-from monotonicity import strictly_increasing
 
 
 ###############################################################################
