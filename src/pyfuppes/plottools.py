@@ -83,7 +83,7 @@ def nticks_yrange(yrange, nticks, to_multiples_of=10):
     nticks : int
         number of ticks along y-axis.
     to_multiples_of : int, optional
-        make the yrange a multiple of .... The default is 10.
+        make the yrange divisible w/o remainder by .... The default is 10.
 
     Returns
     -------
