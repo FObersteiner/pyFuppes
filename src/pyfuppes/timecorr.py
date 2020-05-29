@@ -59,7 +59,8 @@ def xcorr_timelag(x1, y1, x2, y2,
                   rmv_NaN=True,
                   pad_to_zero=True,
                   normalize_y=True,
-                  show_plots=True, ynames=('y1', 'y2')):
+                  show_plots=True, ynames=('y1', 'y2'),
+                  anticorr=False):
     """
     analyze time lag between two time series by cross-correlation.
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
@@ -84,6 +85,8 @@ def xcorr_timelag(x1, y1, x2, y2,
         normalize y data to 0-1. The default is True.
     show_plots : boolean, optional
         show result plot. The default is True.
+    anticorr : boolean, optional
+        y1 and y2 are anti-correlated. The default is False.
 
     Returns
     -------
@@ -151,7 +154,9 @@ def xcorr_timelag(x1, y1, x2, y2,
                     np.correlate(y2res, y2res, mode='same')[int(n/2)]))
 
     delay_arr = np.linspace(-0.5*n/to_freq, 0.5*n/to_freq, int(n))
-    delay = delay_arr[np.argmax(corr)] # in input unit, e.g. seconds
+    delay = delay_arr[np.argmax(corr)]
+    if anticorr:
+        delay = delay_arr[np.argmin(corr)]
 
     if show_plots:
         ax[1].plot(delay_arr, corr, 'k', label='xcorr')
