@@ -5,8 +5,10 @@ Created on Fri May 22 16:16:00 2020
 @author: F. Obersteiner, f/obersteiner//kit/edu
 """
 
-from pyfuppes.na1001_helpers.nasa_ames_1001_rw import nasa_ames_1001_read
-from pyfuppes.na1001_helpers.nasa_ames_1001_rw import nasa_ames_1001_write
+import numpy as np
+
+from pyfuppes.na1001_helpers.nasa_ames_1001_rw import na1001_cls_read
+from pyfuppes.na1001_helpers.nasa_ames_1001_rw import na1001_cls_write
 from pyfuppes.na1001_helpers.nasa_ames_1001_tools import naDict_2_npndarr
 from pyfuppes.na1001_helpers.nasa_ames_1001_tools import naDict_2_pddf
 
@@ -20,19 +22,21 @@ class na1001():
     """
     a class to work with NASA AMES files of type 1001.
     """
-    # file format identifier is always 1001, so make it a class attribute:
-    FFI = 1001
     # sourc
     SRC = None
-    # keys are also always the same for the class:
-    KEYS = ('NLHEAD', 'ONAME', 'ORG', 'SNAME', 'MNAME', 'IVOL', 'NVOL',
-            'DATE', 'RDATE', 'DX', 'XNAME', 'NV', 'VSCAL', 'VMISS', 'VNAME',
-            'NSCOML', 'SCOM', 'NNCOML', 'NCOM', 'X', 'V')
-
+    # initialize class instance with some parameters:
+    INID = {'NLHEAD': 14, 'ONAME': '', 'ORG': '', 'SNAME': '', 'MNAME': '', 
+            'IVOL': -1, 'NVOL': -1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1), 
+            'DX': 0, 'XNAME': '', 'NV': 0, 'VSCAL': np.nan, 'VMISS': np.nan,
+            '_VNAME': '', 'NSCOML': 0, '_SCOM': '', 'NNCOML': 0, '_NCOM': '',
+            'X': '', 'V': '', '_FFI': 1001}
+    
+    KEYS = list(INID.keys())
+    
     # if no filename is supplied, initialize all attributes to None
     def __init__(self, fromfile=None, **kwargs):
-        for k in self.KEYS:
-            setattr(self, k, None)
+        for k, v in self.INID.items():
+            setattr(self, k, v)
         if fromfile is not None:
             self.from_file(fromfile, **kwargs)
             self.SRC = str(fromfile)
@@ -53,7 +57,28 @@ class na1001():
         s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[1:4])
         s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[7:9])
         return s
-
+    
+    @property
+    def SCOM(self):
+        return self._SCOM
+    @SCOM.setter
+    def SCOM(self, value):
+        self._SCOM, self.NSCOML = value, len(value)
+        
+    @property
+    def NCOM(self):
+        return self._NCOM
+    @SCOM.setter
+    def NCOM(self, value):
+        self._NCOM, self.NNCOML = value, len(value)
+        
+    @property
+    def VNAME(self):
+        return self._VNAME
+    @SCOM.setter
+    def VNAME(self, value):
+        self._VNAME, self.NV = value, len(value)
+        
 #------------------------------------------------------------------------------
     def from_file(self, file, **kwargs):
         """
@@ -76,7 +101,7 @@ class na1001():
             vmiss_to_None: set True if missing values should be replaced with None.
             ensure_ascii: check if all bytes in the specified file are < 128.
         """
-        nadict = nasa_ames_1001_read(file, **kwargs)
+        nadict = na1001_cls_read(file, **kwargs)
         for k in self.KEYS:
             setattr(self, k, nadict[k])
 
@@ -98,7 +123,7 @@ class na1001():
         overwrite - set to True to overwrite if file exists
         verbose - print info to the console
         """
-        io = nasa_ames_1001_write(file, self.__dict__, **kwargs)
+        io = na1001_cls_write(file, self.__dict__, **kwargs)
         return io
 
 #------------------------------------------------------------------------------

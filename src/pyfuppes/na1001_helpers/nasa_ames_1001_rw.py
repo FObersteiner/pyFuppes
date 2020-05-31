@@ -17,7 +17,7 @@ from pyfuppes.misc import checkbytes_lt128
 ###############################################################################
 
 
-def nasa_ames_1001_read(file_path, sep=" ", sep_com=";", sep_data="\t",
+def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
                         auto_nncoml=True,
                         strip_lines=True,
                         remove_doubleseps=False,
@@ -73,28 +73,7 @@ def nasa_ames_1001_read(file_path, sep=" ", sep_com=";", sep_data="\t",
                     line = line.replace(sep+sep, sep)
                 data[i] = line
 
-        na_1001 = {'NLHEAD': None,
-                   'FFI': None,
-                   'ONAME': None,
-                   'ORG': None,
-                   'SNAME': None,
-                   'MNAME': None,
-                   'IVOL': None,
-                   'NVOL': None,
-                   'DATE': None,
-                   'RDATE': None,
-                   'DX': None,
-                   'XNAME': None,
-                   'NV': None,
-                   'VSCAL': None,
-                   'VMISS': None,
-                   'VNAME': None,
-                   'NSCOML': None,
-                   'SCOM': None,
-                   'NNCOML': None,
-                   'NCOM': None,
-                   'X': None,
-                   'V': None}
+        na_1001 = {}
 
         tmp = list(map(int, data[0].split()))
         assert len(tmp) == 2, f"invalid format in {data[0]} (line 1)"
@@ -195,10 +174,10 @@ def nasa_ames_1001_read(file_path, sep=" ", sep_com=";", sep_data="\t",
 ###############################################################################
 
 
-def nasa_ames_1001_write(file_path, na_1001,
-                         sep=" ", sep_com=";", sep_data="\t",
-                         crlf="\n", overwrite=False,
-                         verbose=False):
+def na1001_cls_write(file_path, cls_dict,
+                     sep=" ", sep_com=";", sep_data="\t",
+                     crlf="\n", overwrite=False,
+                     verbose=False):
     """
     writes dictionary 'na_1001' to text file in NASA AMES 1001 format.
     encoding is ASCII.
@@ -230,7 +209,9 @@ def nasa_ames_1001_write(file_path, na_1001,
         write = 2 # overwriting
     write = 1 # normal writing
 
-    na_1001['FFI'] = 1001
+    na_1001 = {}
+    for k, v in cls_dict.items():
+        na_1001[k.strip('_')] = v
 
     # check n variables and comment lines; adjust values if incorrect
     n_vars_named = len(na_1001['VNAME'])
@@ -334,8 +315,7 @@ def nasa_ames_1001_write(file_path, na_1001,
         for i in range(nncoml):
             file_obj.write(block[i] + crlf)
 
-        nl_data = len(na_1001['X']) # lines of data to write
-        for i in range(nl_data):
+        for i in range(len(na_1001['X'])):
             line = str((na_1001['X'])[i]) + sep_data
             for j in range(n_vars):
                 line = line + str((na_1001['V'][j])[i]) + sep_data
