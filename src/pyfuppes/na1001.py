@@ -43,7 +43,7 @@ class na1001():
         s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[3:4])
         s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[7:9])
         s += f'\nXNAME: {self.XNAME}'
-        sv = "\n".join(v for v in self.VNAME)
+        sv = "\n".join(v for v in self.VNAME) if self.VNAME else None
         s += f'\nNV: {self.NV}, VNAMES:\n{sv}'
         return s
 
