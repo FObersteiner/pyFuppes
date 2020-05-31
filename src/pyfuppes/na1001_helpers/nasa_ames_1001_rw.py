@@ -167,8 +167,21 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
             else:
                 for j in range(n_vars):
                     na_1001['V'][j].append(l[j+1].strip())
+                    
+        # mapping to class dict
+        mapping = {'NLHEAD': 'NLHEAD', 'FFI': '_FFI',
+                   'ONAME': 'ONAME', 'ORG': 'ORG',
+                   'SNAME': 'SNAME', 'MNAME': 'MNAME',
+                   'IVOL': 'IVOL', 'NVOL': 'NVOL',
+                   'DATE': 'DATE', 'RDATE': 'RDATE',
+                   'DX': 'DX', 'XNAME': 'XNAME',
+                   'NV': 'NV', 'VSCAL': 'VSCAL', 'VMISS': 'VMISS',
+                   'VNAME': '_VNAME',
+                   'NSCOML': 'NSCOML', 'SCOM': '_SCOM',
+                   'NNCOML': 'NNCOML', 'NCOM': '_NCOM',
+                   'X': 'X', 'V': 'V'}                    
 
-    return na_1001
+    return {clskey: na_1001[key] for key, clskey in mapping.items()}
 
 
 ###############################################################################
@@ -210,6 +223,7 @@ def na1001_cls_write(file_path, cls_dict,
     write = 1 # normal writing
 
     na_1001 = {}
+    # mapping from class dict: remove private attr identifiers _
     for k, v in cls_dict.items():
         na_1001[k.strip('_')] = v
 
@@ -217,9 +231,8 @@ def na1001_cls_write(file_path, cls_dict,
     n_vars_named = len(na_1001['VNAME'])
     n_vars_data = len(na_1001['V'])
     if n_vars_named != n_vars_data:
-        verboseprint("NA error: n vars in V and VNAME not equal, "
-                     f"{n_vars_data} vs. {n_vars_named}!")
-        return 0 # error case: undefined or missing variables in v
+        raise ValueError("NA error: n vars in V and VNAME not equal, "
+                        f"{n_vars_data} vs. {n_vars_named}!")
 
     if n_vars_named-na_1001['NV'] != 0:
         verboseprint("NA output: NV corrected!")
@@ -261,12 +274,12 @@ def na1001_cls_write(file_path, cls_dict,
         file_obj.write(block)
 
         # dates: assume "yyyy m d" in tuple
-        block = (str('%4.4u' % (na_1001['DATE'])[0]) + sep +
-                 str('%2.2u' % (na_1001['DATE'])[1]) + sep +
-                 str('%2.2u' % (na_1001['DATE'])[2]) + sep +
-                 str('%4.4u' % (na_1001['RDATE'])[0]) + sep +
-                 str('%2.2u' % (na_1001['RDATE'])[1]) + sep +
-                 str('%2.2u' % (na_1001['RDATE'])[2]) + crlf)
+        block = ('%4.4u' % na_1001['DATE'][0] + sep +
+                 '%2.2u' % na_1001['DATE'][1] + sep +
+                 '%2.2u' % na_1001['DATE'][2] + sep +
+                 '%4.4u' % na_1001['RDATE'][0] + sep +
+                 '%2.2u' % na_1001['RDATE'][1] + sep +
+                 '%2.2u' % na_1001['RDATE'][2] + crlf)        
         file_obj.write(block)
 
         file_obj.write(f"{na_1001['DX']:g}{crlf}")
@@ -279,8 +292,8 @@ def na1001_cls_write(file_path, cls_dict,
 
         line = ""
         for i in range(n_vars):
-            line = line+str((na_1001['VSCAL'])[i])+sep
-        if line.find("\n") > -1:
+            line += str(na_1001['VSCAL'][i]) + sep
+        if line.endswith("\n"):
             line = line[0:-1]
         else:
             line = line[0:-1] + crlf
@@ -288,8 +301,8 @@ def na1001_cls_write(file_path, cls_dict,
 
         line = ""
         for i in range(n_vars):
-            line = line+str((na_1001['VMISS'])[i])+sep
-        if line.find("\n") > -1:
+            line += str(na_1001['VMISS'][i]) + sep
+        if line.endswith("\n"):
             line = line[0:-1]
         else:
             line = line[0:-1] + crlf
@@ -300,7 +313,7 @@ def na1001_cls_write(file_path, cls_dict,
             file_obj.write(block[i] + crlf)
 
         nscoml = na_1001['NSCOML'] # get number of special comment lines
-        line = str(nscoml)+crlf
+        line = str(nscoml) + crlf
         file_obj.write(line)
 
         block = na_1001['SCOM']
@@ -308,22 +321,18 @@ def na1001_cls_write(file_path, cls_dict,
             file_obj.write(block[i] + crlf)
 
         nncoml = na_1001['NNCOML'] # get number of normal comment lines
-        line = str(nncoml)+crlf
+        line = str(nncoml) + crlf
         file_obj.write(line)
 
         block = na_1001['NCOM']
         for i in range(nncoml):
             file_obj.write(block[i] + crlf)
 
-        for i in range(len(na_1001['X'])):
-            line = str((na_1001['X'])[i]) + sep_data
+        for i, x in enumerate(na_1001['X']):
+            line = str(x) + sep_data
             for j in range(n_vars):
-                line = line + str((na_1001['V'][j])[i]) + sep_data
-            if line.find("\n") > -1:
-                line = line[0:-1]
-            else:
-                line = line[0:-1] + crlf
-            file_obj.write(line)
+                line += str(na_1001['V'][j][i]) + sep_data
+            file_obj.write(line[0:-1] + crlf)
 
     return write
 

@@ -68,14 +68,14 @@ class na1001():
     @property
     def NCOM(self):
         return self._NCOM
-    @SCOM.setter
+    @NCOM.setter
     def NCOM(self, value):
         self._NCOM, self.NNCOML = value, len(value)
         
     @property
     def VNAME(self):
         return self._VNAME
-    @SCOM.setter
+    @VNAME.setter
     def VNAME(self, value):
         self._VNAME, self.NV = value, len(value)
         
