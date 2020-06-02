@@ -19,7 +19,7 @@ def naDict_2_npndarr(naDict,
                      selVnames=None,
                      splitVname=';', splitIdx=0,
                      xdtype=np.float, vdtype=np.float,
-                     vmiss=np.NaN, create_x=True):
+                     vmiss=np.NaN):
     """
     convert variables from a NASA AMES 1001 dictionary stored as string(lists)
     to numpy nd array type.
@@ -49,19 +49,15 @@ def naDict_2_npndarr(naDict,
     """
     npDict = {naDict['XNAME'][0]: np.array(naDict['X'], dtype=xdtype)}
 
-    # convenience: link npDict['x'] to npDict[naDict['XNAME'][0]]
-    if create_x:
-        npDict['x'] = npDict[naDict['XNAME'][0]]
-
     if not selVnames:
-        selVnames = [n.split(splitVname)[0] for n in naDict['VNAME']]
+        selVnames = [n.split(splitVname)[0] for n in naDict['_VNAME']]
 
     # for each parameter, find its index in naDict['V']
     for parm in selVnames:
         if splitVname:
-            ix = [l.split(splitVname)[splitIdx] for l in naDict['VNAME']].index(parm)
+            ix = [l.split(splitVname)[splitIdx] for l in naDict['_VNAME']].index(parm)
         else:
-            ix = naDict['VNAME'].index(parm)
+            ix = naDict['_VNAME'].index(parm)
         npDict[parm] = np.array(naDict['V'][ix], dtype=vdtype)
 
         # check vmiss: make sure that vmiss=0 also works by checking for type
@@ -106,7 +102,7 @@ def naDict_2_pddf(naDict,
 
     """
     # column names for the DataFrame:
-    keys = naDict['NCOM'][idx_colhdr].split(sep_colhdr)
+    keys = naDict['_NCOM'][idx_colhdr].split(sep_colhdr)
 
     # begin extraction with independent variable:
     values = [np.array(naDict['X'], dtype=dtype)]

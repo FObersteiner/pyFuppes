@@ -22,30 +22,28 @@ class na1001():
     """
     a class to work with NASA AMES files of type 1001.
     """
-    # sourc
-    SRC = None
     # initialize class instance with some parameters:
-    INID = {'NLHEAD': 14, 'ONAME': '', 'ORG': '', 'SNAME': '', 'MNAME': '', 
-            'IVOL': -1, 'NVOL': -1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1), 
+    __INID = {'NLHEAD': 14, 'ONAME': '', 'ORG': '', 'SNAME': '', 'MNAME': '',
+            'IVOL': -1, 'NVOL': -1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1),
             'DX': 0, 'XNAME': '', 'NV': 0, 'VSCAL': np.nan, 'VMISS': np.nan,
             '_VNAME': '', 'NSCOML': 0, '_SCOM': '', 'NNCOML': 0, '_NCOM': '',
-            'X': '', 'V': '', '_FFI': 1001}
-    
-    KEYS = list(INID.keys())
-    
+            'X': '', 'V': '', '_FFI': 1001,
+            'SRC': ''}
+
+    __KEYS = list(__INID.keys())
+
     # if no filename is supplied, initialize all attributes to None
     def __init__(self, fromfile=None, **kwargs):
-        for k, v in self.INID.items():
+        for k, v in self.__INID.items():
             setattr(self, k, v)
         if fromfile is not None:
-            self.from_file(fromfile, **kwargs)
-            self.SRC = str(fromfile)
+            self.__from_file(fromfile, **kwargs)
 
     def __repr__(self):
         s = "NASA AMES 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
-        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[3:4])
-        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[7:9])
+        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[3:4])
+        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
         s += f'\nXNAME: {self.XNAME}'
         sv = "\n".join(v for v in self.VNAME) if self.VNAME else None
         s += f'\nNV: {self.NV}, VNAMES:\n{sv}'
@@ -54,33 +52,33 @@ class na1001():
     def __str__(self):
         s = "NASA AMES 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
-        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[1:4])
-        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.KEYS[7:9])
+        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[1:4])
+        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
         return s
-    
+
     @property
     def SCOM(self):
         return self._SCOM
     @SCOM.setter
     def SCOM(self, value):
         self._SCOM, self.NSCOML = value, len(value)
-        
+
     @property
     def NCOM(self):
         return self._NCOM
     @NCOM.setter
     def NCOM(self, value):
         self._NCOM, self.NNCOML = value, len(value)
-        
+
     @property
     def VNAME(self):
         return self._VNAME
     @VNAME.setter
     def VNAME(self, value):
         self._VNAME, self.NV = value, len(value)
-        
+
 #------------------------------------------------------------------------------
-    def from_file(self, file, **kwargs):
+    def __from_file(self, file, **kwargs):
         """
         Load NASA AMES 1001 from file.
 
@@ -102,7 +100,7 @@ class na1001():
             ensure_ascii: check if all bytes in the specified file are < 128.
         """
         nadict = na1001_cls_read(file, **kwargs)
-        for k in self.KEYS:
+        for k in self.__KEYS:
             setattr(self, k, nadict[k])
 
 #------------------------------------------------------------------------------

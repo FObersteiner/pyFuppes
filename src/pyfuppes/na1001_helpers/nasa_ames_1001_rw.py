@@ -18,12 +18,12 @@ from pyfuppes.misc import checkbytes_lt128
 
 
 def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
-                        auto_nncoml=True,
-                        strip_lines=True,
-                        remove_doubleseps=False,
-                        vscale_vmiss_vertical=False,
-                        vmiss_to_None=False,
-                        ensure_ascii=True):
+                    auto_nncoml=True,
+                    strip_lines=True,
+                    remove_doubleseps=False,
+                    vscale_vmiss_vertical=False,
+                    vmiss_to_None=False,
+                    ensure_ascii=True):
     """
     read NASA AMES 1001 formatted text file. expected encoding is ASCII.
     args:
@@ -73,7 +73,7 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
                     line = line.replace(sep+sep, sep)
                 data[i] = line
 
-        na_1001 = {}
+        na_1001 = {'SRC': str(file_path)}
 
         tmp = list(map(int, data[0].split()))
         assert len(tmp) == 2, f"invalid format in {data[0]} (line 1)"
@@ -81,7 +81,7 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
 
         nlhead = tmp[0]
         na_1001['NLHEAD'] = nlhead
-        na_1001['FFI'] = tmp[1]
+        na_1001['_FFI'] = tmp[1]
 
         header = data[0:nlhead]
         data = data[nlhead:]
@@ -123,17 +123,17 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         msg = "vscal, vmiss and vname must have equal number of elements"
         assert n_vars == len(na_1001['VSCAL']) == len(na_1001['VMISS']), msg
 
-        na_1001['VNAME'] = header[10+offset:10+n_vars+offset]
+        na_1001['_VNAME'] = header[10+offset:10+n_vars+offset]
 
         nscoml = int(header[10+n_vars+offset])
         na_1001['NSCOML'] = nscoml
         if nscoml > 0: # read special comment if nscoml>0
-            na_1001['SCOM'] = header[n_vars+11+offset:n_vars+nscoml+11+offset]
+            na_1001['_SCOM'] = header[n_vars+11+offset:n_vars+nscoml+11+offset]
         else:
-            na_1001['SCOM'] = ""
+            na_1001['_SCOM'] = ""
         # test case:
-        msg = "nscoml not equal n elements in list na_1001['SCOM']"
-        assert nscoml == len(na_1001['SCOM']), msg
+        msg = "nscoml not equal n elements in list na_1001['_SCOM']"
+        assert nscoml == len(na_1001['_SCOM']), msg
 
         # read normal comment if nncoml>0
         if auto_nncoml is True:
@@ -143,12 +143,12 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         na_1001['NNCOML'] = nncoml
 
         if nncoml > 0:
-            na_1001['NCOM'] = header[n_vars+nscoml+12+offset:n_vars+nscoml+nncoml+12+offset]
+            na_1001['_NCOM'] = header[n_vars+nscoml+12+offset:n_vars+nscoml+nncoml+12+offset]
         else:
-            na_1001['NCOM'] = ""
+            na_1001['_NCOM'] = ""
         # test case:
-        msg = "nncoml not equal n elements in list na_1001['NCOM']"
-        assert nncoml == len(na_1001['NCOM']), msg
+        msg = "nncoml not equal n elements in list na_1001['_NCOM']"
+        assert nncoml == len(na_1001['_NCOM']), msg
         # test case
         msg = "nlhead must be equal to nncoml + nscoml + n_vars + 14"
         assert nncoml+nscoml+n_vars+14 == nlhead, msg
@@ -167,27 +167,14 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
             else:
                 for j in range(n_vars):
                     na_1001['V'][j].append(l[j+1].strip())
-                    
-        # mapping to class dict
-        mapping = {'NLHEAD': 'NLHEAD', 'FFI': '_FFI',
-                   'ONAME': 'ONAME', 'ORG': 'ORG',
-                   'SNAME': 'SNAME', 'MNAME': 'MNAME',
-                   'IVOL': 'IVOL', 'NVOL': 'NVOL',
-                   'DATE': 'DATE', 'RDATE': 'RDATE',
-                   'DX': 'DX', 'XNAME': 'XNAME',
-                   'NV': 'NV', 'VSCAL': 'VSCAL', 'VMISS': 'VMISS',
-                   'VNAME': '_VNAME',
-                   'NSCOML': 'NSCOML', 'SCOM': '_SCOM',
-                   'NNCOML': 'NNCOML', 'NCOM': '_NCOM',
-                   'X': 'X', 'V': 'V'}                    
 
-    return {clskey: na_1001[key] for key, clskey in mapping.items()}
+    return na_1001
 
 
 ###############################################################################
 
 
-def na1001_cls_write(file_path, cls_dict,
+def na1001_cls_write(file_path, na_1001,
                      sep=" ", sep_com=";", sep_data="\t",
                      crlf="\n", overwrite=False,
                      verbose=False):
@@ -209,6 +196,7 @@ def na1001_cls_write(file_path, cls_dict,
         (int) 0 -> failed, 1 -> normal write, 2 -> overwrite
     """
     verboseprint = print if verbose else lambda *a, **k: None
+
     # check if directory exists, create if not.
     if not os.path.isdir(os.path.dirname(file_path)):
         os.mkdir(os.path.dirname(file_path))
@@ -222,13 +210,8 @@ def na1001_cls_write(file_path, cls_dict,
         write = 2 # overwriting
     write = 1 # normal writing
 
-    na_1001 = {}
-    # mapping from class dict: remove private attr identifiers _
-    for k, v in cls_dict.items():
-        na_1001[k.strip('_')] = v
-
     # check n variables and comment lines; adjust values if incorrect
-    n_vars_named = len(na_1001['VNAME'])
+    n_vars_named = len(na_1001['_VNAME'])
     n_vars_data = len(na_1001['V'])
     if n_vars_named != n_vars_data:
         raise ValueError("NA error: n vars in V and VNAME not equal, "
@@ -238,12 +221,12 @@ def na1001_cls_write(file_path, cls_dict,
         verboseprint("NA output: NV corrected!")
         na_1001['NV'] = n_vars_named
 
-    nscoml_is = len(na_1001['SCOM'])
+    nscoml_is = len(na_1001['_SCOM'])
     if (nscoml_is - na_1001['NSCOML']) != 0:
         verboseprint("NA output: NSCOML corrected!")
         na_1001['NSCOML'] = nscoml_is
 
-    nncoml_is = len(na_1001['NCOM'])
+    nncoml_is = len(na_1001['_NCOM'])
     if (nncoml_is - na_1001['NNCOML']) != 0:
         verboseprint("NA output: NNCOML corrected!")
         na_1001['NNCOML'] = nncoml_is
@@ -255,7 +238,7 @@ def na1001_cls_write(file_path, cls_dict,
 
     # begin the actual writing process
     with open(file_path, "w", encoding="ascii") as file_obj:
-        block = str(na_1001['NLHEAD']) + sep + str(na_1001['FFI']) + crlf
+        block = str(na_1001['NLHEAD']) + sep + str(na_1001['_FFI']) + crlf
         file_obj.write(block)
 
         block = str(na_1001['ONAME']) + crlf
@@ -279,7 +262,7 @@ def na1001_cls_write(file_path, cls_dict,
                  '%2.2u' % na_1001['DATE'][2] + sep +
                  '%4.4u' % na_1001['RDATE'][0] + sep +
                  '%2.2u' % na_1001['RDATE'][1] + sep +
-                 '%2.2u' % na_1001['RDATE'][2] + crlf)        
+                 '%2.2u' % na_1001['RDATE'][2] + crlf)
         file_obj.write(block)
 
         file_obj.write(f"{na_1001['DX']:g}{crlf}")
@@ -308,7 +291,7 @@ def na1001_cls_write(file_path, cls_dict,
             line = line[0:-1] + crlf
         file_obj.write(line)
 
-        block = na_1001['VNAME']
+        block = na_1001['_VNAME']
         for i in range(n_vars):
             file_obj.write(block[i] + crlf)
 
@@ -316,7 +299,7 @@ def na1001_cls_write(file_path, cls_dict,
         line = str(nscoml) + crlf
         file_obj.write(line)
 
-        block = na_1001['SCOM']
+        block = na_1001['_SCOM']
         for i in range(nscoml):
             file_obj.write(block[i] + crlf)
 
@@ -324,7 +307,7 @@ def na1001_cls_write(file_path, cls_dict,
         line = str(nncoml) + crlf
         file_obj.write(line)
 
-        block = na_1001['NCOM']
+        block = na_1001['_NCOM']
         for i in range(nncoml):
             file_obj.write(block[i] + crlf)
 
