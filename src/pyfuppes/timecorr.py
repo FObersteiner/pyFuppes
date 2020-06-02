@@ -60,7 +60,7 @@ def xcorr_timelag(x1, y1, x2, y2,
                   pad_to_zero=True,
                   normalize_y=True,
                   show_plots=True, ynames=('y1', 'y2'),
-                  anticorr=False):
+                  corrmode='auto'):
     """
     analyze time lag between two time series by cross-correlation.
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
@@ -85,8 +85,8 @@ def xcorr_timelag(x1, y1, x2, y2,
         normalize y data to 0-1. The default is True.
     show_plots : boolean, optional
         show result plot. The default is True.
-    anticorr : boolean, optional
-        y1 and y2 are anti-correlated. The default is False.
+    corrmode : string, optional. values: 'auto', 'positive', 'negative'
+         type of correlation between y1 and y2. The default is auto.
 
     Returns
     -------
@@ -154,9 +154,17 @@ def xcorr_timelag(x1, y1, x2, y2,
                     np.correlate(y2res, y2res, mode='same')[int(n/2)]))
 
     delay_arr = np.linspace(-0.5*n/to_freq, 0.5*n/to_freq, int(n))
-    delay = delay_arr[np.argmax(corr)]
-    if anticorr:
-        delay = delay_arr[np.argmin(corr)]
+
+    # check if correlation is positive or negative to determine lag time
+    funcs = (np.argmin, np.argmax)
+    if corrmode == 'auto':
+        select = funcs[int(np.ceil(np.corrcoef(y2res, y1res)[0,1]))]
+    elif corrmode == 'positive':
+        select = funcs[1]
+    elif corrmode == 'negative':
+        select = funcs[0]
+
+    delay = delay_arr[select(corr)]
 
     if show_plots:
         ax[1].plot(delay_arr, corr, 'k', label='xcorr')
@@ -172,9 +180,7 @@ def xcorr_timelag(x1, y1, x2, y2,
 
 
 if __name__ == '__main__':
-    ### TESTING
-
-    ## principle
+    # illustration of time_correction():
     order = 1
     t = np.array([1,2,3,4,5,6], dtype=np.float32)
     ref = np.array([1,3,5,7,9,11], dtype=np.float32)
