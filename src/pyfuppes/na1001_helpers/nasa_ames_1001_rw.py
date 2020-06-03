@@ -154,13 +154,13 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         assert nncoml+nscoml+n_vars+14 == nlhead, msg
 
         # done with header, continue with variables.
-        na_1001['X'] = [] # holds independent variable
+        na_1001['_X'] = [] # holds independent variable
         na_1001['V'] = [[] for _ in range(n_vars)] # list for each dependent variable
 
         for ix, line in enumerate(data):
             l = line.rsplit(sep=sep_data)
             assert len(l) == n_vars+1, f'{file_path.name}: invalid number of parameters in line {ix+nlhead}'
-            na_1001['X'].append(l[0].strip())
+            na_1001['_X'].append(l[0].strip())
             if vmiss_to_None:
                 for j in range(n_vars):
                     na_1001['V'][j].append(l[j+1].strip() if l[j+1].strip() != na_1001['VMISS'][j] else None)
@@ -311,7 +311,7 @@ def na1001_cls_write(file_path, na_1001,
         for i in range(nncoml):
             file_obj.write(block[i] + crlf)
 
-        for i, x in enumerate(na_1001['X']):
+        for i, x in enumerate(na_1001['_X']):
             line = str(x) + sep_data
             for j in range(n_vars):
                 line += str(na_1001['V'][j][i]) + sep_data

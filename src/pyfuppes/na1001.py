@@ -16,19 +16,17 @@ from pyfuppes.na1001_helpers.nasa_ames_1001_tools import naDict_2_pddf
 ###############################################################################
 
 
-### TODO
-# automatically determine number of lines in header, ncom, scom etc.
 class na1001():
     """
     a class to work with NASA AMES files of type 1001.
     """
     # initialize class instance with some parameters:
     __INID = {'NLHEAD': 14, 'ONAME': '', 'ORG': '', 'SNAME': '', 'MNAME': '',
-            'IVOL': -1, 'NVOL': -1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1),
-            'DX': 0, 'XNAME': '', 'NV': 0, 'VSCAL': np.nan, 'VMISS': np.nan,
-            '_VNAME': '', 'NSCOML': 0, '_SCOM': '', 'NNCOML': 0, '_NCOM': '',
-            'X': '', 'V': '', '_FFI': 1001,
-            'SRC': ''}
+              'IVOL': 1, 'NVOL': 1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1),
+              'DX': 0, 'XNAME': '', 'NV': 0, 'VSCAL': np.nan, 'VMISS': np.nan,
+              '_VNAME': '', 'NSCOML': 0, '_SCOM': '', 'NNCOML': 0, '_NCOM': '',
+              '_X': '', 'V': '', '_FFI': 1001,
+              'SRC': ''}
 
     __KEYS = list(__INID.keys())
 
@@ -62,6 +60,7 @@ class na1001():
     @SCOM.setter
     def SCOM(self, value):
         self._SCOM, self.NSCOML = value, len(value)
+        self.NLHEAD = 14 + self.NSCOML + self.NNCOML
 
     @property
     def NCOM(self):
@@ -69,6 +68,7 @@ class na1001():
     @NCOM.setter
     def NCOM(self, value):
         self._NCOM, self.NNCOML = value, len(value)
+        self.NLHEAD = 14 + self.NSCOML + self.NNCOML
 
     @property
     def VNAME(self):
@@ -76,6 +76,16 @@ class na1001():
     @VNAME.setter
     def VNAME(self, value):
         self._VNAME, self.NV = value, len(value)
+        self.NLHEAD = 14 + self.NSCOML + self.NNCOML
+
+    @property
+    def X(self):
+        return self._X
+    @X.setter
+    def X(self, xarr):
+        self._X = xarr
+        dx = 1 if np.unique(np.diff(np.array(xarr, dtype=np.float))).size == 1 else 0
+        self.DX = dx
 
 #------------------------------------------------------------------------------
     def __from_file(self, file, **kwargs):
