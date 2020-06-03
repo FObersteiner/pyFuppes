@@ -47,7 +47,7 @@ def naDict_2_npndarr(naDict,
         dictionary holding numpy arrays for variables from the NASA AMES file.
 
     """
-    npDict = {naDict['XNAME'][0]: np.array(naDict['X'], dtype=xdtype)}
+    npDict = {naDict['XNAME'][0]: np.array(naDict['_X'], dtype=xdtype)}
 
     if not selVnames:
         selVnames = [n.split(splitVname)[0] for n in naDict['_VNAME']]
@@ -105,7 +105,7 @@ def naDict_2_pddf(naDict,
     keys = naDict['_NCOM'][idx_colhdr].split(sep_colhdr)
 
     # begin extraction with independent variable:
-    values = [np.array(naDict['X'], dtype=dtype)]
+    values = [np.array(naDict['_X'], dtype=dtype)]
 
     # include scaling factors and missing values:
     vmiss = [float(s) for s in naDict['VMISS']]

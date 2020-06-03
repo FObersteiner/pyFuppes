@@ -7,10 +7,8 @@ Created on Fri May 22 16:16:00 2020
 
 import numpy as np
 
-from pyfuppes.na1001_helpers.nasa_ames_1001_rw import na1001_cls_read
-from pyfuppes.na1001_helpers.nasa_ames_1001_rw import na1001_cls_write
-from pyfuppes.na1001_helpers.nasa_ames_1001_tools import naDict_2_npndarr
-from pyfuppes.na1001_helpers.nasa_ames_1001_tools import naDict_2_pddf
+import pyfuppes.na1001_helpers.nasa_ames_1001_rw as rw
+import pyfuppes.na1001_helpers.nasa_ames_1001_tools as tools
 
 
 ###############################################################################
@@ -84,6 +82,7 @@ class na1001():
     @X.setter
     def X(self, xarr):
         self._X = xarr
+        # a little bit windy to do this with floats:
         dx = 1 if np.unique(np.diff(np.array(xarr, dtype=np.float))).size == 1 else 0
         self.DX = dx
 
@@ -109,7 +108,7 @@ class na1001():
             vmiss_to_None: set True if missing values should be replaced with None.
             ensure_ascii: check if all bytes in the specified file are < 128.
         """
-        nadict = na1001_cls_read(file, **kwargs)
+        nadict = rw.na1001_cls_read(file, **kwargs)
         for k in self.__KEYS:
             setattr(self, k, nadict[k])
 
@@ -131,7 +130,7 @@ class na1001():
         overwrite - set to True to overwrite if file exists
         verbose - print info to the console
         """
-        io = na1001_cls_write(file, self.__dict__, **kwargs)
+        io = rw.na1001_cls_write(file, self.__dict__, **kwargs)
         return io
 
 #------------------------------------------------------------------------------
@@ -168,7 +167,7 @@ class na1001():
             dictionary holding numpy arrays for variables from the NASA AMES file.
 
         """
-        return naDict_2_npndarr(self.__dict__, **kwargs)
+        return tools.naDict_2_npndarr(self.__dict__, **kwargs)
 
 #------------------------------------------------------------------------------
     def to_pddf(self, **kwargs):
@@ -196,5 +195,5 @@ class na1001():
         dataframe with a column for X and one for each parameter in V.
 
         """
-        return naDict_2_pddf(self.__dict__, **kwargs)
+        return tools.naDict_2_pddf(self.__dict__, **kwargs)
 
