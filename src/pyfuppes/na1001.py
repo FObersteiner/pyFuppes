@@ -82,8 +82,13 @@ class na1001():
     @X.setter
     def X(self, xarr):
         self._X = xarr
-        # a little bit windy to do this with floats:
-        dx = 1 if np.unique(np.diff(np.array(xarr, dtype=np.float))).size == 1 else 0
+        u = np.unique(np.diff(np.array(xarr, dtype=np.float)))
+        # unique with floats might fail, so double-check with isclose:
+        m = np.append(True, ~np.isclose(u[:-1], u[1:]))
+        dx = u[m][0] if u[m].size == 1 else 0
+        # use an integer if dx is close to its integer value,
+        # otherwise round to 3 decimals to avoid stuff like 0.2999999999999998:
+        dx = int(dx) if np.isclose(dx, int(dx)) else np.round(dx, 3)
         self.DX = dx
 
 #------------------------------------------------------------------------------

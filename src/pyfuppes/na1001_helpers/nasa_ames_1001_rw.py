@@ -265,7 +265,7 @@ def na1001_cls_write(file_path, na_1001,
                  '%2.2u' % na_1001['RDATE'][2] + crlf)
         file_obj.write(block)
 
-        file_obj.write(f"{na_1001['DX']:g}{crlf}")
+        file_obj.write(f"{na_1001['DX']}{crlf}")
 
         file_obj.write(sep_com.join(na_1001['XNAME']) + crlf)
 
