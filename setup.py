@@ -8,7 +8,7 @@ from setuptools import setup
 
 setup(
     name='pyfuppes',
-    version='0.0.2',
+    version='0.0.3',
     license='MIT',
     description='MrFuppes collection of tools in Python',
     author='Florian Obersteiner',

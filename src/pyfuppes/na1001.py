@@ -82,10 +82,12 @@ class na1001():
     @X.setter
     def X(self, xarr):
         self._X = xarr
-        # unique with floats might fail, so add a round:
-        dx = np.unique(np.diff(np.array(xarr, dtype=np.float)).round(decimals=4))
+        # calculate dx as unique diffs in X,
+        # unique with floats might fail, so add a round to 4 decimals:
+        dx = np.unique(np.diff(np.array(xarr, dtype=np.float)).round(4))
+        # let dx be 0 if there's more than one unique diff
         dx = dx[0] if dx.size == 1 else 0
-        # use an integer if dx is close to its integer value
+        # use an integer if dx is close to its integer value, else float:
         dx = int(dx) if np.isclose(dx, int(dx)) else dx
         self.DX = dx
 

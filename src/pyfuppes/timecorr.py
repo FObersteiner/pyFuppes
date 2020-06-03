@@ -60,7 +60,8 @@ def xcorr_timelag(x1, y1, x2, y2,
                   pad_to_zero=True,
                   normalize_y=True,
                   show_plots=True, ynames=('y1', 'y2'),
-                  corrmode='auto'):
+                  corrmode='auto',
+                  boundaries=None):
     """
     analyze time lag between two time series by cross-correlation.
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
@@ -87,6 +88,8 @@ def xcorr_timelag(x1, y1, x2, y2,
         show result plot. The default is True.
     corrmode : string, optional. values: 'auto', 'positive', 'negative'
          type of correlation between y1 and y2. The default is auto.
+    boundaries: 2-element tuple. lower and upper boundary.
+        expect timelag to fall within these boundaries. The default is None.
 
     Returns
     -------
@@ -154,6 +157,11 @@ def xcorr_timelag(x1, y1, x2, y2,
                     np.correlate(y2res, y2res, mode='same')[int(n/2)]))
 
     delay_arr = np.linspace(-0.5*n/to_freq, 0.5*n/to_freq, int(n))
+
+    if boundaries:
+        m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])
+        delay_arr = delay_arr[m]
+        corr = corr[m]
 
     # check if correlation is positive or negative to determine lag time
     funcs = (np.argmin, np.argmax)

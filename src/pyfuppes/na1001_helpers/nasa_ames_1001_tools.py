@@ -21,8 +21,8 @@ def naDict_2_npndarr(naDict,
                      xdtype=np.float, vdtype=np.float,
                      vmiss=np.NaN):
     """
-    convert variables from a NASA AMES 1001 dictionary stored as string(lists)
-    to numpy nd array type.
+    convert variables from na1001 class instance to dictionary holding
+    numpy arrays.
 
     Parameters
     ----------
@@ -79,10 +79,7 @@ def naDict_2_pddf(naDict,
                   dtype=np.float64,
                   add_datetime_index=False):
     """
-    WHAT?
-        wrapper for nasa_ames_1001_read() that just returns a Pandas DataFrame
-    ASSUMES:
-        last line of NCOM contains names of parameters (delimited by sep_data)
+    convert variables from na1001 class instance to pandas dataframe.
 
     Parameters
     ----------

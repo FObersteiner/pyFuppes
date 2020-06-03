@@ -45,8 +45,7 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         ensure_ascii: check if all bytes in the specified file are < 128.
 
     returns:
-        na_1001: dictionary with keys according to NASA AMES 1001 file
-                 specification
+        na_1001: dictionary with keys according to na1001 class.
     """
     try:
         file_path.is_file()
@@ -179,7 +178,7 @@ def na1001_cls_write(file_path, na_1001,
                      crlf="\n", overwrite=False,
                      verbose=False):
     """
-    writes dictionary 'na_1001' to text file in NASA AMES 1001 format.
+    write content of na1001 class instance to file in NASA AMES 1001 format.
     encoding is ASCII.
     for na_1001 specifications, see nasa_ames_1001_read.
     inputs:
