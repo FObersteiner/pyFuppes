@@ -17,18 +17,19 @@ Wheel file can be found in the /dist folder.
 
 Content
 =======
-- [avgbinmap.py](#avgbinmap)
-- [carfiletools.py](#carfiletools)
-- [filtersmooth.py](#filtersmooth)
-- [geo.py](#geo)
-- [misc.py](#misc)
-- [monotonicity.py](#monotonicity)
-- [na1001.py](#na1001)
-- [numberstring.py](#numberstring)
-- [plottools.py](#plottools)
-- [timeconversion.py](#timeconversion)
-- [timecorr.py](#timecorr)
-- [txt2dict.py](#txt2dict)
+- [avgbinmap](#module-avgbinmappy)
+- [carfiletools](#module-carfiletoolspy)
+- [filtersmooth](#module-filtersmoothpy)
+- [geo](#module-geopy)
+- [misc](#module-miscpy)
+- [monotonicity](#module-monotonicitypy)
+- [na1001](#module-na1001py)
+- [numberstring](#module-numberstringpy)
+- [plottools](#module-plottoolspy)
+- [timeconversion](#module-timeconversionpy)
+- [timecorr](#module-timecorrpy)
+- [txt2dict](#module-txt2dictpy)
+
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
