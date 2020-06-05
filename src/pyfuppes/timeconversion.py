@@ -129,7 +129,7 @@ def posix_2_mdns(posixts,
     posixts : float, list of float or np.ndarray with dtype float.
         the POSIX timestamp to be converted to seconds after midnight.
     ymd : tuple of int, optional
-        define starting data as tuple of integers (year, month, day).
+        define starting date as tuple of integers (year, month, day) UTC.
         The default is None, which means the reference date is the day of the
         timestamp.
 
@@ -141,15 +141,14 @@ def posix_2_mdns(posixts,
     """
     posixts, ret_scalar = to_list(posixts)
 
-    if ymd:  # [yyyy,m,d] given, take that as starting point
+    if ymd:  # (yyyy, m, d) given, take that as starting point t0:
         t0 = datetime(year=ymd[0], month=ymd[1], day=ymd[2],
-                      tzinfo=timezone.utc)
+                      tzinfo=timezone.utc).timestamp()
+    else: # take date of first entry as starting point
+        t0 = datetime.fromtimestamp(posixts[0], tz=timezone.utc)
+        t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
 
-    dt_obj = [datetime.fromtimestamp(ts, tz=timezone.utc) for ts in posixts]
-
-    if not ymd: # take date of first entry as starting point
-        t0 = dt_obj[0].replace(hour=0, minute=0, second=0, microsecond=0)
-    ts = [(s - t0).total_seconds() for s in dt_obj]
+    ts = [t-t0 for t in posixts]
 
     return ts[0] if ret_scalar else ts
 
