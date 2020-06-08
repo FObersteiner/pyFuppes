@@ -102,11 +102,11 @@ def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
 ###############################################################################
 
 
-def filter_jumps_v2(arr, thrsh, look_ahead,
-                    abs_delta=False,
-                    vmiss=np.nan,
-                    remove_repeated=False,
-                    interpol_jumps=False, interpol_kind='linear'):
+def filter_jumps(arr, thrsh, look_ahead,
+                 abs_delta=False,
+                 vmiss=np.nan,
+                 remove_repeated=False,
+                 interpol_jumps=False, interpol_kind='linear'):
     """
     wrapper around mask_jumps()
     ! interpolation assumes equidistant spacing of the independent variable of
@@ -169,7 +169,9 @@ def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
 
     Returns
     -------
-    dict.
+    dict. 'filtered': filtered data
+            'ix_del': idices of deleted elements
+            'ix_rem': indices of remaining elements
 
     """
 
