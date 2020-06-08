@@ -14,6 +14,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 from scipy.interpolate import interp1d
+from scipy.ndimage.filters import uniform_filter1d
 
 
 ###############################################################################
@@ -368,7 +369,7 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode='same', edges='expand'):
     mode : string, optional
         config for np.convolve. The default is 'same'.
     edges : string, optional
-        config for np.convolve. The default is 'expand'.
+        config for output. The default is 'expand'.
             in case of mode='same', convolution gives false results
             ("running-in effect") at edges. account for this by
             simply expanding the Nth value to the edges.
@@ -432,6 +433,37 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
         return df['ip'].values
 
     return df['rollmean'].values
+
+
+###############################################################################
+
+
+def sp_mvg_avg(v, N, edges='nearest'):
+    """
+    Use scipy's uniform_filter1d to calculate a moving average, see the docs at
+    https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.uniform_filter1d.html
+    Handles NaNs by removing them before interpolation.
+
+    Parameters
+    ----------
+    v : np.ndarray
+        data to average.
+    N : int
+        number of samples per average.
+    edges : str, optional
+        mode of uniform_filter1d (see docs). The default is 'nearest'.
+
+    Returns
+    -------
+    avg : np.ndarray
+        averaged data.
+
+    """
+    m = np.isfinite(v)
+    avg = np.empty(v.shape)
+    avg[~m] = np.nan
+    avg[m] = uniform_filter1d(v[m], size=N, mode=edges)
+    return avg
 
 
 ###############################################################################
