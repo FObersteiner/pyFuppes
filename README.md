@@ -9,10 +9,8 @@ MrFuppes' collection of Python tools.
 
 Installation
 ============
-
-    pip install pyfuppes-x.y.z-py3-none-any.whl
-
-Wheel file can be found in the /dist folder.
+E.g.
+    cd into pyfuppes dir -> build & install via `pip install .`
 
 
 Content
