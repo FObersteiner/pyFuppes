@@ -397,7 +397,7 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode='same', edges='expand'):
 ###############################################################################
 
 
-def pd_mvg_avg(v, N, ip_gaps=False, min_periods=1):
+def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
     """
     moving average based on pandas dataframe rolling function.
 
@@ -407,7 +407,7 @@ def pd_mvg_avg(v, N, ip_gaps=False, min_periods=1):
         data to average.
     N : integer
         number of samples per average.
-    ip_gaps : boolean, optional
+    ip_ovr_nan : boolean, optional
         interpolate linearly using finite elements of v. The default is False.
     min_periods : TYPE, optional
         minimum number of values in averaging window. The default is 1.
@@ -427,7 +427,7 @@ def pd_mvg_avg(v, N, ip_gaps=False, min_periods=1):
     df = pd.DataFrame({ 'v' : v })
     df['rollmean'] = df['v'].rolling(int(N), center=True,
                                      min_periods=min_periods).mean()
-    if ip_gaps:
+    if ip_ovr_nan:
         df['ip']  = df['rollmean'].interpolate()
         return df['ip'].values
 
