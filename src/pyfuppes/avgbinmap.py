@@ -276,15 +276,15 @@ def bin_by_pdresample(t, v,
 
     df = pd.DataFrame(d, index=pd.to_datetime(t*1e9))
     df1 = df.resample(rule, loffset=offset).mean()
-    df1['t10s'] = df1.index.astype(np.int64) // 10**9
+    df1['t_binned'] = df1.index.astype(np.int64) // 10**9
 
     if force_t_range:
-        if df1['t10s'].iloc[0] < t[0]:
+        if df1['t_binned'].iloc[0] < t[0]:
             df1 = df1.drop(df1.index[0])
-        if df1['t10s'].iloc[-1] > t[-1]:
+        if df1['t_binned'].iloc[-1] > t[-1]:
             df1 = df1.drop(df1.index[-1])
 
-    df1 = df1.drop(columns=['t10s']).set_index(df1['t10s'])
+    df1 = df1.drop(columns=['t_binned']).set_index(df1['t_binned'])
 
     if drop_empty:
         df1 = df1.dropna(how='all')
