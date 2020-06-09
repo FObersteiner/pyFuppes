@@ -55,8 +55,10 @@ def dtstr_2_mdns(timestring,
 
     """
     timestring, ret_scalar = to_list(timestring)
-
-    dt = [datetime.strptime(s, tsfmt) for s in timestring]
+    if tsfmt == 'iso':
+        dt = [datetime.fromisoformat(s) for s in timestring]
+    else:
+        dt = [datetime.strptime(s, tsfmt) for s in timestring]
 
     if ymd:  # [yyyy,m,d] given, take that as starting point
         t0 = (datetime(year=ymd[0], month=ymd[1], day=ymd[2],
@@ -265,6 +267,8 @@ def dtstr_2_posix(timestring,
         UTC seconds since the epoch 1970-01-01.
 
     """
+    if tsfmt == 'iso':
+        return datetime.fromisoformat(timestring).replace(tzinfo=tz).timestamp()
     return datetime.strptime(timestring, tsfmt).replace(tzinfo=tz).timestamp()
 
 
