@@ -17,7 +17,7 @@ Content
 =======
 - [avgbinmap](#module-avgbinmappy)
 - [carfiletools](#module-carfiletoolspy)
-- [filtersmooth](#module-filtersmoothpy)
+- [filter](#module-filterpy)
 - [geo](#module-geopy)
 - [misc](#module-miscpy)
 - [monotonicity](#module-monotonicitypy)
@@ -183,7 +183,7 @@ ip_ovr_nan : boolean, optional
 mode : string, optional
     config for np.convolve. The default is 'same'.
 edges : string, optional
-    config for np.convolve. The default is 'expand'.
+    config for output. The default is 'expand'.
         in case of mode='same', convolution gives false results
         ("running-in effect") at edges. account for this by
         simply expanding the Nth value to the edges.
@@ -206,7 +206,7 @@ v : 1d array
     data to average.
 N : integer
     number of samples per average.
-ip_gaps : boolean, optional
+ip_ovr_nan : boolean, optional
     interpolate linearly using finite elements of v. The default is False.
 min_periods : TYPE, optional
     minimum number of values in averaging window. The default is 1.
@@ -218,6 +218,29 @@ Returns
 
 NOTE: automatically skips NaN (forms averages over windows with <N),
       unless minimum number of values in window is exceeded.
+```
+
++++++++++++++++++++++++++++++++++  
+++ func + **sp_mvg_avg**  
++++++++++++++++++++++++++++++++++  
+```
+Use scipy's uniform_filter1d to calculate a moving average, see the docs at
+https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.uniform_filter1d.html
+Handles NaNs by removing them before interpolation.
+
+Parameters
+----------
+v : np.ndarray
+    data to average.
+N : int
+    number of samples per average.
+edges : str, optional
+    mode of uniform_filter1d (see docs). The default is 'nearest'.
+
+Returns
+-------
+avg : np.ndarray
+    averaged data.
 ```
 
 +++++++++++++++++++++++++++++++++  
@@ -354,7 +377,7 @@ retrieve data- and file version from version tag "*_Vxx.yy"
 
 ------------------------------------------------------------------------------
 ------------------------------------------------------------------------------
-## Module: filtersmooth.py
+## Module: filter.py
 ------------------------------------------------------------------------------
 
 +++++++++++++++++++++++++++++++++  
@@ -408,7 +431,7 @@ look ahead is defined by "look_ahead"
 ```
 
 +++++++++++++++++++++++++++++++++  
-++ func + **filter_jumps_v2**  
+++ func + **filter_jumps**  
 +++++++++++++++++++++++++++++++++  
 ```
 wrapper around mask_jumps()
@@ -445,7 +468,9 @@ interpol_kind : string, optional
 
 Returns
 -------
-dict.
+dict. 'filtered': filtered data
+        'ix_del': idices of deleted elements
+        'ix_rem': indices of remaining elements
 ```
 
 +++++++++++++++++++++++++++++++++  
@@ -837,7 +862,7 @@ Parameters
 posixts : float, list of float or np.ndarray with dtype float.
     the POSIX timestamp to be converted to seconds after midnight.
 ymd : tuple of int, optional
-    define starting data as tuple of integers (year, month, day).
+    define starting date as tuple of integers (year, month, day) UTC.
     The default is None, which means the reference date is the day of the
     timestamp.
 
