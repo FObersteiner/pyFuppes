@@ -160,7 +160,7 @@ def posix_2_mdns(posixts,
 
 def mdns_2_dtobj(mdns,
                  ref_date,
-                 assume_UTC=True,
+                 assume_UTC: bool = True,
                  posix: bool = False,
                  str_fmt: str = False):
     """
