@@ -15,6 +15,26 @@ import matplotlib.pyplot as plt
 ###############################################################################
 
 
+def get_tcorr_parms(t, t_ref, fitorder):
+    """
+    see time_correction(); fit parameter calculation part.
+    """
+    try:
+        parms = np.polyfit(t, t-t_ref, fitorder)
+    except np.linalg.LinAlgError: # sometimes happens at first try...
+        parms = np.polyfit(t, t-t_ref, fitorder)
+    return parms
+
+#------------------------------------------------------------------------------
+
+def apply_tcorr_parms(t, parms):
+    """
+    see time_correction(); fit evaluation part.
+    """
+    return t - np.polyval(parms, t)
+
+#------------------------------------------------------------------------------
+
 def time_correction(t, t_ref, fitorder):
     """
     fit a polynomial to the delta between a time vector and a
@@ -30,25 +50,9 @@ def time_correction(t, t_ref, fitorder):
             'fitparms': parameters of the fit, ndarray
             't_corr': corrected input time vector t
     """
-    parms = np.polyfit(t, t-t_ref, fitorder)
-    t_corr = t - np.polyval(parms, t)
+    parms = get_tcorr_parms(t, t_ref, fitorder)
+    t_corr = apply_tcorr_parms(t, parms)
     return {'fitparms': parms, 't_corr': t_corr}
-
-#------------------------------------------------------------------------------
-
-def get_tcorr_parms(t, t_ref, fitorder):
-    """
-    see time_correction(); fit parameter calculation part.
-    """
-    return np.polyfit(t, t-t_ref, fitorder)
-
-#------------------------------------------------------------------------------
-
-def apply_tcorr_parms(t, parms):
-    """
-    see time_correction(); fit evaluation part.
-    """
-    return t - np.polyval(parms, t)
 
 
 ###############################################################################
