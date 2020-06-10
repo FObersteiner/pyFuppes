@@ -211,9 +211,9 @@ def mdns_2_dtobj(mdns,
     elif str_fmt:
         offset = -3 if str_fmt.endswith("%f") else None
         result = [dtobj.strftime(str_fmt)[:offset] for dtobj in result]
-
-    if reset_tz:
-        result = [t.replace(tzinfo=None) for t in result]
+    else:
+        if reset_tz:
+            result = [t.replace(tzinfo=None) for t in result]
 
     return result[0] if ret_scalar else result
 
