@@ -80,8 +80,8 @@ def dtstr_2_mdns(timestring,
 
 
 def dtobj_2_mdns(dt_obj,
-                 ref_is_first: bool = False,
-                 ref_date: tuple = False):
+                 ref_date: tuple = None,
+                 ref_is_first: bool = False):
     """
     convert a Python datetime object (or list/array of ...) to seconds
     after midnight.
@@ -90,11 +90,11 @@ def dtobj_2_mdns(dt_obj,
     ----------
     dt_obj : datetime object or list/array of datetime objects
         the datetime to be converted to seconds after midnight.
+    ref_date : tuple of int, optional
+        custom start date given as (year, month, day). The default is False.
     ref_is_first : bool, optional
         first entry of dt_obj list/array defines start date.
         The default is False.
-    ref_date : tuple of int, optional
-        custom start date given as (year, month, day). The default is False.
 
     Returns
     -------
@@ -107,14 +107,13 @@ def dtobj_2_mdns(dt_obj,
     tzs = [d.tzinfo for d in dt_obj]
     assert len(set(tzs)) == 1, "all timezones must be equal."
 
+    t0 = dt_obj[0]
     if ref_date:
         t0 = datetime(*ref_date, tzinfo=dt_obj[0].tzinfo)
-    elif ref_is_first:
-        t0 = dt_obj[0]
+    t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0)
 
     if ref_is_first or ref_date:
-        result = ([(x-t0.replace(hour=0, minute=0, second=0, microsecond=0))
-                   .total_seconds() for x in dt_obj])
+        result = ([(x-t0).total_seconds() for x in dt_obj])
     else:
         result = ([(x-x.replace(hour=0, minute=0, second=0, microsecond=0))
                    .total_seconds() for x in dt_obj])
