@@ -120,6 +120,7 @@ def xcorr_timelag(x1, y1, x2, y2,
         y1 -= np.nanmedian(y1)
         y2 -= np.nanmedian(y2)
 
+    # this will fail if either one of the arrays holds no elements:
     if normalize_y:
         y1 /= np.nanmax(y1)
         y2 /= np.nanmax(y2)
