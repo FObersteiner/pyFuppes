@@ -55,16 +55,20 @@ def dtstr_2_mdns(timestring,
 
     """
     timestring, ret_scalar = to_list(timestring)
+
     if tsfmt == 'iso':
         dt = [datetime.fromisoformat(s) for s in timestring]
     else:
         dt = [datetime.strptime(s, tsfmt) for s in timestring]
 
-    if ymd:  # [yyyy,m,d] given, take that as starting point
+    tzs = [d.tzinfo for d in dt]
+    assert len(set(tzs)) == 1, "all timezones must be equal."
+
+    if ymd: # ymd tuple/list supplied, take that as starting point
         t0 = (datetime(year=ymd[0], month=ymd[1], day=ymd[2],
                        hour=0, minute=0, second=0, microsecond=0,
                        tzinfo=dt[0].tzinfo))
-    else:  # use date from timestring as starting point
+    else: # use date from first element as starting point
         t0 = dt[0].replace(hour=0, minute=0, second=0, microsecond=0)
 
     mdns = [(s - t0).total_seconds() for s in dt]
@@ -132,8 +136,8 @@ def posix_2_mdns(posixts,
         the POSIX timestamp to be converted to seconds after midnight.
     ymd : tuple of int, optional
         define starting date as tuple of integers (year, month, day) UTC.
-        The default is None, which means the reference date is the day of the
-        timestamp.
+        The default is None, which means the reference date is that of the
+        first element in posixts.
 
     Returns
     -------
