@@ -4,8 +4,6 @@ Created on Wed May 29 08:35:12 2019
 
 @author: F. Obersteiner, florian\obersteiner\\kit\edu
 """
-from datetime import datetime, timezone
-
 import numpy as np
 import pandas as pd
 
