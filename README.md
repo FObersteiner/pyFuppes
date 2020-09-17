@@ -9,8 +9,7 @@ MrFuppes' collection of Python tools.
 
 Installation
 ============
-E.g.
-    cd into pyfuppes dir -> build & install via `pip install .`
+    check the `.dist` folder for a whell file...
 
 
 Content
