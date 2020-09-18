@@ -58,7 +58,7 @@ class na1001():
     @SCOM.setter
     def SCOM(self, value):
         self._SCOM, self.NSCOML = value, len(value)
-        self.NLHEAD = 14 + self.NSCOML + self.NNCOML
+        self.NLHEAD = 14 + self.NSCOML + self.NNCOML + self.NV
 
     @property
     def NCOM(self):
@@ -66,7 +66,7 @@ class na1001():
     @NCOM.setter
     def NCOM(self, value):
         self._NCOM, self.NNCOML = value, len(value)
-        self.NLHEAD = 14 + self.NSCOML + self.NNCOML
+        self.NLHEAD = 14 + self.NSCOML + self.NNCOML + self.NV
 
     @property
     def VNAME(self):

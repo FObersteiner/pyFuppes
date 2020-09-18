@@ -94,7 +94,7 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         na_1001['MNAME'] = header[4]
 
         tmp = list(map(int, header[5].split()))
-        assert len(tmp) ==2, f"invalid format {header[5]} (line 6)"
+        assert len(tmp) == 2, f"invalid format {header[5]} (line 6)"
         na_1001['IVOL'], na_1001['NVOL'] = tmp[0], tmp[1]
 
         tmp = list(map(int, header[6].split()))
@@ -180,7 +180,6 @@ def na1001_cls_write(file_path, na_1001,
     """
     write content of na1001 class instance to file in NASA AMES 1001 format.
     encoding is ASCII.
-    for na_1001 specifications, see nasa_ames_1001_read.
     inputs:
         file_path - file path, string or pathlib.Path
         na_1001 - dict containing parameters according to NASA AMES 1001 spec.

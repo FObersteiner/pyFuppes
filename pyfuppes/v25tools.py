@@ -207,8 +207,8 @@ def Collect_V25Logs(folder, ext, delimiter="\t", colhdr_ix=0,
         if write_mergefile: # optionally write merged data to file
             n_el = len(data[keys[0]])
             outfile = Path(os.path.dirname(folder[0]) + "/" +
-                               os.path.basename(folder[0]) + "_merged" + "/" +
-                               os.path.basename(folder[0]) + "_merged_." + ext)
+                           os.path.basename(folder[0]) + "_merged" + "/" +
+                           os.path.basename(folder[0]) + "_merged_." + ext)
             try: # check if directory exists
                 os.stat(os.path.dirname(outfile))
             except OSError: # create if not
@@ -419,3 +419,13 @@ def parseHALOtime(cfgEVAL, data_in_ac):
 
 
 ###############################################################################
+
+
+def V25Logs_append_simple(folder, ext, delimiter="\t", colhdr_ix=0,
+                          write_mergefile=False, verbose=False):
+    # Collect_irregular
+    return None
+    
+
+###############################################################################
+
