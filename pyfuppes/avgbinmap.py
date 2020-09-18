@@ -124,7 +124,7 @@ def bin_t_10s(t,
     if t.ndim != 1:
         raise TypeError('Please pass 1D array to function.')
 
-    from monotonicity import strict_inc_np
+    from pyfuppes.monotonicity import strict_inc_np
     if not strict_inc_np(t):
         raise ValueError('Input must be strictly increasing.')
 
