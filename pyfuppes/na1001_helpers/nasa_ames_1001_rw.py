@@ -103,7 +103,8 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
         date(*tmp[:3]), date(*tmp[3:6])
         na_1001['DATE'], na_1001['RDATE'] = tmp[:3], tmp[3:6]
 
-        na_1001['DX'] = float(header[7]) # dx=0 means non-uniform independent variable.
+        # DX check if the line contains a decimal separator; if so use float else int
+        na_1001['DX'] = float(header[7]) if '.' in header[7] else int(header[7])
         na_1001['XNAME'] = header[8].rsplit(sep=sep_com)
         # CARIBIC: [0] is type, [1] is description, [2] is unit.
 
