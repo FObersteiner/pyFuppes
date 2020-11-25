@@ -68,7 +68,7 @@ class TestTimeconv(unittest.TestCase):
         l = timecorr.xcorr_timelag(t, f, t, g, (t[0], t[-1]), 1, 10, show_plots=False)
         self.assertTrue(abs(l-90)<0.25) # shift is 90...
 
-        # sabertooth
+        # Sawtooth wave
         # https://stackoverflow.com/questions/4688715/find-time-shift-between-two-similar-waveforms
         f = np.array([0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0])
         g = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])

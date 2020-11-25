@@ -131,7 +131,7 @@ def xcorr_timelag(x1, y1, x2, y2,
         p0 = ax[0].plot(x1, y1, 'r', label=f"{ynames[0]}")
         ax[0].set_xlabel("x", weight='bold')
         ax[0].set_ylabel(f"{ynames[0]} normalized")
-        ax[0].set_title(f"input")
+        ax[0].set_title("input")
         ax1 = ax[0].twinx()
         p1 = ax1.plot(x2, y2, 'b', label=f"{ynames[1]}")
         ax1.set_ylabel(f"{ynames[1]} normalized")
