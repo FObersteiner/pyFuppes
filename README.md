@@ -9,7 +9,7 @@ MrFuppes' collection of Python tools.
 
 Installation
 ============
-    check the .dist folder for a whell file...
+    check /dist directory for a wheel file.
 
 
 Content
