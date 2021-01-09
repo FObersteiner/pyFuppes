@@ -5,14 +5,14 @@ description = "MrFuppes' collection of Python tools"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
-numpy = "^1.19.2"
-pandas = "^1.1.2"
-scipy = "^1.5.2"
-matplotlib = "^3.3.2"
-numba = "^0.51.2"
-geopy = "^2.0.0"
+python = ">= 3.7, < 3.9"
+numpy = "^1"
+pandas = "^1"
+scipy = "^1"
+matplotlib = "^3"
+geopy = "^2"
 pysolar = "^0.8"
+numba = "^0.52"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
