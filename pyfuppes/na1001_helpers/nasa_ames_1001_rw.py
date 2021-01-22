@@ -161,7 +161,8 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
 
         for ix, line in enumerate(data):
             l = line.rsplit(sep=sep_data)
-            assert len(l) == n_vars+1, f'{file_path.name}: invalid number of parameters in line {ix+nlhead}'
+            msg = f'{file_path.name}: invalid number of parameters in line {ix+nlhead}, have {len(l)}, want {n_vars+1}'
+            assert len(l) == n_vars+1, msg
             na_1001['_X'].append(l[0].strip())
             if vmiss_to_None:
                 for j in range(n_vars):
