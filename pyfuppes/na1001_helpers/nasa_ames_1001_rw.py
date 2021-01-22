@@ -11,7 +11,7 @@ import os
 from datetime import date
 from pathlib import Path
 
-from pyfuppes.misc import checkbytes_lt128
+# from pyfuppes.misc import checkbytes_lt128
 
 
 ###############################################################################
@@ -55,11 +55,13 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
     if not os.path.isfile(file_path): # check if file exists
         raise FileExistsError(str(file_path) + "\n    does not exist.")
     else:
-        if ensure_ascii:
-            if not checkbytes_lt128(file_path):
-                raise TypeError(f"non-ASCII character found in {str(file_path)}")
+        # if ensure_ascii:
+        #     if not checkbytes_lt128(file_path):
+        #         raise TypeError(f"non-ASCII character found in {str(file_path)}")
 
-        with open(file_path, "r", encoding="ASCII") as file_obj:
+        enc = 'ascii' if ensure_ascii else 'utf-8'
+
+        with open(file_path, "r", encoding=enc) as file_obj:
             data = file_obj.readlines() # read file content to string list
 
         if strip_lines:
