@@ -55,14 +55,24 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
     if not os.path.isfile(file_path): # check if file exists
         raise FileExistsError(str(file_path) + "\n    does not exist.")
     else:
-        # if ensure_ascii:
-        #     if not checkbytes_lt128(file_path):
-        #         raise TypeError(f"non-ASCII character found in {str(file_path)}")
+        # by definition, nasa ames 1001 is pure ascii. the following lines allow
+        # to read files with other encodings; use with caution
+        encodings = ('ascii',) if ensure_ascii else ('ascii', 'utf-8', 'cp1252', 'latin-1')
+        data = None
+        for enc in encodings:
+            try:
+                with open(file_path, "r", encoding=enc) as file_obj:
+                    data = file_obj.readlines() # read file content to string list
+            except ValueError: # invalid encoding, try next
+                pass
+            else:
+                if enc != 'ascii':
+                    print(f"warning: using non-ascii encoding {enc} for file {file_path.name}")
+                break # found a working encoding
+        if not data:
+            raise ValueError(f"could not decode {file_path.name} (ASCII-only: {ensure_ascii}")
+        # done with encoding
 
-        enc = 'ascii' if ensure_ascii else 'utf-8'
-
-        with open(file_path, "r", encoding=enc) as file_obj:
-            data = file_obj.readlines() # read file content to string list
 
         if strip_lines:
             for i, line in enumerate(data):
