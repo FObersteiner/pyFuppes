@@ -1,18 +1,11 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.1.2"
+version = "0.1.3"
 description = "MrFuppes' collection of Python tools"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 
 [tool.poetry.dependencies]
 python = ">= 3.7, < 3.9"
-numpy = "^1"
-pandas = "^1"
-scipy = "^1"
-matplotlib = "^3"
-geopy = "^2"
-pysolar = "^0.8"
-numba = "^0.52"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
