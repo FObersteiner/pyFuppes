@@ -728,11 +728,11 @@ Parameters
 ----------
 dt_obj : datetime object or list/array of datetime objects
     the datetime to be converted to seconds after midnight.
+ref_date : tuple of int, optional
+    custom start date given as (year, month, day). The default is False.
 ref_is_first : bool, optional
     first entry of dt_obj list/array defines start date.
     The default is False.
-ref_date : tuple of int, optional
-    custom start date given as (year, month, day). The default is False.
 
 Returns
 -------
@@ -752,8 +752,8 @@ posixts : float, list of float or np.ndarray with dtype float.
     the POSIX timestamp to be converted to seconds after midnight.
 ymd : tuple of int, optional
     define starting date as tuple of integers (year, month, day) UTC.
-    The default is None, which means the reference date is the day of the
-    timestamp.
+    The default is None, which means the reference date is that of the
+    first element in posixts.
 
 Returns
 -------
@@ -820,8 +820,12 @@ timestring : string
     representing date (and time).
 tsfmt : str, optional
     strptime format. The default is "%Y-%m-%d %H:%M:%S.%f".
+    Set to 'iso' to use Python's datetime.fromisoformat() method.
 tz : timezone, optional
-    The default is timezone.utc.
+    The default is timezone.utc for UTC.
+    Set to None to ignore/use tzinfo as parsed.
+    Note: if tzinfo is None after parsing, and tz argument is None,
+        Python will assume local time by default!
 
 Returns
 -------
@@ -833,6 +837,20 @@ POSIX timestamp
 ------------------------------------------------------------------------------
 ## Module: timecorr.py
 ------------------------------------------------------------------------------
+
++++++++++++++++++++++++++++++++++  
+++ func + **get_tcorr_parms**  
++++++++++++++++++++++++++++++++++  
+```
+see time_correction(); fit parameter calculation part.
+```
+
++++++++++++++++++++++++++++++++++  
+++ func + **apply_tcorr_parms**  
++++++++++++++++++++++++++++++++++  
+```
+see time_correction(); fit evaluation part.
+```
 
 +++++++++++++++++++++++++++++++++  
 ++ func + **time_correction**  
@@ -850,20 +868,6 @@ returns:
     dict, holding
         'fitparms': parameters of the fit, ndarray
         't_corr': corrected input time vector t
-```
-
-+++++++++++++++++++++++++++++++++  
-++ func + **get_tcorr_parms**  
-+++++++++++++++++++++++++++++++++  
-```
-see time_correction(); fit parameter calculation part.
-```
-
-+++++++++++++++++++++++++++++++++  
-++ func + **apply_tcorr_parms**  
-+++++++++++++++++++++++++++++++++  
-```
-see time_correction(); fit evaluation part.
 ```
 
 +++++++++++++++++++++++++++++++++  
@@ -977,7 +981,7 @@ kwargs:
                                  lines (1 entry per line) instead of in one
                                  line each (e.g. for DLR Bahamas files)
     vmiss_to_None: set True if missing values should be replaced with None.
-    ensure_ascii: check if all bytes in the specified file are < 128.
+    ensure_ascii: set True to allow only ASCII encoding (default).
 
 returns:
     na_1001: dictionary with keys according to na1001 class.
@@ -989,7 +993,6 @@ returns:
 ```
 write content of na1001 class instance to file in NASA AMES 1001 format.
 encoding is ASCII.
-for na_1001 specifications, see nasa_ames_1001_read.
 inputs:
     file_path - file path, string or pathlib.Path
     na_1001 - dict containing parameters according to NASA AMES 1001 spec.
