@@ -261,8 +261,12 @@ def dtstr_2_posix(timestring,
         representing date (and time).
     tsfmt : str, optional
         strptime format. The default is "%Y-%m-%d %H:%M:%S.%f".
+        Set to 'iso' to use Python's datetime.fromisoformat() method.
     tz : timezone, optional
-        The default is timezone.utc.
+        The default is timezone.utc for UTC.
+        Set to None to ignore/use tzinfo as parsed.
+        Note: if tzinfo is None after parsing, and tz argument is None,
+            Python will assume local time by default!
 
     Returns
     -------
@@ -271,8 +275,22 @@ def dtstr_2_posix(timestring,
 
     """
     if tsfmt == 'iso':
-        return datetime.fromisoformat(timestring).replace(tzinfo=tz).timestamp()
-    return datetime.strptime(timestring, tsfmt).replace(tzinfo=tz).timestamp()
+        dtobj = datetime.fromisoformat(timestring)
+    else:
+        dtobj = datetime.strptime(timestring, tsfmt)
+
+    # if parsed dtobj neither has tzinfo nor utcoffset defined...
+    if dtobj.tzinfo is None and dtobj.utcoffset() is None:
+        if tz: # set the tzinfo if tz argument is provided
+            dtobj = dtobj.replace(tzinfo=tz)
+        else: # issue a warning if tz argument is None
+            print("Warning: parsed datetime object won't have tzinfo set!")
+    # else the dtobj already has a tz, so convert if tz argument is given:
+    else:
+        if tz:
+            dtobj = dtobj.astimezone(tz)
+
+    return dtobj.timestamp()
 
 
 ###############################################################################
