@@ -42,7 +42,7 @@ def na1001_cls_read(file_path, sep=" ", sep_com=";", sep_data="\t",
                                      lines (1 entry per line) instead of in one
                                      line each (e.g. for DLR Bahamas files)
         vmiss_to_None: set True if missing values should be replaced with None.
-        ensure_ascii: check if all bytes in the specified file are < 128.
+        ensure_ascii: set True to allow only ASCII encoding (default).
 
     returns:
         na_1001: dictionary with keys according to na1001 class.
