@@ -25,12 +25,13 @@ def mean_angle(deg):
     Calculate a mean angle.
     input:
         deg - (list or array) values to average
-    returns:
-        mean of deg (float)
     notes:
     - if input parameter deg contains NaN or is a numpy masked array, missing
       values will be removed before the calculation.
     - result is degrees between -180 and +180
+
+    returns:
+        mean of deg (float)
     """
     if np.ma.isMaskedArray(deg):
         deg = deg.data
@@ -84,7 +85,7 @@ def mean_day_frac(dfr, use_numba=True):
     elif isinstance(dfr, np.ndarray):
         dfr = dfr[np.isfinite(dfr)]
     else:
-        dfr = np.array(dfr, dtype='float64')
+        dfr = np.array(dfr, dtype=float)
         dfr = dfr[np.isfinite(dfr)]
 
     if len(dfr) == 0:
@@ -111,12 +112,12 @@ def bin_t_10s(t,
         lower boundary included, upper boundary excluded (0. <= 5. < 10.)
     input:
         t - np.ndarray (time vector, unit=second, increasing monotonically)
-    returns:
-        dict with binned time axis and bins, as returned by np.searchsorted()
-
     keywords:
         force_t_range (bool) - True enforces bins to fall within range of t
         drop_empty (bool) - False keeps empty bins alive
+
+    returns:
+        dict with binned time axis and bins, as returned by np.searchsorted()
     """
     if not isinstance(t, np.ndarray):
         raise TypeError('Please pass np.ndarray to function.')
@@ -175,12 +176,13 @@ def bin_y_of_t(v, bin_info,
     input:
         v - np.ndarray to be binned
         bin_info - config dict returned by bin_time() or bin_time_10s()
-    returns:
-        v binned according to parameters in bin_info
     keywords:
         vmiss (numeric) - missing value identifier, defaults to np.NaN
         return_type (str) - how to bin, defaults to 'arit_mean'
         use_numba (bool) - use njit'ed binning functions or not
+
+    returns:
+        v binned according to parameters in bin_info
     """
     if not isinstance(v, np.ndarray):
         raise TypeError('Please pass np.ndarray to function.')
@@ -267,7 +269,6 @@ def bin_by_pdresample(t, v,
     -------
     df1 : pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
-
     """
 
     if isinstance(v, list):
@@ -303,8 +304,6 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int,
     ignores NaN or INF by default (finite elements only).
     if ignore_nan is set to False, the whole bin will be NaN if 1 or more NaNs
         fall within the bin.
-    on SO:
-        https://stackoverflow.com/questions/57160558/how-to-handle-nans-in-binning-with-numpy-add-reduceat
     """
     if not isinstance(v, np.ndarray):
         v = np.array(v)
@@ -340,7 +339,6 @@ def moving_avg(v, N):
     -------
     m_avg : list
         averaged data.
-
     """
     s, m_avg = [0], []
     for i, x in enumerate(v, 1):
@@ -413,13 +411,13 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
     min_periods : TYPE, optional
         minimum number of values in averaging window. The default is 1.
 
+    NOTE: automatically skips NaN (forms averages over windows with <N),
+          unless minimum number of values in window is exceeded.
+
     Returns
     -------
     1d array
         averaged data.
-
-    NOTE: automatically skips NaN (forms averages over windows with <N),
-          unless minimum number of values in window is exceeded.
     """
     N, min_periods = int(N), int(min_periods)
 
@@ -457,7 +455,6 @@ def sp_mvg_avg(v, N, edges='nearest'):
     -------
     avg : np.ndarray
         averaged data.
-
     """
     m = np.isfinite(v)
     avg = np.empty(v.shape)
@@ -484,11 +481,11 @@ def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
         dependent variable of xcmp.
     vmiss : int or float
         what should be inserted to specify missing values.
+
     Returns
     -------
     vmap : np.ndarray, 1D
         vcmp mapped to xref.
-
     """
     # which element of xref has a corresponding element in xcmp?
     m = np.in1d(xref, xcmp)

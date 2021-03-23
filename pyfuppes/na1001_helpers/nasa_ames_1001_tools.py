@@ -16,7 +16,7 @@ from pyfuppes.timeconversion import mdns_2_dtobj
 def naDict_2_npndarr(naDict,
                      selVnames=None,
                      splitVname=';', splitIdx=0,
-                     xdtype=np.float, vdtype=np.float,
+                     xdtype=np.float, vdtype=float,
                      vmiss=np.NaN):
     """
     convert variables from na1001 class instance to dictionary holding
@@ -43,7 +43,6 @@ def naDict_2_npndarr(naDict,
     -------
     npDict : dict
         dictionary holding numpy arrays for variables from the NASA AMES file.
-
     """
     npDict = {naDict['XNAME'][0]: np.array(naDict['_X'], dtype=xdtype)}
 
@@ -74,7 +73,7 @@ def naDict_2_npndarr(naDict,
 
 def naDict_2_pddf(naDict,
                   sep_colhdr='\t', idx_colhdr=-1,
-                  dtype=np.float64,
+                  dtype=float,
                   add_datetime_index=False):
     """
     convert variables from na1001 class instance to pandas dataframe.
@@ -94,7 +93,6 @@ def naDict_2_pddf(naDict,
     -------
     Pandas DataFrame
         dataframe with a column for X and one for each parameter in V.
-
     """
     # column names for the DataFrame:
     keys = naDict['_NCOM'][idx_colhdr].split(sep_colhdr)
@@ -122,4 +120,3 @@ def naDict_2_pddf(naDict,
         df = df.set_index(i)
 
     return df
-

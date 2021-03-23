@@ -84,7 +84,7 @@ class na1001():
         self._X = xarr
         # calculate dx as unique diffs in X,
         # unique with floats might fail, so add a round to 4 decimals:
-        dx = np.unique(np.diff(np.array(xarr, dtype=np.float)).round(4))
+        dx = np.unique(np.diff(np.array(xarr, dtype=float)).round(4))
         # let dx be 0 if there's more than one unique diff
         dx = dx[0] if dx.size == 1 else 0
         # use an integer if dx is close to its integer value, else float:
@@ -201,4 +201,3 @@ class na1001():
 
         """
         return tools.naDict_2_pddf(self.__dict__, **kwargs)
-

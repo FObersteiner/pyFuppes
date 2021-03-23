@@ -11,8 +11,6 @@ import os
 from datetime import date
 from pathlib import Path
 
-# from pyfuppes.misc import checkbytes_lt128
-
 
 ###############################################################################
 
@@ -204,6 +202,7 @@ def na1001_cls_write(file_path, na_1001,
         crlf - newline character(s)
         overwrite - set to True to overwrite if file exists
         verbose - print info to the console
+
     returns:
         (int) 0 -> failed, 1 -> normal write, 2 -> overwrite
     """

@@ -45,6 +45,7 @@ def time_correction(t, t_ref, fitorder):
         t - time vector, 1D np array, numeric type
         t_ref - reference time vector, of same shape as t
         fitorder - order of the polynomial fit, integer
+
     returns:
         dict, holding
             'fitparms': parameters of the fit, ndarray
@@ -98,7 +99,6 @@ def xcorr_timelag(x1, y1, x2, y2,
     Returns
     -------
     scalar value, delay in specified xunit.
-
     """
     # copy x and y so that nothing gets messed up
     x1, y1 = deepcopy(x1.astype(np.float)), deepcopy(y1.astype(np.float))
@@ -195,8 +195,8 @@ def xcorr_timelag(x1, y1, x2, y2,
 if __name__ == '__main__':
     # illustration of time_correction():
     order = 1
-    t = np.array([1,2,3,4,5,6], dtype=np.float32)
-    ref = np.array([1,3,5,7,9,11], dtype=np.float32)
+    t = np.array([1,2,3,4,5,6], dtype=float)
+    ref = np.array([1,3,5,7,9,11], dtype=float)
     parms = np.polyfit(t, t-ref, order)
     t_corr = t - np.polyval(parms, t)
     plt.plot(t, 'r', label='t')

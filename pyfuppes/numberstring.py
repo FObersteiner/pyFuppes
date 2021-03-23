@@ -26,6 +26,7 @@ class NumStr():
                 (decimal, no decimal, exp notation)
             2) pass the string and the general class to an appropriate
                 parsing function.
+
         RETURNS:
             the result of the parsing function:
                 tuple with
@@ -160,4 +161,3 @@ if __name__ == '__main__':
     print('right:', dec2str_stripped(NUMBERS, dec_places=3, strip='right'))
     print('left:', dec2str_stripped(NUMBERS, dec_places=3, strip='left'))
     print('both:', dec2str_stripped(NUMBERS, dec_places=3, strip='both'))
-

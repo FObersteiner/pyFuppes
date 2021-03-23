@@ -175,8 +175,8 @@ def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
 
     """
 
-    ix_del = np.full(v.shape[0], -1, dtype='int32')  # deletion index
-    ix_rem = np.full(v.shape[0], -1, dtype='int32')  # remaining index
+    ix_del = np.full(v.shape[0], -1, dtype=int)  # deletion index
+    ix_rem = np.full(v.shape[0], -1, dtype=int)  # remaining index
 
     buffer = [False, 0]
 

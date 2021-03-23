@@ -5,7 +5,6 @@ Created on Thu Dec 20 11:18:46 2018
 @author: F. Obersteiner, florian\obersteiner\\kit\edu
 """
 
-import operator
 import os
 from pathlib import Path
 
@@ -37,23 +36,23 @@ def print_progressbar(iteration, total,
     # Print New Line on Complete
     if iteration == total:
         print('\n')
-##
-## Sample Usage
-##
-#
-#from time import sleep
-#
-## A List of Items
-#items = list(range(0, 57))
-#l = len(items)
-#
-## Initial call to print 0% progress
-#printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
-#for i, item in enumerate(items):
-#    # Do stuff...
-#    sleep(0.1)
-#    # Update Progress Bar
-#    printProgressBar(i + 1, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+# #
+# # Sample Usage
+# #
+
+# from time import sleep
+
+# # A List of Items
+# items = list(range(0, 57))
+# l = len(items)
+
+# # Initial call to print 0% progress
+# printProgressBar(0, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
+# for i, item in enumerate(items):
+#     # Do stuff...
+#     sleep(0.1)
+#     # Update Progress Bar
+#     printProgressBar(i + 1, l, prefix = 'Progress:', suffix = 'Complete', length = 50)
 
 
 ###############################################################################
@@ -67,6 +66,7 @@ def find_youngest_file(path, pattern, n=1):
         path, string or pathlib.Path, where to look for the file(s)
         pattern, string, pattern to look for in files (see pathlib.Path.glob)
         n, integer, how many to return. defaults to 1
+
     returns
         filename(s) of youngest file(s), including path
         None if no file
@@ -88,7 +88,9 @@ def find_youngest_file(path, pattern, n=1):
 def checkbytes_lt128(file):
     """
     Check if all bytes of a file are less than decimal 128.
-    Returns True for an ASCII encoded text file.
+
+    Returns :
+        True for an ASCII encoded text file else False.
     """
     with open(file, 'rb') as f:
         content = f.read()
@@ -105,6 +107,7 @@ def find_fist_elem(arr, val, condition):
         arr: numeric numpy 1d array or python list
         val: scalar value
         condition: e.g. 'operator.ge' (operator package)
+
     Returns:
         index of value matching the condition or None if no match is found.
     """

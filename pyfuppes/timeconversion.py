@@ -52,7 +52,6 @@ def dtstr_2_mdns(timestring,
     -------
     float; scalar or float; list
         seconds since midnight for the given timestring(s).
-
     """
     timestring, ret_scalar = to_list(timestring)
 
@@ -100,7 +99,6 @@ def dtobj_2_mdns(dt_obj,
     -------
     float; scalar or list of float
         seconds after midnight for the given datetime object(s).
-
     """
     dt_obj, ret_scalar = to_list(dt_obj)
 
@@ -142,7 +140,6 @@ def posix_2_mdns(posixts,
     -------
     float; scalar or list of float
         seconds after midnight for the given POSIX timestamp(s).
-
     """
     posixts, ret_scalar = to_list(posixts)
 
@@ -189,7 +186,6 @@ def mdns_2_dtobj(mdns,
     -------
     datetime object or float (POSIX timestamp)
         ...for the given seconds after midnight.
-
     """
     mdns, ret_scalar = to_list(mdns)
     # ensure type float:
@@ -239,7 +235,6 @@ def daysSince_2_dtobj(day0, daysSince):
     Returns
     -------
     datetime object
-
     """
     if isinstance(daysSince, (list, np.ndarray)):
         return [(day0 + timedelta(days=ds)) for ds in daysSince]
@@ -272,7 +267,6 @@ def dtstr_2_posix(timestring,
     -------
     POSIX timestamp
         UTC seconds since the epoch 1970-01-01.
-
     """
     if tsfmt == 'iso':
         dtobj = datetime.fromisoformat(timestring)

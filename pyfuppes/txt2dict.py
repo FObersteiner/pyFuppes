@@ -59,7 +59,7 @@ def txt_2_dict_simple(file, sep=';', colhdr_ix=0, *,
         preserve_empty - do not remove empty fields
         skip_empty_lines - ignore empty lines, just skip them.
 
-    RETURNS: dict
+    returns: dict
         {'file_hdr': list, 'data': dict with key for each col header tag}
     """
 
