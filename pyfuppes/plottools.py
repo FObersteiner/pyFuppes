@@ -38,7 +38,10 @@ def get_plot_range(v, add_percent=5,
         lower and upper limit.
 
     """
-    v = np.array(v, dtype=np.float) # ensure array type
+    if hasattr(v, 'mask'): # numpy masked array: only use non-masked values
+        v = v[~v.mask]
+
+    v = np.array(v, dtype=float) # ensure array type
 
     if x and xrange:
         x = np.sort(np.array(x)) # monotonically increasing x-vector (e.g. time)
