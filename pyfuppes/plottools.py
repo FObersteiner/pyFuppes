@@ -52,7 +52,9 @@ def get_plot_range(v, add_percent=5,
     v = v[np.isfinite(v)]
 
     if len(v) < 2:
-        raise ValueError("input must at least contain 2 elements")
+        # it is better not to raise an exception in case no valid input,
+        # to avoid errors further down...
+        return [-1, 1]
 
     v_min, v_max = v.min(), v.max()
     offset = (abs(v_min)+abs(v_max))/2 * add_percent/100
