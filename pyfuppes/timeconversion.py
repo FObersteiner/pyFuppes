@@ -248,7 +248,7 @@ def dtstr_2_posix(timestring,
                   tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
                   tz=timezone.utc):
     """
-    Convert timestring without timezone information to UTC timestamp.
+    Convert timestring without time zone information to Unix time.
 
     Parameters
     ----------
