@@ -7,7 +7,6 @@ Created on Wed May 29 08:35:12 2019
 import numpy as np
 import pandas as pd
 
-from pyfuppes.timeconversion import mdns_2_dtobj
 
 
 ###############################################################################
@@ -116,7 +115,12 @@ def naDict_2_pddf(naDict,
     df = pd.DataFrame.from_dict(dict(zip(keys, values)))
 
     if add_datetime_index:
-        i = pd.DatetimeIndex(mdns_2_dtobj(values[0], ref_date=naDict['DATE']))
-        df = df.set_index(i)
+        df.set_index(
+            pd.DatetimeIndex(
+                pd.Timestamp(*naDict['DATE']) + pd.to_timedelta(values[0], unit='s'),
+                tz='UTC',
+                ),
+            inplace=True,
+            )
 
     return df
