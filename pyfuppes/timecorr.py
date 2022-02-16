@@ -20,12 +20,14 @@ def get_tcorr_parms(t, t_ref, fitorder):
     see time_correction(); fit parameter calculation part.
     """
     try:
-        parms = np.polyfit(t, t-t_ref, fitorder)
-    except np.linalg.LinAlgError: # sometimes happens at first try...
-        parms = np.polyfit(t, t-t_ref, fitorder)
+        parms = np.polyfit(t, t - t_ref, fitorder)
+    except np.linalg.LinAlgError:  # sometimes happens at first try...
+        parms = np.polyfit(t, t - t_ref, fitorder)
     return parms
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+
 
 def apply_tcorr_parms(t, parms):
     """
@@ -33,7 +35,9 @@ def apply_tcorr_parms(t, parms):
     """
     return t - np.polyval(parms, t)
 
-#------------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------------
+
 
 def time_correction(t, t_ref, fitorder):
     """
@@ -53,20 +57,28 @@ def time_correction(t, t_ref, fitorder):
     """
     parms = get_tcorr_parms(t, t_ref, fitorder)
     t_corr = apply_tcorr_parms(t, parms)
-    return {'fitparms': parms, 't_corr': t_corr}
+    return {"fitparms": parms, "t_corr": t_corr}
 
 
 ###############################################################################
 
 
-def xcorr_timelag(x1, y1, x2, y2,
-                  sel_xrange, xunit, to_freq,
-                  rmv_NaN=True,
-                  pad_to_zero=True,
-                  normalize_y=True,
-                  show_plots=True, ynames=('y1', 'y2'),
-                  corrmode='auto',
-                  boundaries=None):
+def xcorr_timelag(
+    x1,
+    y1,
+    x2,
+    y2,
+    sel_xrange,
+    xunit,
+    to_freq,
+    rmv_NaN=True,
+    pad_to_zero=True,
+    normalize_y=True,
+    show_plots=True,
+    ynames=("y1", "y2"),
+    corrmode="auto",
+    boundaries=None,
+):
     """
     analyze time lag between two time series by cross-correlation.
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
@@ -126,42 +138,41 @@ def xcorr_timelag(x1, y1, x2, y2,
         y2 /= np.nanmax(y2)
 
     if show_plots:
-        fig, ax = plt.subplots(2,1, figsize=(14,10))
+        fig, ax = plt.subplots(2, 1, figsize=(14, 10))
         plt.subplots_adjust(top=0.94, bottom=0.06, left=0.06, right=0.94)
-        p0 = ax[0].plot(x1, y1, 'r', label=f"{ynames[0]}")
-        ax[0].set_xlabel("x", weight='bold')
+        p0 = ax[0].plot(x1, y1, "r", label=f"{ynames[0]}")
+        ax[0].set_xlabel("x", weight="bold")
         ax[0].set_ylabel(f"{ynames[0]} normalized")
         ax[0].set_title("input")
         ax1 = ax[0].twinx()
-        p1 = ax1.plot(x2, y2, 'b', label=f"{ynames[1]}")
+        p1 = ax1.plot(x2, y2, "b", label=f"{ynames[1]}")
         ax1.set_ylabel(f"{ynames[1]} normalized")
 
     # normalize x:
     start, end = np.floor(x1[0]), np.ceil(x1[-1])
-    n = (end-start)*to_freq
+    n = (end - start) * to_freq
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
-    f_ip = interp1d(x1, y1, kind='linear', bounds_error=False,
-                    fill_value="extrapolate")
+    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate")
     y1res = f_ip(xnorm)
-    f_ip = interp1d(x2, y2, kind='linear', bounds_error=False,
-                    fill_value="extrapolate")
+    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate")
     y2res = f_ip(xnorm)
 
     if show_plots:
-        p2 = ax[0].plot(xnorm, y1res, 'firebrick', label=f"{ynames[0]} resampled")
-        p3 = ax1.plot(xnorm, y2res, 'deepskyblue', label=f"{ynames[1]} resampled")
+        p2 = ax[0].plot(xnorm, y1res, "firebrick", label=f"{ynames[0]} resampled")
+        p3 = ax1.plot(xnorm, y2res, "deepskyblue", label=f"{ynames[1]} resampled")
         plots = p0 + p1 + p2 + p3
         lbls = [l.get_label() for l in plots]
-        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor='white')
+        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")
 
     # cross-correlate y2 vs. y1 and normalize to 0-1:
-    corr = (np.correlate(y2res, y1res, mode='same') /
-            np.sqrt(np.correlate(y1res, y1res, mode='same')[int(n/2)] *
-                    np.correlate(y2res, y2res, mode='same')[int(n/2)]))
+    corr = np.correlate(y2res, y1res, mode="same") / np.sqrt(
+        np.correlate(y1res, y1res, mode="same")[int(n / 2)]
+        * np.correlate(y2res, y2res, mode="same")[int(n / 2)]
+    )
 
-    delay_arr = np.linspace(-0.5*n/to_freq, 0.5*n/to_freq, int(n))
+    delay_arr = np.linspace(-0.5 * n / to_freq, 0.5 * n / to_freq, int(n))
 
     if boundaries:
         m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])
@@ -170,20 +181,20 @@ def xcorr_timelag(x1, y1, x2, y2,
 
     # check if correlation is positive or negative to determine lag time
     funcs = (np.argmin, np.argmax)
-    if corrmode == 'auto':
-        select = funcs[int(np.ceil(np.corrcoef(y2res, y1res)[0,1]))]
-    elif corrmode == 'positive':
+    if corrmode == "auto":
+        select = funcs[int(np.ceil(np.corrcoef(y2res, y1res)[0, 1]))]
+    elif corrmode == "positive":
         select = funcs[1]
-    elif corrmode == 'negative':
+    elif corrmode == "negative":
         select = funcs[0]
 
     delay = delay_arr[select(corr)]
 
     if show_plots:
-        ax[1].plot(delay_arr, corr, 'k', label='xcorr')
-        ax[1].axvline(x=delay, color='r', linewidth=2)
-        ax[1].set_xlabel('lag')
-        ax[1].set_ylabel('correlation coefficient')
+        ax[1].plot(delay_arr, corr, "k", label="xcorr")
+        ax[1].axvline(x=delay, color="r", linewidth=2)
+        ax[1].set_xlabel("lag")
+        ax[1].set_ylabel("correlation coefficient")
         ax[1].set_title(f"{ynames[1]} vs. {ynames[0]} lag: {delay:+.3f}")
 
     return delay
@@ -192,15 +203,15 @@ def xcorr_timelag(x1, y1, x2, y2,
 ###############################################################################
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     # illustration of time_correction():
     order = 1
-    t = np.array([1,2,3,4,5,6], dtype=float)
-    ref = np.array([1,3,5,7,9,11], dtype=float)
-    parms = np.polyfit(t, t-ref, order)
+    t = np.array([1, 2, 3, 4, 5, 6], dtype=float)
+    ref = np.array([1, 3, 5, 7, 9, 11], dtype=float)
+    parms = np.polyfit(t, t - ref, order)
     t_corr = t - np.polyval(parms, t)
-    plt.plot(t, 'r', label='t')
-    plt.plot(ref, 'b', label='ref', marker='x')
-    plt.plot(t_corr, '--k', label='corrected')
-    plt.plot(t-ref, 'g', label='delta (t-ref)')
+    plt.plot(t, "r", label="t")
+    plt.plot(ref, "b", label="ref", marker="x")
+    plt.plot(t_corr, "--k", label="corrected")
+    plt.plot(t - ref, "g", label="delta (t-ref)")
     plt.legend()

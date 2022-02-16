@@ -14,17 +14,37 @@ import pyfuppes.na1001_helpers.nasa_ames_1001_tools as tools
 ###############################################################################
 
 
-class na1001():
+class na1001:
     """
-    a class to work with NASA AMES files of type 1001.
+    a class to work with NASA Ames files with format index 1001.
     """
+
     # initialize class instance with some parameters:
-    __INID = {'NLHEAD': 14, 'ONAME': '', 'ORG': '', 'SNAME': '', 'MNAME': '',
-              'IVOL': 1, 'NVOL': 1, 'DATE': (1970,1,1), 'RDATE': (1970,1,1),
-              'DX': 0, 'XNAME': '', 'NV': 0, 'VSCAL': np.nan, 'VMISS': np.nan,
-              '_VNAME': '', 'NSCOML': 0, '_SCOM': '', 'NNCOML': 0, '_NCOM': '',
-              '_X': '', 'V': '', '_FFI': 1001,
-              'SRC': ''}
+    __INID = {
+        "NLHEAD": 14,
+        "ONAME": "",
+        "ORG": "",
+        "SNAME": "",
+        "MNAME": "",
+        "IVOL": 1,
+        "NVOL": 1,
+        "DATE": (1970, 1, 1),
+        "RDATE": (1970, 1, 1),
+        "DX": 0,
+        "XNAME": "",
+        "NV": 0,
+        "VSCAL": np.nan,
+        "VMISS": np.nan,
+        "_VNAME": "",
+        "NSCOML": 0,
+        "_SCOM": "",
+        "NNCOML": 0,
+        "_NCOM": "",
+        "_X": "",
+        "V": "",
+        "_FFI": 1001,
+        "SRC": "",
+    }
 
     __KEYS = list(__INID.keys())
 
@@ -38,23 +58,24 @@ class na1001():
     def __repr__(self):
         s = "NASA AMES 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
-        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[3:4])
-        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
-        s += f'\nXNAME: {self.XNAME}'
+        s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[3:4])
+        s += "\n" + ", ".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
+        s += f"\nXNAME: {self.XNAME}"
         sv = "\n".join(v for v in self.VNAME) if self.VNAME else None
-        s += f'\nNV: {self.NV}, VNAMES:\n{sv}'
+        s += f"\nNV: {self.NV}, VNAMES:\n{sv}"
         return s
 
     def __str__(self):
         s = "NASA AMES 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
-        s += '\n'.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[1:4])
-        s += '\n' + ', '.join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
+        s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[1:4])
+        s += "\n" + ", ".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
         return s
 
     @property
     def SCOM(self):
         return self._SCOM
+
     @SCOM.setter
     def SCOM(self, value):
         self._SCOM, self.NSCOML = value, len(value)
@@ -63,6 +84,7 @@ class na1001():
     @property
     def NCOM(self):
         return self._NCOM
+
     @NCOM.setter
     def NCOM(self, value):
         self._NCOM, self.NNCOML = value, len(value)
@@ -71,6 +93,7 @@ class na1001():
     @property
     def VNAME(self):
         return self._VNAME
+
     @VNAME.setter
     def VNAME(self, value):
         self._VNAME, self.NV = value, len(value)
@@ -79,6 +102,7 @@ class na1001():
     @property
     def X(self):
         return self._X
+
     @X.setter
     def X(self, xarr):
         self._X = xarr
@@ -91,7 +115,7 @@ class na1001():
         dx = int(dx) if np.isclose(dx, int(dx)) else dx
         self.DX = dx
 
-#------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
     def __from_file(self, file, **kwargs):
         """
         Load NASA AMES 1001 from file.
@@ -117,7 +141,7 @@ class na1001():
         for k in self.__KEYS:
             setattr(self, k, nadict[k])
 
-#------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
     def to_file(self, file, **kwargs):
         """
         Write NASA AMES 1001 file from class attributes.
@@ -138,7 +162,7 @@ class na1001():
         io = rw.na1001_cls_write(file, self.__dict__, **kwargs)
         return io
 
-#------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
     def to_dict_nparray(self, **kwargs):
         """
         convert variables from a NASA AMES 1001 dictionary stored as string(lists)
@@ -174,7 +198,7 @@ class na1001():
         """
         return tools.naDict_2_npndarr(self.__dict__, **kwargs)
 
-#------------------------------------------------------------------------------
+    # ------------------------------------------------------------------------------
     def to_pddf(self, **kwargs):
         """
         make a Pandas DataFrame from NA 1001 data.

@@ -21,17 +21,20 @@ def strictly_increasing(py_list):
     """
     return all(x < y for x, y in zip(py_list, py_list[1:]))
 
+
 def strictly_decreasing(py_list):
     """
     check if elements of a list are strictly decreasing.
     """
     return all(x > y for x, y in zip(py_list, py_list[1:]))
 
+
 def non_increasing(py_list):
     """
     check if elements of a list are increasing monotonically.
     """
     return all(x >= y for x, y in zip(py_list, py_list[1:]))
+
 
 def non_decreasing(py_list):
     """
@@ -47,17 +50,20 @@ def strict_inc_np(npndarr_1d):
     """
     return np.all(np.diff(npndarr_1d) > 0)
 
+
 def strict_dec_np(npndarr_1d):
     """
     check if elements of numpy 1D array are strictly decreasing.
     """
     return np.all(np.diff(npndarr_1d) < 0)
 
+
 def non_inc_np(npndarr_1d):
     """
     check if elements of numpy 1D array are increasing monotonically.
     """
     return np.all(np.diff(npndarr_1d) <= 0)
+
 
 def non_dec_np(npndarr_1d):
     """

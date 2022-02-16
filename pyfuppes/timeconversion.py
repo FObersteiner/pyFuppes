@@ -17,12 +17,12 @@ def to_list(parm, is_scalar=False):
     convert input "parm" to a Python list object.
     if "parm" is a scalar, return value "is_scalar" is True, otherwise False.
     """
-    if isinstance(parm, str): # check this first: don't call list() on a string
+    if isinstance(parm, str):  # check this first: don't call list() on a string
         parm, is_scalar = [parm], True
     elif not isinstance(parm, (list, np.ndarray)):
         try:
-            parm = list(parm) # call list() first in case parm is np.ndarray
-        except TypeError: # will e.g. raised if parm is a float
+            parm = list(parm)  # call list() first in case parm is np.ndarray
+        except TypeError:  # will e.g. raised if parm is a float
             parm = [parm]
         is_scalar = True
     return parm, is_scalar
@@ -31,9 +31,7 @@ def to_list(parm, is_scalar=False):
 ### MAIN FUNCTIONS ############################################################
 
 
-def dtstr_2_mdns(timestring,
-                 tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
-                 ymd: tuple = None):
+def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = None):
     """
     convert datetime string to seconds since midnight (float).
     since a relative difference is calculated, the function is timezone-safe.
@@ -55,7 +53,7 @@ def dtstr_2_mdns(timestring,
     """
     timestring, ret_scalar = to_list(timestring)
 
-    if tsfmt == 'iso':
+    if tsfmt == "iso":
         dt = [datetime.fromisoformat(s) for s in timestring]
     else:
         dt = [datetime.strptime(s, tsfmt) for s in timestring]
@@ -63,11 +61,18 @@ def dtstr_2_mdns(timestring,
     tzs = [d.tzinfo for d in dt]
     assert len(set(tzs)) == 1, "all timezones must be equal."
 
-    if ymd: # ymd tuple/list supplied, take that as starting point
-        t0 = (datetime(year=ymd[0], month=ymd[1], day=ymd[2],
-                       hour=0, minute=0, second=0, microsecond=0,
-                       tzinfo=dt[0].tzinfo))
-    else: # use date from first element as starting point
+    if ymd:  # ymd tuple/list supplied, take that as starting point
+        t0 = datetime(
+            year=ymd[0],
+            month=ymd[1],
+            day=ymd[2],
+            hour=0,
+            minute=0,
+            second=0,
+            microsecond=0,
+            tzinfo=dt[0].tzinfo,
+        )
+    else:  # use date from first element as starting point
         t0 = dt[0].replace(hour=0, minute=0, second=0, microsecond=0)
 
     mdns = [(s - t0).total_seconds() for s in dt]
@@ -78,9 +83,7 @@ def dtstr_2_mdns(timestring,
 ###############################################################################
 
 
-def dtobj_2_mdns(dt_obj,
-                 ref_date: tuple = None,
-                 ref_is_first: bool = False):
+def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
     """
     convert a Python datetime object (or list/array of ...) to seconds
     after midnight.
@@ -111,10 +114,12 @@ def dtobj_2_mdns(dt_obj,
     t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0)
 
     if ref_is_first or ref_date:
-        result = ([(x-t0).total_seconds() for x in dt_obj])
+        result = [(x - t0).total_seconds() for x in dt_obj]
     else:
-        result = ([(x-x.replace(hour=0, minute=0, second=0, microsecond=0))
-                   .total_seconds() for x in dt_obj])
+        result = [
+            (x - x.replace(hour=0, minute=0, second=0, microsecond=0)).total_seconds()
+            for x in dt_obj
+        ]
 
     return result[0] if ret_scalar else result
 
@@ -122,8 +127,7 @@ def dtobj_2_mdns(dt_obj,
 ###############################################################################
 
 
-def posix_2_mdns(posixts,
-                 ymd: tuple = None):
+def posix_2_mdns(posixts, ymd: tuple = None):
     """
     convert a POSIX timestamp (or list/array of ...) to seconds after midnight.
 
@@ -144,13 +148,14 @@ def posix_2_mdns(posixts,
     posixts, ret_scalar = to_list(posixts)
 
     if ymd:  # (yyyy, m, d) given, take that as starting point t0:
-        t0 = datetime(year=ymd[0], month=ymd[1], day=ymd[2],
-                      tzinfo=timezone.utc).timestamp()
-    else: # take date of first entry as starting point
+        t0 = datetime(
+            year=ymd[0], month=ymd[1], day=ymd[2], tzinfo=timezone.utc
+        ).timestamp()
+    else:  # take date of first entry as starting point
         t0 = datetime.fromtimestamp(posixts[0], tz=timezone.utc)
         t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
 
-    ts = [t-t0 for t in posixts]
+    ts = [t - t0 for t in posixts]
 
     return ts[0] if ret_scalar else ts
 
@@ -158,11 +163,9 @@ def posix_2_mdns(posixts,
 ###############################################################################
 
 
-def mdns_2_dtobj(mdns,
-                 ref_date,
-                 assume_UTC: bool = True,
-                 posix: bool = False,
-                 str_fmt: str = False):
+def mdns_2_dtobj(
+    mdns, ref_date, assume_UTC: bool = True, posix: bool = False, str_fmt: str = False
+):
     """
     convert seconds after midnight (or list/array of ...) to datetime object.
 
@@ -196,16 +199,18 @@ def mdns_2_dtobj(mdns,
     reset_tz = False
     if isinstance(ref_date, (tuple, list)):
         ref_date, reset_tz = datetime(*ref_date), True
-        if assume_UTC: # add timezone UTC if assume_UTC is set to True
+        if assume_UTC:  # add timezone UTC if assume_UTC is set to True
             ref_date = ref_date.replace(tzinfo=timezone.utc)
 
     result = [ref_date + timedelta(seconds=t) for t in mdns]
 
     if posix:
         if not ref_date.tzinfo:
-            print("*mdns_2_dtobj warning*: creating POSIX timestamps from "
-                  "naive datetime objects might give unexpected results!\n"
-                  "\t-> consider passing a tz-aware ref_date instead.")
+            print(
+                "*mdns_2_dtobj warning*: creating POSIX timestamps from "
+                "naive datetime objects might give unexpected results!\n"
+                "\t-> consider passing a tz-aware ref_date instead."
+            )
         result = [dtobj.timestamp() for dtobj in result]
     elif str_fmt:
         offset = -3 if str_fmt.endswith("%f") else None
@@ -238,15 +243,13 @@ def daysSince_2_dtobj(day0, daysSince):
     """
     if isinstance(daysSince, (list, np.ndarray)):
         return [(day0 + timedelta(days=ds)) for ds in daysSince]
-    return (day0 + timedelta(days=daysSince))
+    return day0 + timedelta(days=daysSince)
 
 
 ###############################################################################
 
 
-def dtstr_2_posix(timestring,
-                  tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
-                  tz=timezone.utc):
+def dtstr_2_posix(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz=timezone.utc):
     """
     Convert timestring without time zone information to Unix time.
 
@@ -268,16 +271,16 @@ def dtstr_2_posix(timestring,
     POSIX timestamp
         UTC seconds since the epoch 1970-01-01.
     """
-    if tsfmt == 'iso':
+    if tsfmt == "iso":
         dtobj = datetime.fromisoformat(timestring)
     else:
         dtobj = datetime.strptime(timestring, tsfmt)
 
     # if parsed dtobj neither has tzinfo nor utcoffset defined...
     if dtobj.tzinfo is None and dtobj.utcoffset() is None:
-        if tz: # set the tzinfo if tz argument is provided
+        if tz:  # set the tzinfo if tz argument is provided
             dtobj = dtobj.replace(tzinfo=tz)
-        else: # issue a warning if tz argument is None
+        else:  # issue a warning if tz argument is None
             print("Warning: parsed datetime object won't have tzinfo set!")
     # else the dtobj already has a tz, so convert if tz argument is given:
     else:

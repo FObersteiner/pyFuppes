@@ -43,7 +43,7 @@ def mean_angle(deg):
     elif len(deg) == 1:
         return deg[0]
 
-    return degrees(phase(sum(rect(1, radians(d)) for d in deg)/len(deg)))
+    return degrees(phase(sum(rect(1, radians(d)) for d in deg) / len(deg)))
 
 
 ###############################################################################
@@ -65,7 +65,7 @@ def mean_angle_numba(deg):
     for d in deg:
         result += rect(1, radians(d))
 
-    return degrees(phase(result/len(deg)))
+    return degrees(phase(result / len(deg)))
 
 
 ###############################################################################
@@ -93,20 +93,18 @@ def mean_day_frac(dfr, use_numba=True):
     elif len(dfr) == 1:
         return dfr[0]
 
-    deg_mean = mean_angle_numba(dfr*360) if use_numba else mean_angle(dfr*360)
+    deg_mean = mean_angle_numba(dfr * 360) if use_numba else mean_angle(dfr * 360)
 
-    if deg_mean < 0: # account for mean degree between -180 and +180
+    if deg_mean < 0:  # account for mean degree between -180 and +180
         deg_mean += 360
 
-    return deg_mean/360
+    return deg_mean / 360
 
 
 ###############################################################################
 
 
-def bin_t_10s(t,
-              force_t_range=True,
-              drop_empty=True):
+def bin_t_10s(t, force_t_range=True, drop_empty=True):
     """
     bin a time axis to 10 s intervals around 5;
         lower boundary included, upper boundary excluded (0. <= 5. < 10.)
@@ -120,17 +118,18 @@ def bin_t_10s(t,
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
     if not isinstance(t, np.ndarray):
-        raise TypeError('Please pass np.ndarray to function.')
+        raise TypeError("Please pass np.ndarray to function.")
 
     if t.ndim != 1:
-        raise TypeError('Please pass 1D array to function.')
+        raise TypeError("Please pass 1D array to function.")
 
     from pyfuppes.monotonicity import strict_inc_np
+
     if not strict_inc_np(t):
-        raise ValueError('Input must be strictly increasing.')
+        raise ValueError("Input must be strictly increasing.")
 
     tmin, tmax = np.floor(t[0]), np.floor(t[-1])
-    t_binned = np.arange((tmin-tmin%10)+5, (tmax-tmax%10)+6, 10)
+    t_binned = np.arange((tmin - tmin % 10) + 5, (tmax - tmax % 10) + 6, 10)
 
     # if all values of t should fall WITHIN the range of t_binned:
     vmask = None
@@ -141,22 +140,26 @@ def bin_t_10s(t,
             t_binned = t_binned[:-1]
         # check if values should be masked, e.g. if an element in t does not
         # fall into the bins
-        vmask = ((t < t_binned[0]-5) | (t >= t_binned[-1]+5))
+        vmask = (t < t_binned[0] - 5) | (t >= t_binned[-1] + 5)
         t = t[~vmask]
 
-    bins = np.searchsorted(t_binned-5, t, side='right')
+    bins = np.searchsorted(t_binned - 5, t, side="right")
 
     # if empty bins should be created, mask all bins that would have no
     # corresponding value in the dependent variable's data
     bmask = None
     if drop_empty:
-        t_binned = t_binned[np.bincount(bins-1).astype(np.bool_)]
+        t_binned = t_binned[np.bincount(bins - 1).astype(np.bool_)]
     else:
         bmask = np.ones(t_binned.shape).astype(np.bool_)
-        bmask[bins-1] = False
+        bmask[bins - 1] = False
 
-    return {'t_binned': t_binned, 'bins': bins,
-            'masked_bins': bmask, 'masked_vals': vmask}
+    return {
+        "t_binned": t_binned,
+        "bins": bins,
+        "masked_bins": bmask,
+        "masked_vals": vmask,
+    }
 
 
 ###############################################################################
@@ -166,10 +169,8 @@ def bin_t_10s(t,
 def get_npnanmean(v):
     return np.nanmean(v)
 
-def bin_y_of_t(v, bin_info,
-                  vmiss=np.nan,
-                  return_type='arit_mean',
-                  use_numba=True):
+
+def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=True):
     """
     use the output of function "bin_time" or "bin_time_10s" to bin
         a variable 'v' that depends on a variable t.
@@ -185,55 +186,72 @@ def bin_y_of_t(v, bin_info,
         v binned according to parameters in bin_info
     """
     if not isinstance(v, np.ndarray):
-        raise TypeError('Please pass np.ndarray to function.')
+        raise TypeError("Please pass np.ndarray to function.")
 
-    if not any([v.dtype == np.dtype(t) for t in ('int16', 'int32', 'int64',
-                                                 'float16', 'float32', 'float64')]):
-        raise TypeError('Please pass valid dtype, int or float.')
+    if not any(
+        [
+            v.dtype == np.dtype(t)
+            for t in ("int16", "int32", "int64", "float16", "float32", "float64")
+        ]
+    ):
+        raise TypeError("Please pass valid dtype, int or float.")
 
     # make a deep copy so that v is not modified on the way
     _v = deepcopy(v)
 
     # change dtype to float so we can use NaN
-    if any([_v.dtype == np.dtype(t) for t in ('int16', 'int32', 'int64')]):
+    if any([_v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")]):
         _v = _v.astype(np.float)
 
-    _v[_v==vmiss] = np.nan
+    _v[_v == vmiss] = np.nan
 
     # remove values that were masked (out of bin range)
-    _v = _v[~bin_info['masked_vals']]
+    _v = _v[~bin_info["masked_vals"]]
 
     v_binned = []
-    vd_bins = bin_info['bins']
+    vd_bins = bin_info["bins"]
 
-    if return_type == 'arit_mean':
+    if return_type == "arit_mean":
         if use_numba:
-            v_binned = [get_npnanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
+            v_binned = [
+                get_npnanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
+            ]
         else:
-            v_binned = [np.nanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
-    elif return_type == 'mean_day_frac':
+            v_binned = [
+                np.nanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
+            ]
+    elif return_type == "mean_day_frac":
         if use_numba:
-            v_binned = [mean_day_frac(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
+            v_binned = [
+                mean_day_frac(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
+            ]
         else:
-            v_binned = [mean_day_frac(_v[vd_bins == bin_no], use_numba=False) for bin_no in np.unique(vd_bins)]
-    elif return_type == 'mean_angle':
+            v_binned = [
+                mean_day_frac(_v[vd_bins == bin_no], use_numba=False)
+                for bin_no in np.unique(vd_bins)
+            ]
+    elif return_type == "mean_angle":
         if use_numba:
-            v_binned = [mean_angle_numba(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
+            v_binned = [
+                mean_angle_numba(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
+            ]
         else:
-            v_binned = [mean_angle(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
+            v_binned = [
+                mean_angle(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
+            ]
 
     result = np.array(v_binned)
 
     # check if there are masked bins, i.e. empty bins. add them to the output if so.
-    if bin_info['masked_bins'] is not None:
-        tmp = np.ones(bin_info['masked_bins'].shape)
-        tmp[bin_info['masked_bins']] = vmiss
-        tmp[~bin_info['masked_bins']] = result
+    if bin_info["masked_bins"] is not None:
+        tmp = np.ones(bin_info["masked_bins"].shape)
+        tmp[bin_info["masked_bins"]] = vmiss
+        tmp[~bin_info["masked_bins"]] = result
         result = tmp
 
     # round to integers if input type was integer
-    if any([v.dtype == np.dtype(t) for t in ('int16', 'int32', 'int64')]):
-        result =  np.rint(result).astype(v.dtype)
+    if any([v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")]):
+        result = np.rint(result).astype(v.dtype)
 
     return result
 
@@ -241,11 +259,9 @@ def bin_y_of_t(v, bin_info,
 ###############################################################################
 
 
-def bin_by_pdresample(t, v,
-                      rule='10S',
-                      offset=timedelta(seconds=5),
-                      force_t_range=True,
-                      drop_empty=True):
+def bin_by_pdresample(
+    t, v, rule="10S", offset=timedelta(seconds=5), force_t_range=True, drop_empty=True
+):
     """
     use pandas DataFrame method "resample" for binning along a time axis.
 
@@ -274,22 +290,22 @@ def bin_by_pdresample(t, v,
     if isinstance(v, list):
         d = {f"v_{i}": y for i, y in enumerate(v)}
     else:
-        d = {'v_0': v}
+        d = {"v_0": v}
 
-    df = pd.DataFrame(d, index=pd.to_datetime(t*1e9))
+    df = pd.DataFrame(d, index=pd.to_datetime(t * 1e9))
     df1 = df.resample(rule, loffset=offset).mean()
-    df1['t_binned'] = df1.index.astype(np.int64) // 10**9
+    df1["t_binned"] = df1.index.astype(np.int64) // 10**9
 
     if force_t_range:
-        if df1['t_binned'].iloc[0] < t[0]:
+        if df1["t_binned"].iloc[0] < t[0]:
             df1 = df1.drop(df1.index[0])
-        if df1['t_binned'].iloc[-1] > t[-1]:
+        if df1["t_binned"].iloc[-1] > t[-1]:
             df1 = df1.drop(df1.index[-1])
 
-    df1 = df1.drop(columns=['t_binned']).set_index(df1['t_binned'])
+    df1 = df1.drop(columns=["t_binned"]).set_index(df1["t_binned"])
 
     if drop_empty:
-        df1 = df1.dropna(how='all')
+        df1 = df1.dropna(how="all")
 
     return df1
 
@@ -297,8 +313,7 @@ def bin_by_pdresample(t, v,
 ###############################################################################
 
 
-def bin_by_npreduceat(v: np.ndarray, nbins: int,
-                      ignore_nan=True):
+def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
     """
     1D binning with numpy.add.reduceat.
     ignores NaN or INF by default (finite elements only).
@@ -308,15 +323,15 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int,
     if not isinstance(v, np.ndarray):
         v = np.array(v)
 
-    bins = np.linspace(0, v.size, nbins+1, True).astype(np.int)
+    bins = np.linspace(0, v.size, nbins + 1, True).astype(np.int)
 
     if ignore_nan:
         mask = np.isfinite(v)
         vn = np.where(~mask, 0, v)
-        with np.errstate(invalid='ignore'):
-            out = np.add.reduceat(vn, bins[:-1])/np.add.reduceat(mask, bins[:-1])
+        with np.errstate(invalid="ignore"):
+            out = np.add.reduceat(vn, bins[:-1]) / np.add.reduceat(mask, bins[:-1])
     else:
-        out = np.add.reduceat(v, bins[:-1])/np.diff(bins)
+        out = np.add.reduceat(v, bins[:-1]) / np.diff(bins)
 
     return out
 
@@ -342,9 +357,9 @@ def moving_avg(v, N):
     """
     s, m_avg = [0], []
     for i, x in enumerate(v, 1):
-        s.append(s[i-1] + x)
+        s.append(s[i - 1] + x)
         if i >= N:
-            avg = (s[i] - s[i-N])/N
+            avg = (s[i] - s[i - N]) / N
             m_avg.append(avg)
     return m_avg
 
@@ -352,7 +367,7 @@ def moving_avg(v, N):
 ###############################################################################
 
 
-def np_mvg_avg(v, N, ip_ovr_nan=False, mode='same', edges='expand'):
+def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
     """
     moving average based on numpy convolution function.
 
@@ -380,15 +395,20 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode='same', edges='expand'):
     N = int(N)
 
     if ip_ovr_nan:
-        x = np.linspace(0, len(v)-1, num=len(v))
-        fip = interp1d(x[np.isfinite(v)], v[np.isfinite(v)], kind='linear',
-                       bounds_error=False, fill_value='extrapolate')
+        x = np.linspace(0, len(v) - 1, num=len(v))
+        fip = interp1d(
+            x[np.isfinite(v)],
+            v[np.isfinite(v)],
+            kind="linear",
+            bounds_error=False,
+            fill_value="extrapolate",
+        )
         v = fip(x)
 
-    m_avg = np.convolve(v, np.ones((N,))/N, mode=mode)
+    m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)
 
-    if edges=='expand':
-        m_avg[:N-1], m_avg[-N-1:] = m_avg[N], m_avg[-N]
+    if edges == "expand":
+        m_avg[: N - 1], m_avg[-N - 1 :] = m_avg[N], m_avg[-N]
 
     return m_avg
 
@@ -423,20 +443,21 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
 
     min_periods = 1 if min_periods < 1 else min_periods
 
-    df = pd.DataFrame({ 'v' : v })
-    df['rollmean'] = df['v'].rolling(int(N), center=True,
-                                     min_periods=min_periods).mean()
+    df = pd.DataFrame({"v": v})
+    df["rollmean"] = (
+        df["v"].rolling(int(N), center=True, min_periods=min_periods).mean()
+    )
     if ip_ovr_nan:
-        df['ip']  = df['rollmean'].interpolate()
-        return df['ip'].values
+        df["ip"] = df["rollmean"].interpolate()
+        return df["ip"].values
 
-    return df['rollmean'].values
+    return df["rollmean"].values
 
 
 ###############################################################################
 
 
-def sp_mvg_avg(v, N, edges='nearest'):
+def sp_mvg_avg(v, N, edges="nearest"):
     """
     Use scipy's uniform_filter1d to calculate a moving average, see the docs at
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.uniform_filter1d.html

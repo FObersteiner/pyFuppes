@@ -62,7 +62,7 @@ def mask_repeated_nb(arr, n, atol=1e-6):
     current = arr[0]
     count = 0
     for idx, item in enumerate(arr):
-        if abs(item-current) < atol:
+        if abs(item - current) < atol:
             count += 1
         else:
             current = item
@@ -84,14 +84,14 @@ def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
     n_el = arr.shape[0]
     mask = np.ones(arr.shape).astype(np.bool_)
     i = 0
-    while i < n_el-1:
-        cur, nxt = arr[i], arr[i+1]
-        delta_0 = np.absolute(nxt-cur) if abs_delta else nxt-cur
+    while i < n_el - 1:
+        cur, nxt = arr[i], arr[i + 1]
+        delta_0 = np.absolute(nxt - cur) if abs_delta else nxt - cur
         if delta_0 > thrsh:
-            for value in arr[i+1:i+look_ahead+1]:
-                delta_1 = np.absolute(value-cur) if abs_delta else value-cur
+            for value in arr[i + 1 : i + look_ahead + 1]:
+                delta_1 = np.absolute(value - cur) if abs_delta else value - cur
                 if delta_1 > thrsh:
-                    mask[i+1] = False
+                    mask[i + 1] = False
                     i += 1
                 else:
                     break
@@ -102,11 +102,16 @@ def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
 ###############################################################################
 
 
-def filter_jumps(arr, thrsh, look_ahead,
-                 abs_delta=False,
-                 vmiss=np.nan,
-                 remove_repeated=False,
-                 interpol_jumps=False, interpol_kind='linear'):
+def filter_jumps(
+    arr,
+    thrsh,
+    look_ahead,
+    abs_delta=False,
+    vmiss=np.nan,
+    remove_repeated=False,
+    interpol_jumps=False,
+    interpol_kind="linear",
+):
     """
     wrapper around mask_jumps()
     ! interpolation assumes equidistant spacing of the independent variable of
@@ -121,7 +126,7 @@ def filter_jumps(arr, thrsh, look_ahead,
     if look_ahead >= arr.shape[0] or look_ahead < 1:
         raise ValueError(f"parameter look_ahead must be >=1 and <{arr.shape[0]}.")
 
-    result = arr.copy() # do not touch the input...
+    result = arr.copy()  # do not touch the input...
     if not np.isnan(vmiss):
         result[vmiss] = np.nan
     if remove_repeated:
@@ -129,8 +134,12 @@ def filter_jumps(arr, thrsh, look_ahead,
     mask = mask_jumps(result, thrsh, look_ahead, abs_delta=abs_delta)
     result[~mask] = np.nan
     if interpol_jumps:
-        f_ip = interp1d(np.arange(0, result.shape[0])[mask], result[mask],
-                        kind=interpol_kind, fill_value='extrapolate')
+        f_ip = interp1d(
+            np.arange(0, result.shape[0])[mask],
+            result[mask],
+            kind=interpol_kind,
+            fill_value="extrapolate",
+        )
         result = f_ip(np.arange(0, result.shape[0]))
         return (result, mask)
     return (result, mask)
@@ -139,9 +148,16 @@ def filter_jumps(arr, thrsh, look_ahead,
 ###############################################################################
 
 
-def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
-                    reset_buffer_after=3, remove_doubles=False,
-                    interpol_jumps=False, interpol_kind='linear'):
+def filter_jumps_np(
+    v,
+    max_delta,
+    no_val=np.nan,
+    use_abs_delta=True,
+    reset_buffer_after=3,
+    remove_doubles=False,
+    interpol_jumps=False,
+    interpol_kind="linear",
+):
     """
 
     if v is dependent on another variable x (e.g. time) and if that x
@@ -191,9 +207,9 @@ def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
             continue  # fill buffer if not done so yet
 
         if use_abs_delta:
-            delta = abs(v_ix-buffer[0])
+            delta = abs(v_ix - buffer[0])
         else:
-            delta = v_ix-buffer[0]
+            delta = v_ix - buffer[0]
 
         if delta > max_delta:  # jump found!
             v[ix] = no_val
@@ -205,7 +221,7 @@ def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
         else:  # no jump,...
             buffer[0] = v_ix
             if remove_doubles:  # check for double values...
-                if delta == 0.:  # double found!
+                if delta == 0.0:  # double found!
                     v[ix] = no_val
                     ix_del[ix] = ix
                 else:  # no double
@@ -222,36 +238,34 @@ def filter_jumps_np(v, max_delta, no_val=np.nan, use_abs_delta=True,
     if interpol_jumps:
         tmp_x = (np.arange(0, v.shape[0]))[ix_rem]
         tmp_y = v[ix_rem]
-        f_ip = interp1d(tmp_x, tmp_y,
-                        kind=interpol_kind, fill_value='extrapolate')
+        f_ip = interp1d(tmp_x, tmp_y, kind=interpol_kind, fill_value="extrapolate")
         filtered = f_ip(np.arange(0, v.shape[0]))
     else:
         w_valid = np.where(v != no_val)
         filtered = v[w_valid]
 
-    return {'filtered': filtered,
-            'ix_del': ix_del,
-            'ix_rem': ix_rem}
+    return {"filtered": filtered, "ix_del": ix_del, "ix_rem": ix_rem}
 
 
 ###############################################################################
 
 
-def del_at_edge(v, n_cut, add=2, out_len='same'):
+def del_at_edge(v, n_cut, add=2, out_len="same"):
     """
     assume v to be a 1D array which contains blocks of NaNs.
     returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
     """
 
-    tf = np.isfinite(v)*1.
+    tf = np.isfinite(v) * 1.0
 
-    mask = np.convolve(tf, np.ones((int(n_cut+add),))/int(n_cut+add),
-                       mode=out_len)
+    mask = np.convolve(
+        tf, np.ones((int(n_cut + add),)) / int(n_cut + add), mode=out_len
+    )
 
     if tf[0] > 0.9:
-        mask[0] = 1.
+        mask[0] = 1.0
     if tf[-1] > 0.9:
-        mask[-1] = 1.
+        mask[-1] = 1.0
 
     mask[np.where(mask < 0.999)] = np.nan
 

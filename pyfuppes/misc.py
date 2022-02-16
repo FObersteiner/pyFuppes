@@ -14,8 +14,9 @@ import numpy as np
 ###############################################################################
 
 
-def print_progressbar(iteration, total,
-                      prefix='', suffix='', decimals=1, length=100, fill='█'):
+def print_progressbar(
+    iteration, total, prefix="", suffix="", decimals=1, length=100, fill="█"
+):
     """
     https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     access: 2018-12-20
@@ -31,11 +32,13 @@ def print_progressbar(iteration, total,
     """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
-    progBar = fill * filledLength + '-' * (length - filledLength)
-    print('\r%s |%s| %s%% %s' % (prefix, progBar, percent, suffix), end='\r')
+    progBar = fill * filledLength + "-" * (length - filledLength)
+    print("\r%s |%s| %s%% %s" % (prefix, progBar, percent, suffix), end="\r")
     # Print New Line on Complete
     if iteration == total:
-        print('\n')
+        print("\n")
+
+
 # #
 # # Sample Usage
 # #
@@ -92,9 +95,9 @@ def checkbytes_lt128(file):
     Returns :
         True for an ASCII encoded text file else False.
     """
-    with open(file, 'rb') as f:
+    with open(file, "rb") as f:
         content = f.read()
-    return all(b<128 for b in content)
+    return all(b < 128 for b in content)
 
 
 ###############################################################################
@@ -154,4 +157,4 @@ def set_compare(a, b):
          what is common in a and b)
     """
     a, b = set(a), set(b)
-    return (a-b, b-a, a.intersection(b))
+    return (a - b, b - a, a.intersection(b))

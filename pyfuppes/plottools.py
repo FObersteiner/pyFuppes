@@ -11,9 +11,9 @@ import numpy as np
 ###############################################################################
 
 
-def get_plot_range(v, add_percent=5,
-                   v_min_lim=False, v_max_lim=False,
-                   xrange=False, x=False):
+def get_plot_range(
+    v, add_percent=5, v_min_lim=False, v_max_lim=False, xrange=False, x=False
+):
     """
     Adjust y-axis range of matplotlib pyplot for a given vector v.
 
@@ -38,15 +38,15 @@ def get_plot_range(v, add_percent=5,
         lower and upper limit.
 
     """
-    if hasattr(v, 'mask'): # numpy masked array: only use non-masked values
+    if hasattr(v, "mask"):  # numpy masked array: only use non-masked values
         v = v[~v.mask]
 
-    v = np.array(v, dtype=float) # ensure array type
+    v = np.array(v, dtype=float)  # ensure array type
 
     if x and xrange:
-        x = np.sort(np.array(x)) # monotonically increasing x-vector (e.g. time)
+        x = np.sort(np.array(x))  # monotonically increasing x-vector (e.g. time)
         if len(x) == len(v):
-            w_xvd = ((x >= xrange[0]) & (x <= xrange[1]))
+            w_xvd = (x >= xrange[0]) & (x <= xrange[1])
             v = v[w_xvd]
 
     v = v[np.isfinite(v)]
@@ -57,7 +57,7 @@ def get_plot_range(v, add_percent=5,
         return [-1, 1]
 
     v_min, v_max = v.min(), v.max()
-    offset = (abs(v_min)+abs(v_max))/2 * add_percent/100
+    offset = (abs(v_min) + abs(v_max)) / 2 * add_percent / 100
     result = [v_min - offset, v_max + offset]
 
     if v_min_lim:
@@ -95,14 +95,16 @@ def nticks_yrange(yrange, nticks, to_multiples_of=10):
 
     """
 
-    result = [np.floor(yrange[0]/to_multiples_of)*to_multiples_of,
-              np.ceil(yrange[1]/to_multiples_of)*to_multiples_of]
+    result = [
+        np.floor(yrange[0] / to_multiples_of) * to_multiples_of,
+        np.ceil(yrange[1] / to_multiples_of) * to_multiples_of,
+    ]
 
-    size = np.lcm(nticks-1, to_multiples_of)
-    n, r = divmod((result[1]-result[0]), size)
+    size = np.lcm(nticks - 1, to_multiples_of)
+    n, r = divmod((result[1] - result[0]), size)
 
     add = 1 if r > to_multiples_of else 0
-    result[1] = result[0] + (n + add)*size
+    result[1] = result[0] + (n + add) * size
 
     return result
 

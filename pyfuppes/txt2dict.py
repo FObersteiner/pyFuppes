@@ -9,7 +9,7 @@ Created on Fri Apr 20 11:17:42 2018
 ###############################################################################
 
 
-def txt_2_dict_basic(file, delimiter, *, offset=0, encoding='utf-8'):
+def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8"):
     """
     most basic csv reader (delimiter-separated text file).
     faster than dict reader from csv package.
@@ -22,7 +22,7 @@ def txt_2_dict_basic(file, delimiter, *, offset=0, encoding='utf-8'):
     returns:
         dict; keys = values from the first row, values = rest of the csv file.
     """
-    with open(file, 'r', encoding=encoding) as csvfile:
+    with open(file, "r", encoding=encoding) as csvfile:
         data = csvfile.read().splitlines()
         if offset > 0:
             data = data[offset:]
@@ -34,11 +34,19 @@ def txt_2_dict_basic(file, delimiter, *, offset=0, encoding='utf-8'):
 ###############################################################################
 
 
-def txt_2_dict_simple(file, sep=';', colhdr_ix=0, *,
-                      encoding='utf-8',
-                      to_float=False, ignore_repeated_sep=False,
-                      ignore_colhdr=False, keys_upper=False,
-                      preserve_empty=True, skip_empty_lines=False):
+def txt_2_dict_simple(
+    file,
+    sep=";",
+    colhdr_ix=0,
+    *,
+    encoding="utf-8",
+    to_float=False,
+    ignore_repeated_sep=False,
+    ignore_colhdr=False,
+    keys_upper=False,
+    preserve_empty=True,
+    skip_empty_lines=False,
+):
     """
     requires input: txt file with column header and values separated by a
         specific separator (delimiter).
@@ -69,13 +77,13 @@ def txt_2_dict_simple(file, sep=';', colhdr_ix=0, *,
     if not content:
         raise ValueError(f"no content in {file}")
 
-    result = {'file_hdr': [], 'data': {}, 'src': str(file)}
+    result = {"file_hdr": [], "data": {}, "src": str(file)}
     if colhdr_ix > 0:
-        result['file_hdr'] = [l.strip() for l in content[:colhdr_ix]]
+        result["file_hdr"] = [l.strip() for l in content[:colhdr_ix]]
 
     col_hdr = content[colhdr_ix].strip().rsplit(sep)
     if ignore_repeated_sep:
-        col_hdr = [s for s in col_hdr if s != '']
+        col_hdr = [s for s in col_hdr if s != ""]
     if ignore_colhdr:
         for i, _ in enumerate(col_hdr):
             col_hdr[i] = f"col_{(i+1):03d}"
@@ -84,26 +92,26 @@ def txt_2_dict_simple(file, sep=';', colhdr_ix=0, *,
         col_hdr = [s.upper() for s in col_hdr]
 
     for element in col_hdr:
-        result['data'][element] = []
+        result["data"][element] = []
 
     # cut col header...
     if ignore_colhdr:
         colhdr_ix -= 1
 
-    content = content[1+colhdr_ix:]
+    content = content[1 + colhdr_ix :]
     for ix, line in enumerate(content):
-        if preserve_empty: # only remove linefeed (if first field is empty)
-            line = line[:-1] if '\n' in line else line
+        if preserve_empty:  # only remove linefeed (if first field is empty)
+            line = line[:-1] if "\n" in line else line
         else:
             line = line.strip()  # remove surrounding whitespaces
         if skip_empty_lines:
-            if line == '': # skip empty lines
+            if line == "":  # skip empty lines
                 continue
 
         line = line.rsplit(sep)
 
         if ignore_repeated_sep:
-            line = [s for s in line if s != '']
+            line = [s for s in line if s != ""]
 
         if len(line) != len(col_hdr):
             err_msg = f"n elem in line {ix} != n elem in col header ({file})"
@@ -112,10 +120,10 @@ def txt_2_dict_simple(file, sep=';', colhdr_ix=0, *,
             for i, hdr_tag in enumerate(col_hdr):
                 if to_float:
                     try:
-                        result['data'][hdr_tag].append(float(line[i]))
-                    except ValueError: # not convertible, just append value...
-                        result['data'][hdr_tag].append(line[i])
+                        result["data"][hdr_tag].append(float(line[i]))
+                    except ValueError:  # not convertible, just append value...
+                        result["data"][hdr_tag].append(line[i])
                 else:
-                    result['data'][hdr_tag].append(line[i].strip())
+                    result["data"][hdr_tag].append(line[i].strip())
 
     return result
