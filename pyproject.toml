@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "pyfuppes"
 version = "0.1.7"
-description = "MrFuppes' collection of Python tools"
+description = "A collection of Python tools"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 
 [tool.poetry.dependencies]
@@ -11,5 +11,5 @@ python = ">= 3.7, < 3.10"
 pytest = "^5.2"
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+requires = ["poetry-core @ git+https://github.com/python-poetry/poetry-core.git@master"]
+build-backend = "poetry.core.masonry.api"
