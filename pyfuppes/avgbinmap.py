@@ -14,7 +14,7 @@ import numpy as np
 import pandas as pd
 from numba import njit
 from scipy.interpolate import interp1d
-from scipy.ndimage.filters import uniform_filter1d
+from scipy.ndimage import uniform_filter1d
 
 
 ###############################################################################
@@ -93,7 +93,8 @@ def mean_day_frac(dfr, use_numba=True):
     elif len(dfr) == 1:
         return dfr[0]
 
-    deg_mean = mean_angle_numba(dfr * 360) if use_numba else mean_angle(dfr * 360)
+    deg_mean = mean_angle_numba(
+        dfr * 360) if use_numba else mean_angle(dfr * 360)
 
     if deg_mean < 0:  # account for mean degree between -180 and +180
         deg_mean += 360
@@ -329,7 +330,8 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
         mask = np.isfinite(v)
         vn = np.where(~mask, 0, v)
         with np.errstate(invalid="ignore"):
-            out = np.add.reduceat(vn, bins[:-1]) / np.add.reduceat(mask, bins[:-1])
+            out = np.add.reduceat(
+                vn, bins[:-1]) / np.add.reduceat(mask, bins[:-1])
     else:
         out = np.add.reduceat(v, bins[:-1]) / np.diff(bins)
 
@@ -408,7 +410,7 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
     m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)
 
     if edges == "expand":
-        m_avg[: N - 1], m_avg[-N - 1 :] = m_avg[N], m_avg[-N]
+        m_avg[: N - 1], m_avg[-N - 1:] = m_avg[N], m_avg[-N]
 
     return m_avg
 
