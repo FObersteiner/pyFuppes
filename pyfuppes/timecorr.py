@@ -155,22 +155,25 @@ def xcorr_timelag(
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
-    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate")
+    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False,
+                    fill_value="extrapolate")
     f = f_ip(xnorm)
-    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate")
+    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False,
+                    fill_value="extrapolate")
     g = f_ip(xnorm)
 
     if show_plots:
         p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")
         p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")
         plots = p0 + p1 + p2 + p3
-        lbls = [l.get_label() for l in plots]
+        lbls = [p.get_label() for p in plots]
         ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")
 
     # cross-correlate f vs. g (i.e. y1 vs. y2):
     corr = xcorr_func(f, g)
 
-    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
+    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * \
+        (end - start) / xnorm.size * -1
 
     if boundaries:
         m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])
