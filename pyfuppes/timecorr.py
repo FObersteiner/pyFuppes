@@ -9,6 +9,7 @@ from copy import deepcopy
 
 import numpy as np
 from scipy.interpolate import interp1d
+from scipy.signal import correlate
 import matplotlib.pyplot as plt
 
 
@@ -68,16 +69,16 @@ def xcorr_timelag(
     y1,
     x2,
     y2,
-    sel_xrange,
-    xunit,
-    to_freq,
+    xrange=None,
+    freq=100,
     rmv_NaN=True,
     pad_to_zero=True,
     normalize_y=True,
     show_plots=True,
-    ynames=("y1", "y2"),
-    corrmode="auto",
+    ynames=("f", "g"),
+    corrmode="positive",
     boundaries=None,
+    xcorr_func=correlate,
 ):
     """
     analyze time lag between two time series by cross-correlation.
@@ -89,12 +90,10 @@ def xcorr_timelag(
         independend and dependent variable of reference data.
     x2, y2 : 1d arrays
         independend and dependent variable of data to check for time lag.
-    sel_xrange : tuple
-        cut data to fall within x-range "sel_xrange".
-    xunit : numeric, scalar value
-        unit of x, seconds.
-    to_freq : numeric, scalar value
-        interpolate data to frequency "to_freq".
+    xrange : tuple, optional.
+        cut data to fall within x-range "xrange". The default is (x1.min(), x2.max())
+    freq : numeric, scalar value
+        frequency the data is interpolated to in Hz. The default is 100.
     rmv_NaN : boolean, optional
         clean NaNs from data. The default is True.
     pad_to_zero : boolean, optional
@@ -104,22 +103,24 @@ def xcorr_timelag(
     show_plots : boolean, optional
         show result plot. The default is True.
     corrmode : string, optional. values: 'auto', 'positive', 'negative'
-         type of correlation between y1 and y2. The default is auto.
+         type of correlation to expect between y1 and y2. The default is positive.
     boundaries: 2-element tuple. lower and upper boundary.
         expect timelag to fall within these boundaries. The default is None.
 
     Returns
     -------
-    scalar value, delay in specified xunit.
+    scalar value, delay / lag value.
     """
     # copy x and y so that nothing gets messed up
-    x1, y1 = deepcopy(x1.astype(np.float)), deepcopy(y1.astype(np.float))
-    x2, y2 = deepcopy(x2.astype(np.float)), deepcopy(y2.astype(np.float))
+    x1, y1 = deepcopy(x1.astype(float)), deepcopy(y1.astype(float))
+    x2, y2 = deepcopy(x2.astype(float)), deepcopy(y2.astype(float))
 
     # cut to selected xrange:
-    m1 = (x1 >= sel_xrange[0]) & (x1 < sel_xrange[1])
+    if xrange is None:
+        xrange = (x1.min(), x2.max())
+    m1 = (x1 >= xrange[0]) & (x1 < xrange[1])
     x1, y1 = x1[m1], y1[m1]
-    m2 = (x2 >= sel_xrange[0]) & (x2 < sel_xrange[1])
+    m2 = (x2 >= xrange[0]) & (x2 < xrange[1])
     x2, y2 = x2[m2], y2[m2]
 
     if rmv_NaN:
@@ -150,29 +151,26 @@ def xcorr_timelag(
 
     # normalize x:
     start, end = np.floor(x1[0]), np.ceil(x1[-1])
-    n = (end - start) * to_freq
+    n = (end - start) * freq
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
     f_ip = interp1d(x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate")
-    y1res = f_ip(xnorm)
+    f = f_ip(xnorm)
     f_ip = interp1d(x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate")
-    y2res = f_ip(xnorm)
+    g = f_ip(xnorm)
 
     if show_plots:
-        p2 = ax[0].plot(xnorm, y1res, "firebrick", label=f"{ynames[0]} resampled")
-        p3 = ax1.plot(xnorm, y2res, "deepskyblue", label=f"{ynames[1]} resampled")
+        p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")
+        p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")
         plots = p0 + p1 + p2 + p3
         lbls = [l.get_label() for l in plots]
         ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")
 
-    # cross-correlate y2 vs. y1 and normalize to 0-1:
-    corr = np.correlate(y2res, y1res, mode="same") / np.sqrt(
-        np.correlate(y1res, y1res, mode="same")[int(n / 2)]
-        * np.correlate(y2res, y2res, mode="same")[int(n / 2)]
-    )
+    # cross-correlate f vs. g (i.e. y1 vs. y2):
+    corr = xcorr_func(f, g)
 
-    delay_arr = np.linspace(-0.5 * n / to_freq, 0.5 * n / to_freq, int(n))
+    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
 
     if boundaries:
         m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])
@@ -180,13 +178,11 @@ def xcorr_timelag(
         corr = corr[m]
 
     # check if correlation is positive or negative to determine lag time
-    funcs = (np.argmin, np.argmax)
+    select = np.argmax  # default: expect positive correlation
     if corrmode == "auto":
-        select = funcs[int(np.ceil(np.corrcoef(y2res, y1res)[0, 1]))]
-    elif corrmode == "positive":
-        select = funcs[1]
+        select = (np.argmin, np.argmax)[int(np.ceil(np.corrcoef(f, g)[0, 1]))]
     elif corrmode == "negative":
-        select = funcs[0]
+        select = np.argmin
 
     delay = delay_arr[select(corr)]
 
