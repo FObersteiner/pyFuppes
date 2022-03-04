@@ -155,11 +155,9 @@ def xcorr_timelag(
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
-    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False,
-                    fill_value="extrapolate")
+    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate")
     f = f_ip(xnorm)
-    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False,
-                    fill_value="extrapolate")
+    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate")
     g = f_ip(xnorm)
 
     if show_plots:
@@ -172,8 +170,7 @@ def xcorr_timelag(
     # cross-correlate f vs. g (i.e. y1 vs. y2):
     corr = xcorr_func(f, g)
 
-    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * \
-        (end - start) / xnorm.size * -1
+    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
 
     if boundaries:
         m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])

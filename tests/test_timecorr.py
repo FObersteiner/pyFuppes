@@ -65,15 +65,12 @@ class TestTimeconv(unittest.TestCase):
         g = 10 * np.exp(-((t - 180) ** 2) / 8) + np.random.randn(250) + 41
         lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, 90)
-        self.assertTrue(abs(lag - 90) < (90 * 0.02)
-                        )  # shift is 90... expect within 2%
+        self.assertTrue(abs(lag - 90) < (90 * 0.02))  # shift is 90... expect within 2%
 
         # Sawtooth wave
         # https://stackoverflow.com/questions/4688715/find-time-shift-between-two-similar-waveforms
-        f = np.array([0, 1, 2, 3, 4, 3, 2, 1, 0, 1,
-                     2, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0])
-        g = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 3,
-                     2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
+        f = np.array([0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0])
+        g = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
         t = np.arange(f.size)
         lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, 4)
@@ -86,7 +83,7 @@ class TestTimeconv(unittest.TestCase):
         data = np.linspace(0, 2 * np.pi, to_freq)
         data = np.tile(np.sin(data), 5)
         data += np.random.normal(0, 5, data.shape)
-        f, g = data[to_freq: 4 * to_freq], data[: 3 * to_freq]
+        f, g = data[to_freq : 4 * to_freq], data[: 3 * to_freq]
         t = np.arange(f.size)
         lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, to_freq)

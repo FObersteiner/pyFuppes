@@ -32,8 +32,7 @@ class TestTimeconv(unittest.TestCase):
         tgt = np.array([np.nan, 1, 2], dtype=float)
         test = avgbinmap.map_dependent(xref, xcmp, vcmp)
         self.assertTrue(
-            all(a == b if np.isfinite(b) else np.isnan(a)
-                for a, b in zip(test, tgt))
+            all(a == b if np.isfinite(b) else np.isnan(a) for a, b in zip(test, tgt))
         )
 
         # last missing
@@ -43,8 +42,7 @@ class TestTimeconv(unittest.TestCase):
         tgt = np.array([2, 3, np.nan], dtype=float)
         test = avgbinmap.map_dependent(xref, xcmp, vcmp)
         self.assertTrue(
-            all(a == b if np.isfinite(b) else np.isnan(a)
-                for a, b in zip(test, tgt))
+            all(a == b if np.isfinite(b) else np.isnan(a) for a, b in zip(test, tgt))
         )
 
         # gap
@@ -54,8 +52,7 @@ class TestTimeconv(unittest.TestCase):
         tgt = np.array([1, np.nan, np.nan, 2], dtype=float)
         test = avgbinmap.map_dependent(xref, xcmp, vcmp)
         self.assertTrue(
-            all(a == b if np.isfinite(b) else np.isnan(a)
-                for a, b in zip(test, tgt))
+            all(a == b if np.isfinite(b) else np.isnan(a) for a, b in zip(test, tgt))
         )
 
         # missing elements in cmp
@@ -65,8 +62,7 @@ class TestTimeconv(unittest.TestCase):
         tgt = np.array([1, np.nan, np.nan, 2], dtype=float)
         test = avgbinmap.map_dependent(xref, xcmp, vcmp)
         self.assertTrue(
-            all(a == b if np.isfinite(b) else np.isnan(a)
-                for a, b in zip(test, tgt))
+            all(a == b if np.isfinite(b) else np.isnan(a) for a, b in zip(test, tgt))
         )
 
         # missing elements in ref
@@ -76,8 +72,7 @@ class TestTimeconv(unittest.TestCase):
         tgt = np.array([1, np.nan, np.nan], dtype=float)
         test = avgbinmap.map_dependent(xref, xcmp, vcmp)
         self.assertTrue(
-            all(a == b if np.isfinite(b) else np.isnan(a)
-                for a, b in zip(test, tgt))
+            all(a == b if np.isfinite(b) else np.isnan(a) for a, b in zip(test, tgt))
         )
 
 
