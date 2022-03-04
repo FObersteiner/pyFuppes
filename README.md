@@ -9,8 +9,12 @@ MrFuppes' collection of Python tools.
 
 Installation
 ============
-    check /dist directory for a wheel file.
+from wheel file:
+* check `/dist` directory for a wheel file.
 
+
+editable via pip:
+* (fork and) clone the repo, then `pip install -e .`
 
 Content
 =======
@@ -19,7 +23,6 @@ Content
 - [geo](#module-geopy)
 - [misc](#module-miscpy)
 - [monotonicity](#module-monotonicitypy)
-- [na1001](#module-na1001py)
 - [numberstring](#module-numberstringpy)
 - [plottools](#module-plottoolspy)
 - [timeconversion](#module-timeconversionpy)
@@ -582,18 +585,6 @@ check if elements of numpy 1D array are increasing monotonically.
 +++++++++++++++++++++++++++++++++  
 ```
 check if elements of numpy 1D array are decreasing monotonically.
-```
-
-------------------------------------------------------------------------------
-------------------------------------------------------------------------------
-## Module: na1001.py
-------------------------------------------------------------------------------
-
-+++++++++++++++++++++++++++++++++  
-++ class+ **na1001**  
-+++++++++++++++++++++++++++++++++  
-```
-a class to work with NASA AMES files of type 1001.
 ```
 
 ------------------------------------------------------------------------------
