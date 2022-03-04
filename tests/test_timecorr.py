@@ -63,23 +63,22 @@ class TestTimeconv(unittest.TestCase):
         t = np.linspace(0, 250, 250)
         f = 10 * np.exp(-((t - 90) ** 2) / 8) + np.random.randn(250) + 99
         g = 10 * np.exp(-((t - 180) ** 2) / 8) + np.random.randn(250) + 41
-        l = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
+        lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, 90)
-        self.assertTrue(abs(l - 90) < (90 * 0.02))  # shift is 90... expect within 2%
+        self.assertTrue(abs(lag - 90) < (90 * 0.02)
+                        )  # shift is 90... expect within 2%
 
         # Sawtooth wave
         # https://stackoverflow.com/questions/4688715/find-time-shift-between-two-similar-waveforms
-        f = np.array([0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0])
-        g = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 3, 2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
+        f = np.array([0, 1, 2, 3, 4, 3, 2, 1, 0, 1,
+                     2, 3, 4, 3, 2, 1, 0, 0, 0, 0, 0])
+        g = np.array([0, 0, 0, 0, 0, 1, 2, 3, 4, 3,
+                     2, 1, 0, 1, 2, 3, 4, 3, 2, 1, 0])
         t = np.arange(f.size)
-        l = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
-        l_old = timecorr.xcorr_timelag_old(
-            t, f, t, g, (t[0], t[-1]), 1, 10, corrmode="positive", show_plots=False
-        )
+        lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, 4)
-        # print(l_old, 4)
-        self.assertTrue(abs(l - 4) < (4 * 0.1))  # shift is 4... expect within 10%
-        self.assertTrue(abs(l_old - 4) < (4 * 0.02))  # shift is 4... expect within 2%
+        # shift is 4... expect within 10%
+        self.assertTrue(abs(lag - 4) < (4 * 0.1))
 
         # sine waves with noise
         # https://stackoverflow.com/questions/41492882/find-time-shift-of-two-signals-using-cross-correlation
@@ -87,12 +86,12 @@ class TestTimeconv(unittest.TestCase):
         data = np.linspace(0, 2 * np.pi, to_freq)
         data = np.tile(np.sin(data), 5)
         data += np.random.normal(0, 5, data.shape)
-        f, g = data[to_freq : 4 * to_freq], data[: 3 * to_freq]
+        f, g = data[to_freq: 4 * to_freq], data[: 3 * to_freq]
         t = np.arange(f.size)
-        l = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
+        lag = timecorr.xcorr_timelag(t, f, t, g, show_plots=False)
         # print(l, to_freq)
         self.assertTrue(
-            abs(l - to_freq) < (to_freq * 0.02)
+            abs(lag - to_freq) < (to_freq * 0.02)
         )  # shift is to_freq... expect within 2%
 
         # more waves
@@ -102,11 +101,12 @@ class TestTimeconv(unittest.TestCase):
         x1 = 1 * x0 + shift
         f = sum([np.sin(2 * np.pi * i * x0 / 10) for i in range(1, 5)])
         g = sum([np.sin(2 * np.pi * i * x1 / 10) for i in range(1, 5)])
-        l = timecorr.xcorr_timelag(
+        lag = timecorr.xcorr_timelag(
             x0, f, x0, g, xrange=(x0.min(), x1.max()), show_plots=False
         )
         # print(l, shift*-1)
-        self.assertTrue(abs(l - 3) < (3 * 0.02))  # shift is 90... expect within 2%
+        # shift is 90... expect within 2%
+        self.assertTrue(abs(lag - 3) < (3 * 0.02))
 
 
 if __name__ == "__main__":
