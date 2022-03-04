@@ -1,20 +1,26 @@
-
-Overview
+pyfuppes
 ========
-
-MrFuppes' collection of Python tools.
-
+A collection of tools in Python.
 * Free software: MIT license
 
 
 Installation
 ============
-from wheel file:
-* check `/dist` directory for a wheel file.
+if using `poetry`:
+* (fork and) clone the repo, then run `poetry install` in the repo's directory
 
+from `wheel` file:
+* check `/dist` directory for a wheel file
+* ...(fork and) clone the repo, then run `poetry build` in the repo's directory to create one for the latest version
 
-editable via pip:
+editable via `pip`:
 * (fork and) clone the repo, then `pip install -e .`
+
+
+Requirements
+============
+* see `pyproject.toml`
+
 
 Content
 =======
