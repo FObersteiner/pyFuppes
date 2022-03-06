@@ -24,6 +24,8 @@ Requirements
 
 Content
 =======
+* note: NASA Ames 1001 reader/writer now [here](https://github.com/FObersteiner/na1001).
+
 - [avgbinmap](#module-avgbinmappy)
 - [filter](#module-filterpy)
 - [geo](#module-geopy)
