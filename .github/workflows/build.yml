@@ -1,9 +1,10 @@
 name: build
 
 on:
-  tag:
-    types:
-      - created
+  push:
+    tags:        
+      - v*
+
 
 jobs:
   deploy:
