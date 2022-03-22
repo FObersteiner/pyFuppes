@@ -123,17 +123,17 @@ def find_fist_elem(arr, val, condition):
 ###############################################################################
 
 
-def list_chng_elem_index(l, element, new_index):
+def list_chng_elem_index(lst, element, new_index):
     """
     change the index of an element in a list.
     ! modifies the list in-place !
     see https://stackoverflow.com/a/3173159/10197418
     """
-    if new_index >= len(l) or new_index < 0:
+    if new_index >= len(lst) or new_index < 0:
         raise IndexError("new index is out of range")
 
-    if element in l:
-        l.insert(new_index, l.pop(l.index(element)))
+    if element in lst:
+        lst.insert(new_index, lst.pop(lst.index(element)))
 
 
 ###############################################################################

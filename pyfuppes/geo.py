@@ -89,9 +89,14 @@ def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
     (2018-10-17 8:10 UTC)
     """
     # define trigonometry with degrees
-    cos2 = lambda x: math.cos(math.radians(x))
-    sin2 = lambda x: math.sin(math.radians(x))
-    acos2 = lambda x: math.degrees(math.acos(x))
+    def cos2(x):
+        return math.cos(math.radians(x))
+
+    def sin2(x):
+        return math.sin(math.radians(x))
+
+    def acos2(x):
+        return math.degrees(math.acos(x))
 
     # parameter
     day_of_year = UTC.timetuple().tm_yday

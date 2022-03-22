@@ -26,8 +26,8 @@ def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8"):
         data = csvfile.read().splitlines()
         if offset > 0:
             data = data[offset:]
-        for i, l in enumerate(data):
-            data[i] = [v for v in l.split(delimiter) if v]
+        for i, line in enumerate(data):
+            data[i] = [v for v in line.split(delimiter) if v]
     return {item[0]: list(item[1:]) for item in zip(*data)}
 
 
@@ -79,7 +79,7 @@ def txt_2_dict_simple(
 
     result = {"file_hdr": [], "data": {}, "src": str(file)}
     if colhdr_ix > 0:
-        result["file_hdr"] = [l.strip() for l in content[:colhdr_ix]]
+        result["file_hdr"] = [line.strip() for line in content[:colhdr_ix]]
 
     col_hdr = content[colhdr_ix].strip().rsplit(sep)
     if ignore_repeated_sep:
