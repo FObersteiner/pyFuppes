@@ -1,29 +1,25 @@
-pyfuppes
-========
+# pyfuppes
 A collection of tools in Python. [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
 * Free software: MIT license
 
 
-Installation
-============
-if using `poetry`:
-* (fork and) clone the repo, then run `poetry install` in the repo's directory
+## Installation
 
 from `wheel` file:
 * check `/dist` directory for a wheel file
-* ...(fork and) clone the repo, then run `poetry build` in the repo's directory to create one for the latest version
+* *or* (fork and) clone the repo, then run `poetry build` in the repo's directory to create one for the latest version
 
 editable via `pip`:
 * (fork and) clone the repo, then `pip install -e .`
 
 
-Requirements
-============
+## Requirements
+
 * see `pyproject.toml`
 
 
-Content
-=======
+## Content
+
 See https://pyfuppes.readthedocs.io/en/latest/
 
 
