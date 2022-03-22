@@ -1,6 +1,6 @@
 pyfuppes
 ========
-A collection of tools in Python.
+A collection of tools in Python. [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
 * Free software: MIT license
 
 
@@ -24,7 +24,12 @@ Requirements
 
 Content
 =======
-* note: NASA Ames 1001 reader/writer now [here](https://github.com/FObersteiner/na1001).
+See https://pyfuppes.readthedocs.io/en/latest/
+
+
+---
+
+
 
 - [avgbinmap](#module-avgbinmappy)
 - [filter](#module-filterpy)
