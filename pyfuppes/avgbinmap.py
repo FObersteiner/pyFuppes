@@ -260,7 +260,12 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
 
 
 def bin_by_pdresample(
-    t, v, rule="10S", offset=timedelta(seconds=5), force_t_range=True, drop_empty=True
+    t,
+    v,
+    rule="10S",
+    offset=pd.Timedelta(seconds=5),
+    force_t_range=True,
+    drop_empty=True,
 ):
     """
     use pandas DataFrame method "resample" for binning along a time axis.
@@ -293,21 +298,25 @@ def bin_by_pdresample(
         d = {"v_0": v}
 
     df = pd.DataFrame(d, index=pd.to_datetime(t * 1e9))
-    df1 = df.resample(rule, loffset=offset).mean()
-    df1["t_binned"] = df1.index.astype(np.int64) // 10**9
+    df = df.resample(rule, loffset=offset).mean()
+
+    # df = df.resample(rule).mean()
+    # df.index = df.index.to_timestamp() + pd.tseries.frequencies.to_offset(offset)
+
+    df["t_binned"] = df.index.astype(np.int64) / 10**9
 
     if force_t_range:
-        if df1["t_binned"].iloc[0] < t[0]:
-            df1 = df1.drop(df1.index[0])
-        if df1["t_binned"].iloc[-1] > t[-1]:
-            df1 = df1.drop(df1.index[-1])
+        if df["t_binned"].iloc[0] < t[0]:
+            df = df.drop(df.index[0])
+        if df["t_binned"].iloc[-1] > t[-1]:
+            df = df.drop(df.index[-1])
 
-    df1 = df1.drop(columns=["t_binned"]).set_index(df1["t_binned"])
+    df = df.drop(columns=["t_binned"]).set_index(df["t_binned"])
 
     if drop_empty:
-        df1 = df1.dropna(how="all")
+        df = df.dropna(how="all")
 
-    return df1
+    return df
 
 
 ###############################################################################
