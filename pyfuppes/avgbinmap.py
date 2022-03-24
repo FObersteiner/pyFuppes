@@ -7,7 +7,6 @@ Created on Thu Aug  9 09:46:55 2018
 
 from cmath import rect, phase
 from math import radians, degrees
-from datetime import timedelta
 from copy import deepcopy
 
 import numpy as np
@@ -269,11 +268,12 @@ def bin_by_pdresample(
 ):
     """
     use pandas DataFrame method "resample" for binning along a time axis.
+    Can only sample down, see also https://stackoverflow.com/q/66967998/10197418.
 
     Parameters
     ----------
     t : 1d array of float or int
-        time axis / independent variable.
+        time axis / independent variable in seconds.
     v : 1d or 2d array corresponding to t
         dependent variable(s).
     rule : string, optional
@@ -288,7 +288,7 @@ def bin_by_pdresample(
 
     Returns
     -------
-    df1 : pandas DataFrame
+    pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
     """
 
@@ -297,13 +297,14 @@ def bin_by_pdresample(
     else:
         d = {"v_0": v}
 
-    df = pd.DataFrame(d, index=pd.to_datetime(t * 1e9))
-    df = df.resample(rule, loffset=offset).mean()
+    # we need a datetime index for resampling. add seconds to arbitrary date
+    t0 = pd.Timestamp('now').floor('d')
+    df = pd.DataFrame(d, index=t0 + pd.to_timedelta(t, unit='s'))
+    df = df.resample(rule).mean()
+    if offset:
+        df.index = df.index + pd.tseries.frequencies.to_offset(offset)
 
-    # df = df.resample(rule).mean()
-    # df.index = df.index.to_timestamp() + pd.tseries.frequencies.to_offset(offset)
-
-    df["t_binned"] = df.index.astype(np.int64) / 10**9
+    df["t_binned"] = (df.index - t0).total_seconds()
 
     if force_t_range:
         if df["t_binned"].iloc[0] < t[0]:
