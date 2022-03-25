@@ -44,9 +44,9 @@ See https://pyfuppes.readthedocs.io/en/latest/
 ## Module: avgbinmap.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mean_angle**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mean_angle**
++++++++++++++++++++++++++++++++++
 ```
 Calculate a mean angle.
 input:
@@ -59,17 +59,17 @@ notes:
 - result is degrees between -180 and +180
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mean_angle_numba**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mean_angle_numba**
++++++++++++++++++++++++++++++++++
 ```
 - numba compatible version of mean_angle()
 - input must be numpy array of type float!
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mean_day_frac**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mean_day_frac**
++++++++++++++++++++++++++++++++++
 ```
 use the mean_angle function to calculate a mean day fraction (0-1).
 the conversion to angle is necessary since day changes cannot be
@@ -79,9 +79,9 @@ the conversion to angle is necessary since day changes cannot be
   values will be removed before the calculation.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **bin_t_10s**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **bin_t_10s**
++++++++++++++++++++++++++++++++++
 ```
 bin a time axis to 10 s intervals around 5;
     lower boundary included, upper boundary excluded (0. <= 5. < 10.)
@@ -95,14 +95,14 @@ keywords:
     drop_empty (bool) - False keeps empty bins alive
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **get_npnanmean**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **get_npnanmean**
++++++++++++++++++++++++++++++++++
 (no description available)
 
-+++++++++++++++++++++++++++++++++  
-++ func + **bin_y_of_t**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **bin_y_of_t**
++++++++++++++++++++++++++++++++++
 ```
 use the output of function "bin_time" or "bin_time_10s" to bin
     a variable 'v' that depends on a variable t.
@@ -117,9 +117,9 @@ keywords:
     use_numba (bool) - use njit'ed binning functions or not
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **bin_by_pdresample**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **bin_by_pdresample**
++++++++++++++++++++++++++++++++++
 ```
 use pandas DataFrame method "resample" for binning along a time axis.
 
@@ -145,9 +145,9 @@ df1 : pandas DataFrame
     data binned (arithmetic mean) to resampled time axis.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **bin_by_npreduceat**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **bin_by_npreduceat**
++++++++++++++++++++++++++++++++++
 ```
 1D binning with numpy.add.reduceat.
 ignores NaN or INF by default (finite elements only).
@@ -157,9 +157,9 @@ on SO:
     https://stackoverflow.com/questions/57160558/how-to-handle-nans-in-binning-with-numpy-add-reduceat
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **moving_avg**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **moving_avg**
++++++++++++++++++++++++++++++++++
 ```
 simple moving average.
 
@@ -176,9 +176,9 @@ m_avg : list
     averaged data.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **np_mvg_avg**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **np_mvg_avg**
++++++++++++++++++++++++++++++++++
 ```
 moving average based on numpy convolution function.
 
@@ -204,9 +204,9 @@ m_avg : 1d array
     averaged data.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **pd_mvg_avg**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **pd_mvg_avg**
++++++++++++++++++++++++++++++++++
 ```
 moving average based on pandas dataframe rolling function.
 
@@ -230,9 +230,9 @@ NOTE: automatically skips NaN (forms averages over windows with <N),
       unless minimum number of values in window is exceeded.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **sp_mvg_avg**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **sp_mvg_avg**
++++++++++++++++++++++++++++++++++
 ```
 Use scipy's uniform_filter1d to calculate a moving average, see the docs at
 https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.uniform_filter1d.html
@@ -253,9 +253,9 @@ avg : np.ndarray
     averaged data.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **map_dependent**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **map_dependent**
++++++++++++++++++++++++++++++++++
 ```
 Map a variable "vcmp" depending on variable "xcmp" to an independent
     variable "xref".
@@ -281,9 +281,9 @@ vmap : np.ndarray, 1D
 ## Module: filter.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mask_repeated**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mask_repeated**
++++++++++++++++++++++++++++++++++
 ```
 given an array a that consists of sections of repeated elements, mask
 those elements in a section that repeat more than N times
@@ -303,9 +303,9 @@ Returns
 boolean mask
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mask_repeated_nb**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mask_repeated_nb**
++++++++++++++++++++++++++++++++++
 ```
 numba version of mask_repeated(). Also works with input of type float.
 
@@ -322,27 +322,27 @@ Returns
 boolean mask
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mask_jumps**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mask_jumps**
++++++++++++++++++++++++++++++++++
 ```
 check the elements of array "arr" if the delta between element and
 following element(s) exceed a threshold "trsh". How many elements to
 look ahead is defined by "look_ahead"
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **filter_jumps**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **filter_jumps**
++++++++++++++++++++++++++++++++++
 ```
 wrapper around mask_jumps()
 ! interpolation assumes equidistant spacing of the independent variable of
   which arr depends !
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **filter_jumps_np**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **filter_jumps_np**
++++++++++++++++++++++++++++++++++
 ```
 if v is dependent on another variable x (e.g. time) and if that x
 is not equidistant, do NOT use interpolation.
@@ -374,9 +374,9 @@ dict. 'filtered': filtered data
         'ix_rem': indices of remaining elements
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **del_at_edge**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **del_at_edge**
++++++++++++++++++++++++++++++++++
 ```
 assume v to be a 1D array which contains blocks of NaNs.
 returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
@@ -387,31 +387,31 @@ returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
 ## Module: geo.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **haversine_dist**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **haversine_dist**
++++++++++++++++++++++++++++++++++
 ```
 calculate Haversine distance along lat/lon coordinates.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **geodesic_dist**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **geodesic_dist**
++++++++++++++++++++++++++++++++++
 ```
 calculate geodesic distance along lat/lon coordinates using geopy module.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **sza_pysolar**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **sza_pysolar**
++++++++++++++++++++++++++++++++++
 ```
 compute solar zenith angel
 uses get_altitude function from pysolar package
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **sza**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **sza**
++++++++++++++++++++++++++++++++++
 ```
 Returns the solar zenith angle (in degree)
 
@@ -425,18 +425,18 @@ Code adapted from https://www.python-forum.de/viewtopic.php?t=21117
 (2018-10-17 8:10 UTC)
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **get_EoT**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **get_EoT**
++++++++++++++++++++++++++++++++++
 ```
 input: date_ts, datetime object
 returns: equation of time (float)
 use for: calculation of local solar time
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **get_LSTdayFrac**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **get_LSTdayFrac**
++++++++++++++++++++++++++++++++++
 ```
 input:
     longitude: -180 to +180 degrees west to east, float
@@ -453,9 +453,9 @@ returns:
 ## Module: misc.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **print_progressbar**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **print_progressbar**
++++++++++++++++++++++++++++++++++
 ```
 https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
 access: 2018-12-20
@@ -470,9 +470,9 @@ Call in a loop to create terminal progress bar
     fill        - Optional  : bar fill character (Str)
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **find_youngest_file**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **find_youngest_file**
++++++++++++++++++++++++++++++++++
 ```
 find the file that matches a pattern and has the highest modification
     timestamp if there are multiple files that match the pattern.
@@ -485,17 +485,17 @@ returns
     None if no file
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **checkbytes_lt128**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **checkbytes_lt128**
++++++++++++++++++++++++++++++++++
 ```
 Check if all bytes of a file are less than decimal 128.
 Returns True for an ASCII encoded text file.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **find_fist_elem**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **find_fist_elem**
++++++++++++++++++++++++++++++++++
 ```
 Find the first element in arr that gives (arr[ix] condition val) == True.
 Inputs:
@@ -506,18 +506,18 @@ Returns:
     index of value matching the condition or None if no match is found.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **list_chng_elem_index**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **list_chng_elem_index**
++++++++++++++++++++++++++++++++++
 ```
 change the index of an element in a list.
 ! modifies the list in-place !
 see https://stackoverflow.com/a/3173159/10197418
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **set_compare**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **set_compare**
++++++++++++++++++++++++++++++++++
 ```
 Compare two iterables a and b. set() is used for comparison, so only
 unique elements will be considered.
@@ -540,58 +540,58 @@ tuple with 3 elements:
 ## Module: monotonicity.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **strictly_increasing**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **strictly_increasing**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of a list are strictly increasing.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **strictly_decreasing**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **strictly_decreasing**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of a list are strictly decreasing.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **non_increasing**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **non_increasing**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of a list are increasing monotonically.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **non_decreasing**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **non_decreasing**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of a list are decreasing monotonically.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **strict_inc_np**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **strict_inc_np**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of numpy 1D array are strictly increasing.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **strict_dec_np**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **strict_dec_np**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of numpy 1D array are strictly decreasing.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **non_inc_np**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **non_inc_np**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of numpy 1D array are increasing monotonically.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **non_dec_np**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **non_dec_np**
++++++++++++++++++++++++++++++++++
 ```
 check if elements of numpy 1D array are decreasing monotonically.
 ```
@@ -601,16 +601,16 @@ check if elements of numpy 1D array are decreasing monotonically.
 ## Module: numberstring.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ class+ **NumStr**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ class+ **NumStr**
++++++++++++++++++++++++++++++++++
 ```
 class to hold methods for working with numbers in string format.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **dec2str_stripped**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **dec2str_stripped**
++++++++++++++++++++++++++++++++++
 ```
 Parameters
 ----------
@@ -632,9 +632,9 @@ list of string.
 ## Module: plottools.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **get_plot_range**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **get_plot_range**
++++++++++++++++++++++++++++++++++
 ```
 Adjust y-axis range of matplotlib pyplot for a given vector v.
 
@@ -659,9 +659,9 @@ result : list
     lower and upper limit.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **nticks_yrange**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **nticks_yrange**
++++++++++++++++++++++++++++++++++
 ```
 update a plot yrange so that it fits nicely into a certain number of
 ticks
@@ -686,17 +686,17 @@ result : 2-element list
 ## Module: timeconversion.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **to_list**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **to_list**
++++++++++++++++++++++++++++++++++
 ```
 convert input "parm" to a Python list object.
 if "parm" is a scalar, return value "is_scalar" is True, otherwise False.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **dtstr_2_mdns**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **dtstr_2_mdns**
++++++++++++++++++++++++++++++++++
 ```
 convert datetime string to seconds since midnight (float).
 since a relative difference is calculated, the function is timezone-safe.
@@ -717,9 +717,9 @@ float; scalar or float; list
     seconds since midnight for the given timestring(s).
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **dtobj_2_mdns**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **dtobj_2_mdns**
++++++++++++++++++++++++++++++++++
 ```
 convert a Python datetime object (or list/array of ...) to seconds
 after midnight.
@@ -740,9 +740,9 @@ float; scalar or list of float
     seconds after midnight for the given datetime object(s).
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **posix_2_mdns**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **posix_2_mdns**
++++++++++++++++++++++++++++++++++
 ```
 convert a POSIX timestamp (or list/array of ...) to seconds after midnight.
 
@@ -761,9 +761,9 @@ float; scalar or list of float
     seconds after midnight for the given POSIX timestamp(s).
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **mdns_2_dtobj**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **mdns_2_dtobj**
++++++++++++++++++++++++++++++++++
 ```
 convert seconds after midnight (or list/array of ...) to datetime object.
 
@@ -789,9 +789,9 @@ datetime object or float (POSIX timestamp)
     ...for the given seconds after midnight.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **daysSince_2_dtobj**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **daysSince_2_dtobj**
++++++++++++++++++++++++++++++++++
 ```
 Convert a floating point number "daysSince" to a datetime object.
 day0: datetime object, from when to count.
@@ -808,9 +808,9 @@ Returns
 datetime object
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **dtstr_2_posix**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **dtstr_2_posix**
++++++++++++++++++++++++++++++++++
 ```
 Convert timestring without timezone information to UTC timestamp.
 
@@ -838,23 +838,23 @@ POSIX timestamp
 ## Module: timecorr.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **get_tcorr_parms**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **get_tcorr_parms**
++++++++++++++++++++++++++++++++++
 ```
 see time_correction(); fit parameter calculation part.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **apply_tcorr_parms**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **apply_tcorr_parms**
++++++++++++++++++++++++++++++++++
 ```
 see time_correction(); fit evaluation part.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **time_correction**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **time_correction**
++++++++++++++++++++++++++++++++++
 ```
 fit a polynomial to the delta between a time vector and a
     reference time vector.
@@ -870,9 +870,9 @@ returns:
         't_corr': corrected input time vector t
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **xcorr_timelag**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **xcorr_timelag**
++++++++++++++++++++++++++++++++++
 ```
 analyze time lag between two time series by cross-correlation.
 https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
@@ -912,9 +912,9 @@ scalar value, delay in specified xunit.
 ## Module: txt2dict.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **txt_2_dict_basic**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **txt_2_dict_basic**
++++++++++++++++++++++++++++++++++
 ```
 most basic csv reader (delimiter-separated text file).
 faster than dict reader from csv package.
@@ -928,9 +928,9 @@ returns:
     dict; keys = values from the first row, values = rest of the csv file.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **txt_2_dict_simple**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **txt_2_dict_simple**
++++++++++++++++++++++++++++++++++
 ```
 requires input: txt file with column header and values separated by a
     specific separator (delimiter).
@@ -960,9 +960,9 @@ RETURNS: dict
 ## Module: nasa_ames_1001_rw.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **na1001_cls_read**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **na1001_cls_read**
++++++++++++++++++++++++++++++++++
 ```
 read NASA AMES 1001 formatted text file. expected encoding is ASCII.
 args:
@@ -987,9 +987,9 @@ returns:
     na_1001: dictionary with keys according to na1001 class.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **na1001_cls_write**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **na1001_cls_write**
++++++++++++++++++++++++++++++++++
 ```
 write content of na1001 class instance to file in NASA AMES 1001 format.
 encoding is ASCII.
@@ -1012,9 +1012,9 @@ returns:
 ## Module: nasa_ames_1001_tools.py
 ------------------------------------------------------------------------------
 
-+++++++++++++++++++++++++++++++++  
-++ func + **naDict_2_npndarr**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **naDict_2_npndarr**
++++++++++++++++++++++++++++++++++
 ```
 convert variables from na1001 class instance to dictionary holding
 numpy arrays.
@@ -1042,9 +1042,9 @@ npDict : dict
     dictionary holding numpy arrays for variables from the NASA AMES file.
 ```
 
-+++++++++++++++++++++++++++++++++  
-++ func + **naDict_2_pddf**  
-+++++++++++++++++++++++++++++++++  
++++++++++++++++++++++++++++++++++
+++ func + **naDict_2_pddf**
++++++++++++++++++++++++++++++++++
 ```
 convert variables from na1001 class instance to pandas dataframe.
 
