@@ -302,7 +302,7 @@ def bin_by_pdresample(
     if offset:
         df.index = df.index + pd.tseries.frequencies.to_offset(offset)
 
-    df["t_binned"] = df.index.values.astype(np.int64) / 10 ** 9
+    df["t_binned"] = df.index.values.astype(np.int64) / 10**9
 
     if force_t_range:
         if df["t_binned"].iloc[0] < t[0]:
