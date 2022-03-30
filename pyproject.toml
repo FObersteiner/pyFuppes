@@ -22,6 +22,8 @@ sphinx-autoapi = "^1.8.4"
 sphinx-rtd-theme = "^1.0.0"
 myst-nb = {version = "^0.13.2", python = "3.9"}
 
+[tool.black]
+
 [build-system]
 requires = ["poetry-core @ git+https://github.com/python-poetry/poetry-core.git@master"]
 build-backend = "poetry.core.masonry.api"
