@@ -70,7 +70,7 @@ def xcorr_timelag(
     x2,
     y2,
     xrange=None,
-    freq=100,
+    upscale=100,
     rmv_NaN=True,
     pad_to_zero=True,
     normalize_y=True,
@@ -92,8 +92,8 @@ def xcorr_timelag(
         independend and dependent variable of data to check for time lag.
     xrange : tuple, optional.
         cut data to fall within x-range "xrange". The default is (x1.min(), x2.max())
-    freq : numeric, scalar value
-        frequency the data is interpolated to in Hz. The default is 100.
+    upscale : numeric, scalar value
+        upscale the data frequency by factor of upscale. The default is 100.
     rmv_NaN : boolean, optional
         clean NaNs from data. The default is True.
     pad_to_zero : boolean, optional
@@ -151,7 +151,7 @@ def xcorr_timelag(
 
     # normalize x:
     start, end = np.floor(x1[0]), np.ceil(x1[-1])
-    n = (end - start) * freq
+    n = (end - start) * upscale
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
@@ -178,11 +178,14 @@ def xcorr_timelag(
         corr = corr[m]
 
     # check if correlation is positive or negative to determine lag time
-    select = np.argmax  # default: expect positive correlation
-    if corrmode == "auto":
-        select = (np.argmin, np.argmax)[int(np.ceil(np.corrcoef(f, g)[0, 1]))]
-    elif corrmode == "negative":
+    assert corrmode in ("auto", "negative", "positive")
+    if corrmode == "negative":
         select = np.argmin
+    elif corrmode == "positive":
+        select = np.argmax
+    else:
+        select = (np.argmin, np.argmax)[int(np.ceil(np.corrcoef(f, g)[0, 1]))]
+
 
     delay = delay_arr[select(corr)]
 
