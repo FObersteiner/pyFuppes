@@ -186,7 +186,6 @@ def xcorr_timelag(
     else:
         select = (np.argmin, np.argmax)[int(np.ceil(np.corrcoef(f, g)[0, 1]))]
 
-
     delay = delay_arr[select(corr)]
 
     if show_plots:
