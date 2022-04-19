@@ -6,6 +6,7 @@ Created on Fri May 15 11:35:38 2020
 """
 
 from datetime import datetime, timedelta, timezone
+from operator import attrgetter
 import numpy as np
 import xarray as xr
 
@@ -14,8 +15,8 @@ import xarray as xr
 
 def to_list(parm, is_scalar=False):
     """
-    convert input "parm" to a Python list object.
-    if "parm" is a scalar, return value "is_scalar" is True, otherwise False.
+    Convert input "parm" to a Python list object.
+    If "parm" is a scalar, return value "is_scalar" is True, otherwise False.
     """
     if isinstance(parm, str):  # check this first: don't call list() on a string
         parm, is_scalar = [parm], True
@@ -31,12 +32,27 @@ def to_list(parm, is_scalar=False):
 ### MAIN FUNCTIONS ############################################################
 
 
-def xrtime_to_mdns(xrda: xr.DataArray) -> np.ndarray:
+def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
-    convert the time vector of an xarray dataarray to an array representing
+    Convert the time vector of an xarray.DataArray to an array representing
     seconds after midnight
+
+    Parameters
+    ----------
+    xrda : xr.DataArray
+        xarray.DataArray to extract time from.
+    dim_name : str, optional
+        Attribute name of the time dimension. The default is "Time".
+
+    Returns
+    -------
+    np.array
+        time in seconds after midnight (dtype float).
+
     """
-    return ((xrda.Time - xrda.Time[0].dt.floor("d")).values / 1e9).astype(float)
+    f = attrgetter(dim_name)
+    t = f(xrda)
+    return ((t - t[0].dt.floor("d")).values / 1e9).astype(float)
 
 
 ###############################################################################
