@@ -7,7 +7,7 @@ Created on Fri May 15 11:35:38 2020
 
 from datetime import datetime, timedelta, timezone
 import numpy as np
-
+import xarray as xr
 
 ### HELPERS ###################################################################
 
@@ -29,6 +29,17 @@ def to_list(parm, is_scalar=False):
 
 
 ### MAIN FUNCTIONS ############################################################
+
+
+def xrtime_to_mdns(xrda: xr.DataArray) -> np.ndarray:
+    """
+    convert the time vector of an xarray dataarray to an array representing
+    seconds after midnight
+    """
+    return ((xrda.Time - xrda.Time[0].dt.floor("d")).values / 1e9).astype(float)
+
+
+###############################################################################
 
 
 def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = None):
