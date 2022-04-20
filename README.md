@@ -15,9 +15,9 @@ editable via `pip`:
 
 ## Requirements
 
-* see `pyproject.toml`
+* see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
 
 
 ## Content
 
-See https://pyfuppes.readthedocs.io/en/latest/ or directly show [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
+See https://pyfuppes.readthedocs.io/en/latest/ or directly go to [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
