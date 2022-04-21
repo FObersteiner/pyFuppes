@@ -531,3 +531,34 @@ def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
 
 
 ###############################################################################
+
+
+def pd_interp_df(df, new_index):
+    """
+    Return a new DataFrame with all numeric columns interpolated to the new_index.
+    Uses numpy's interp function.
+
+    Parameters
+    ----------
+    df : pd.DataFrame
+        the dataframe to be interpolated to the new index.
+    new_index : pd.Index or np.array
+        the new index.
+
+    Returns
+    -------
+    df_out : pd.DataFrame
+        a new dataframe interpolated to the new index.
+
+    """
+    df_out = pd.DataFrame(index=new_index)
+    df_out.index.name = df.index.name
+
+    for colname, col in df.iteritems():
+        if pd.api.types.is_numeric_dtype(col):
+            df_out[colname] = np.interp(new_index, df.index, col)
+
+    return df_out
+
+
+###############################################################################
