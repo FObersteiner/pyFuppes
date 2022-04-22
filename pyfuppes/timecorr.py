@@ -6,10 +6,10 @@ Created on Tue Nov 19 14:32:12 2019
 """
 
 from copy import deepcopy
+import functools
 
 import numpy as np
-from scipy.interpolate import interp1d
-from scipy.signal import correlate
+import scipy as sc
 import matplotlib.pyplot as plt
 
 
@@ -51,7 +51,8 @@ def time_correction(t, t_ref, fitorder):
         t_ref - reference time vector, of same shape as t
         fitorder - order of the polynomial fit, integer
 
-    returns:
+    Returns
+    -------
         dict, holding
             'fitparms': parameters of the fit, ndarray
             't_corr': corrected input time vector t
@@ -74,15 +75,19 @@ def xcorr_timelag(
     rmv_NaN=True,
     pad_to_zero=True,
     normalize_y=True,
+    # detrend_y=True, # possible future feature
     show_plots=True,
     ynames=("f", "g"),
     corrmode="positive",
     boundaries=None,
-    xcorr_func=correlate,
+    xcorr_func=sc.signal.correlate,
 ):
     """
-    analyze time lag between two time series by cross-correlation.
+    analyze time lag between two time series f and g by cross-correlation.
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
+
+    a positive lag of g vs. f (reference) means that g lags behind in time.
+    vice versa, if the lag is negative, g's signal precedes that of f in time.
 
     Parameters
     ----------
@@ -102,14 +107,20 @@ def xcorr_timelag(
         normalize y data to 0-1. The default is True.
     show_plots : boolean, optional
         show result plot. The default is True.
-    corrmode : string, optional. values: 'auto', 'positive', 'negative'
-         type of correlation to expect between y1 and y2. The default is positive.
+    ynames : tuple of str, optional
+        2-element tuple of names to use on the plot. The default is ("f", "g").
+    corrmode : str, optional.
+        type of correlation to expect between y1 and y2. values: 'auto',
+        'positive', 'negative'. The default is "positive".
     boundaries: 2-element tuple. lower and upper boundary.
         expect timelag to fall within these boundaries. The default is None.
+    xcorr_func : func, optional
+        function to calculate cross-correlation. The default is scipy.signal.correlate.
 
     Returns
     -------
-    scalar value, delay / lag value.
+    delay : float
+        time delay of f vs. g in the unit of the input's independent variable.
     """
     # copy x and y so that nothing gets messed up
     x1, y1 = deepcopy(x1.astype(float)), deepcopy(y1.astype(float))
@@ -118,6 +129,7 @@ def xcorr_timelag(
     # cut to selected xrange:
     if xrange is None:
         xrange = (x1.min(), x2.max())
+
     m1 = (x1 >= xrange[0]) & (x1 < xrange[1])
     x1, y1 = x1[m1], y1[m1]
     m2 = (x2 >= xrange[0]) & (x2 < xrange[1])
@@ -155,9 +167,13 @@ def xcorr_timelag(
     xnorm = np.linspace(start, end, num=int(n), endpoint=False)
 
     # interpolate y1 and y2 to xnorm:
-    f_ip = interp1d(x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate")
+    f_ip = sc.interpolate.interp1d(
+        x1, y1, kind="linear", bounds_error=False, fill_value="extrapolate"
+    )
     f = f_ip(xnorm)
-    f_ip = interp1d(x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate")
+    f_ip = sc.interpolate.interp1d(
+        x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate"
+    )
     g = f_ip(xnorm)
 
     if show_plots:
@@ -170,7 +186,19 @@ def xcorr_timelag(
     # cross-correlate f vs. g (i.e. y1 vs. y2):
     corr = xcorr_func(f, g)
 
-    delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
+    # need to know used correl function to make delay array...
+    # check first if functools.partial was used.
+    usedfunc = (
+        xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func
+    )
+    if usedfunc.__code__ == np.correlate.__code__:
+        delay_arr = np.linspace(-0.5 * n / upscale, 0.5 * n / upscale, int(n))[::-1]
+    elif usedfunc.__code__ == sc.signal.correlate.__code__:
+        delay_arr = (
+            np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
+        )
+    else:
+        raise ValueError(f"unknown correl func: {repr(usedfunc)}")
 
     if boundaries:
         m = (delay_arr >= boundaries[0]) & (delay_arr < boundaries[1])
