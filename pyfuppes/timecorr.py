@@ -10,6 +10,7 @@ import functools
 
 import numpy as np
 import scipy as sc
+from scipy import signal
 import matplotlib.pyplot as plt
 
 
@@ -80,7 +81,7 @@ def xcorr_timelag(
     ynames=("f", "g"),
     corrmode="positive",
     boundaries=None,
-    xcorr_func=sc.signal.correlate,
+    xcorr_func=signal.correlate,
 ):
     """
     analyze time lag between two time series f and g by cross-correlation.
