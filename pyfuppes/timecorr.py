@@ -11,7 +11,7 @@ import functools
 import numpy as np
 import scipy as sc
 from scipy import signal
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 
 
 ###############################################################################
