@@ -103,8 +103,9 @@ class SteppedData:
         if plot:
             x_all = np.array(list(range(len(self.values))))
             x_plat = x_all[self.ix_plat]
-            plt.scatter(x_all, self.values, c=clrs)
-            plt.plot(x_plat, self.values_plat, color="g")
+            fig, ax = plt.subplots()
+            ax.scatter(x_all, self.values, c=clrs)
+            ax.plot(x_plat, self.values_plat, color="g")
 
         return self
 
