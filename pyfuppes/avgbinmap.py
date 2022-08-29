@@ -533,7 +533,7 @@ def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
 ###############################################################################
 
 
-def pd_interp_df(df, new_index):
+def pd_DataFrame_ip(df, new_index):
     """
     Return a new DataFrame with all numeric columns interpolated to the new_index.
     Uses numpy's interp function.
@@ -559,6 +559,40 @@ def pd_interp_df(df, new_index):
             df_out[colname] = np.interp(new_index, df.index, col)
 
     return df_out
+
+
+###############################################################################
+
+
+def pd_Series_ip(
+    src_df: pd.DataFrame,
+    dst_df: pd.DataFrame,
+    ivar_src_name: str,
+    dvar_src_name: str,
+    ivar_dst_name: str,
+    dvar_dst_name: str,
+) -> pd.DataFrame:
+    """
+    Interpolate dependent variable from source dataframe to destination
+    df's independent variable.
+
+    Modifies dst_df in-place!
+
+    Returns
+    -------
+    df_dst : pd.DataFrame
+        modified input dst_df.
+
+    """
+    f = interp1d(
+        src_df[ivar_src_name].values,
+        src_df[dvar_src_name].values,
+        kind="linear",
+        bounds_error=False,
+        fill_value=np.NaN,
+    )
+    dst_df[dvar_dst_name] = f(dst_df[ivar_dst_name])
+    return dst_df
 
 
 ###############################################################################
