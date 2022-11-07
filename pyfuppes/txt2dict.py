@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-r"""
+"""
 Created on Fri Apr 20 11:17:42 2018
 
-@author: F. Obersteiner, florian\obersteiner\\kit\edu
+@author: Florian Obersteiner, f.obersteiner@kit.edu
 """
 
 

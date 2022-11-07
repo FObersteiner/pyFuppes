@@ -2,7 +2,7 @@
 """
 Created on Fri May 15 11:35:38 2020
 
-@author: F. Obersteiner, f/obersteiner//kit/edu
+@author: Florian Obersteiner, f.obersteiner@kit.edu
 """
 
 from datetime import datetime, timedelta, timezone

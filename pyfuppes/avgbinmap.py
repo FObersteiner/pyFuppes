@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-r"""
+"""
 Created on Thu Aug  9 09:46:55 2018
 
-@author: F. Obersteiner, florian\obersteiner\\kit\edu
+@author: Florian Obersteiner, f.obersteiner@kit.edu
 """
 
 from cmath import rect, phase

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-r"""
+"""
 Created on Thu Dec 20 11:18:46 2018
 
-@author: F. Obersteiner, florian\obersteiner\\kit\edu
+@author: Florian Obersteiner, f.obersteiner@kit.edu
 """
 
 import os

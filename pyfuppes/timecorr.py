@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
-r"""
+"""
 Created on Tue Nov 19 14:32:12 2019
 
-@author: F. Obersteiner, florian\obersteiner\\kit\edu
+@author: Florian Obersteiner, f.obersteiner@kit.edu
 """
 
 from copy import deepcopy

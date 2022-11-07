@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-
+"""
+@author: Florian Obersteiner, f.obersteiner@kit.edu
+"""
 import numpy as np
 
 from .utils import nasa_ames_1001_rw as rw

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-r"""
+"""
 Created on Tue Aug  7 17:19:19 2018
 
 @author / adapted from:
