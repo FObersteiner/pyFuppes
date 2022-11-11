@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Dec 20 11:18:46 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Misc tools."""
 
 import os
 from pathlib import Path
@@ -18,6 +14,8 @@ def print_progressbar(
     iteration, total, prefix="", suffix="", decimals=1, length=100, fill="█"
 ):
     """
+    Print a progress bar.
+
     https://stackoverflow.com/questions/3173320/text-progress-bar-in-the-console
     access: 2018-12-20
     Call in a loop to create terminal progress bar
@@ -63,8 +61,8 @@ def print_progressbar(
 
 def find_youngest_file(path, pattern, n=1):
     """
-    find the file that matches a pattern and has the highest modification
-        timestamp if there are multiple files that match the pattern.
+    Find the file that matches a pattern and has the highest modification timestamp if there are multiple files that match the pattern.
+
     input:
         path, string or pathlib.Path, where to look for the file(s)
         pattern, string, pattern to look for in files (see pathlib.Path.glob)
@@ -106,6 +104,7 @@ def checkbytes_lt128(file):
 def find_fist_elem(arr, val, condition):
     """
     Find the first element in arr that gives (arr[ix] condition val) == True.
+
     Inputs:
         arr: numeric numpy 1d array or python list
         val: scalar value
@@ -125,7 +124,8 @@ def find_fist_elem(arr, val, condition):
 
 def list_chng_elem_index(lst, element, new_index):
     """
-    change the index of an element in a list.
+    Change the index of an element in a list.
+
     ! modifies the list in-place !
     see https://stackoverflow.com/a/3173159/10197418
     """
@@ -141,8 +141,7 @@ def list_chng_elem_index(lst, element, new_index):
 
 def set_compare(a, b):
     """
-    Compare two iterables a and b. set() is used for comparison, so only
-    unique elements will be considered.
+    Compare two iterables a and b. set() is used for comparison, so only unique elements will be considered.
 
     Parameters
     ----------

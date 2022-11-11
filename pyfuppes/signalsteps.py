@@ -1,10 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Created on Mon Sep 24 09:37:53 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-
-Method: detect steps with a threshold.
+Detect steps in a signal with a threshold.
 
 Details:
     data is analysed step-wise, comparing the average of n values before each
@@ -20,9 +16,7 @@ from matplotlib import pyplot as plt
 
 
 class SteppedData:
-    """
-    class to hold the "stepped" data and its properties.
-    """
+    """Class to hold the "stepped" data and its properties."""
 
     def __init__(self, values):
         self.values = values
@@ -49,9 +43,7 @@ class SteppedData:
         extend_edges=True,
         plot=True,
     ):
-        """
-        you guessed it: a function to detect steps in the signal.
-        """
+        """You guessed it: a function to detect steps in the signal."""
         if extend_edges:
             self.values = np.insert(
                 self.values, 0, np.repeat(self.values[0], look_around[0])
@@ -110,10 +102,7 @@ class SteppedData:
         return self
 
     def plat_stat(self, plats_cut, use_last_n=5):  # plats_cut=[1, 1]
-        """
-        calculate statistical parameters for each of the steps (plateaus)
-        found in the input vector.
-        """
+        """Calculate statistical parameters for each of the steps (plateaus) found in the input vector."""
         if self.n_plats == 0:
             raise ValueError("No plateaus found!")
         for i in range(self.n_plats):

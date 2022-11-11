@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
-"""
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""NASA Ames FFI 1001 text file format reader / writer."""
+
 import numpy as np
 
 from .utils import nasa_ames_1001_rw as rw
@@ -12,7 +11,8 @@ from .utils import nasa_ames_1001_tools as tools
 
 
 class ffi_1001(object):
-    """A class to work with NASA Ames files with format index 1001 in Python.
+    r"""
+    A class to work with NASA Ames files with format index 1001 in Python.
 
     Parameters
     ----------
@@ -77,14 +77,12 @@ class ffi_1001(object):
     __KEYS = list(__INID.keys())
 
     def __init__(self, filename=None, **kwargs):
-        """Constructor method"""
         for k, v in self.__INID.items():
             setattr(self, k, v)
         if filename is not None:
             self.__from_file(filename, **kwargs)
 
     def __repr__(self):
-        """Representer"""
         s = "NASA Ames 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
         s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[3:4])
@@ -95,7 +93,6 @@ class ffi_1001(object):
         return s
 
     def __str__(self):
-        """Stringer"""
         s = "NASA Ames 1001\n"
         s += f"SRC: {self.SRC}\n---\n"
         s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[1:4])
@@ -158,7 +155,8 @@ class ffi_1001(object):
 
     # ------------------------------------------------------------------------------
     def to_file(self, file, **kwargs):
-        """Write NASA Ames 1001 file from populated ffi_1001 class.
+        """
+        Write NASA Ames 1001 file from populated ffi_1001 class.
 
         Parameters
         ----------
@@ -186,7 +184,8 @@ class ffi_1001(object):
 
     # ------------------------------------------------------------------------------
     def to_dict_nparray(self, **kwargs):
-        """Make dictionary of numpy 1D arrays from ffi_1001 class instance.
+        """
+        Make dictionary of numpy 1D arrays from ffi_1001 class instance.
 
         Parameters
         ----------
@@ -217,7 +216,8 @@ class ffi_1001(object):
 
     # ------------------------------------------------------------------------------
     def to_pddf(self, **kwargs):
-        """Make a pandas DataFrame from NA 1001 data (X and V).
+        """
+        Make a pandas DataFrame from NA 1001 data (X and V).
 
         Parameters
         ----------

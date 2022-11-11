@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Tue Nov 19 14:32:12 2019
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Corrections for time in time series."""
 
 from copy import deepcopy
 import functools
@@ -18,9 +14,7 @@ from matplotlib import pyplot as plt
 
 
 def get_tcorr_parms(t, t_ref, fitorder):
-    """
-    see time_correction(); fit parameter calculation part.
-    """
+    """Calculate fit parameters for time correction."""
     try:
         parms = np.polyfit(t, t - t_ref, fitorder)
     except np.linalg.LinAlgError:  # sometimes happens at first try...
@@ -32,9 +26,7 @@ def get_tcorr_parms(t, t_ref, fitorder):
 
 
 def apply_tcorr_parms(t, parms):
-    """
-    see time_correction(); fit evaluation part.
-    """
+    """Subtract fitted time correction from t."""
     return t - np.polyval(parms, t)
 
 
@@ -43,8 +35,8 @@ def apply_tcorr_parms(t, parms):
 
 def time_correction(t, t_ref, fitorder):
     """
-    fit a polynomial to the delta between a time vector and a
-        reference time vector.
+    Fit a polynomial to the delta between a time vector and a reference time vector.
+
     time vector is corrected by subtracting the evaluated polynomial at each
         point of the time vector.
     inputs:
@@ -84,7 +76,8 @@ def xcorr_timelag(
     xcorr_func=signal.correlate,
 ):
     """
-    analyze time lag between two time series f and g by cross-correlation.
+    Analyze time lag between two time series f and g by cross-correlation.
+
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
 
     a positive lag of g vs. f (reference) means that g lags behind in time.

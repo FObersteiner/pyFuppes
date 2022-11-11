@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jul 22 14:03:27 2019
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Number to string and vice versa."""
 
 import re
 
@@ -12,12 +8,12 @@ import re
 
 
 class NumStr:
-    """
-    class to hold methods for working with numbers in string format.
-    """
+    """class to hold methods for working with numbers in string format."""
 
     def analyse_format(self, string, dec_sep="."):
         """
+        Analyse the input format.
+
         INPUT:
             s, string, representing a number
         INPUT, optional:
@@ -34,7 +30,6 @@ class NumStr:
                     format code to be used in '{}.format()'
                     suited Python type for the number, int or float.
         """
-
         # 1. format definitions. key = general classification.
         redct = {
             "dec": "[+-]?[0-9]+["
@@ -64,19 +59,19 @@ class NumStr:
         return method(string, *dec_sep)
 
     def parse_dec(self, s, dec_sep):
-        """number is a decimal..."""
+        """Number is a decimal."""
         lst = s.split(dec_sep)
         result = "{:f}" if not lst[1] else "{:." + str(len(lst[1])) + "f}"
         result = result.replace(":", ":+") if "+" in lst[0] else result
         return (result, float)
 
     def parse_no_dec(self, s, *dec_sep):
-        """number is an integer..."""
+        """Number is an integer."""
         result = "{:+d}" if "+" in s else "{:d}"
         return (result, int)
 
     def parse_exp_dec(self, s, dec_sep):
-        """number is a decimal in exponential notation..."""
+        """Number is a decimal in exponential notation."""
         lst_dec = s.split(dec_sep)
         lst_e = lst_dec[1].upper().split("E")
         result = "{:." + str(len(lst_e[0])) + "E}"
@@ -84,7 +79,7 @@ class NumStr:
         return (result, float)
 
     def parse_exp_no_dec(self, s, *dec_sep):
-        """number is in exponential notation but has no decimal points..."""
+        """Number is in exponential notation but has no decimal points."""
         lst_e = s.upper().split("E")
         result = "{:+E}" if "+" in lst_e[0] else "{:E}"
         return (result, float)
@@ -95,6 +90,8 @@ class NumStr:
 
 def dec2str_stripped(num, dec_places=3, strip="right"):
     """
+    Convert floating point number to string, with zeros stripped.
+
     Parameters
     ----------
     num : float or list of float

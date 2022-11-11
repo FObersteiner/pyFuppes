@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri May 15 11:35:38 2020
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Convert between types representing date/time."""
 
 from datetime import datetime, timedelta, timezone
 from operator import attrgetter
@@ -16,6 +12,7 @@ import xarray as xr
 def to_list(parm, is_scalar=False):
     """
     Convert input "parm" to a Python list object.
+
     If "parm" is a scalar, return value "is_scalar" is True, otherwise False.
     """
     if isinstance(parm, str):  # check this first: don't call list() on a string
@@ -34,8 +31,7 @@ def to_list(parm, is_scalar=False):
 
 def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
-    Convert the time vector of an xarray.DataArray to an array representing
-    seconds after midnight
+    Convert the time vector of an xarray.DataArray to an array representing seconds after midnight.
 
     Parameters
     ----------
@@ -60,7 +56,8 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
 
 def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = None):
     """
-    convert datetime string to seconds since midnight (float).
+    Convert datetime string to seconds since midnight (float).
+
     since a relative difference is calculated, the function is timezone-safe.
 
     Parameters
@@ -112,8 +109,7 @@ def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = N
 
 def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
     """
-    convert a Python datetime object (or list/array of ...) to seconds
-    after midnight.
+    Convert a Python datetime object (or list/array of ...) to seconds after midnight.
 
     Parameters
     ----------
@@ -156,7 +152,7 @@ def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
 
 def posix_2_mdns(posixts, ymd: tuple = None):
     """
-    convert a POSIX timestamp (or list/array of ...) to seconds after midnight.
+    Convert a POSIX timestamp (or list/array of ...) to seconds after midnight.
 
     Parameters
     ----------
@@ -194,7 +190,7 @@ def mdns_2_dtobj(
     mdns, ref_date, assume_UTC: bool = True, posix: bool = False, str_fmt: str = False
 ):
     """
-    convert seconds after midnight (or list/array of ...) to datetime object.
+    Convert seconds after midnight (or list/array of ...) to datetime object.
 
     Parameters
     ----------
@@ -255,6 +251,7 @@ def mdns_2_dtobj(
 def daysSince_2_dtobj(day0, daysSince):
     """
     Convert a floating point number "daysSince" to a datetime object.
+
     day0: datetime object, from when to count.
 
     Parameters

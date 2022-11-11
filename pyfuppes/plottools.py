@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Aug 20 13:36:57 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Helpers to format plots."""
 
 import numpy as np
 
@@ -76,8 +72,7 @@ def get_plot_range(
 
 def nticks_yrange(yrange, nticks, to_multiples_of=10):
     """
-    update a plot yrange so that it fits nicely into a certain number of
-    ticks
+    Update a plot yrange so that it fits nicely into a certain number of ticks.
 
     Parameters
     ----------
@@ -94,7 +89,6 @@ def nticks_yrange(yrange, nticks, to_multiples_of=10):
         updated yrange.
 
     """
-
     result = [
         np.floor(yrange[0] / to_multiples_of) * to_multiples_of,
         np.ceil(yrange[1] / to_multiples_of) * to_multiples_of,

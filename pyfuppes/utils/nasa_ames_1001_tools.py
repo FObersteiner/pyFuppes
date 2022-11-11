@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""NA helpers."""
 
 import numpy as np
 import pandas as pd
@@ -17,8 +18,7 @@ def naDict_2_npndarr(
     vmiss=np.NaN,
 ):
     """
-    Convert variables from na1001 class instance to dictionary holding
-    numpy arrays.
+    Convert variables from na1001 class instance to dictionary holding numpy arrays.
 
     See class method for detailled docstring.
     """

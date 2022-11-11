@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri Apr 20 11:17:42 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Text file to dictionary."""
 
 
 ###############################################################################
@@ -11,15 +7,18 @@ Created on Fri Apr 20 11:17:42 2018
 
 def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8"):
     """
-    most basic csv reader (delimiter-separated text file).
-    faster than dict reader from csv package.
-    input:
-        file - path and filename (string or pathlib.Path)
-        delimiter - line separator (string)
-        offset - lines to skip at beginning (integer)
-        encoding - encoding of the text file to read. default is UTF-8.
-                   set to None to use the operating system default.
-    returns:
+    Most basic csv reader (delimiter-separated text file).
+
+    Faster than dict reader from csv package.
+
+    Input:
+    file - path and filename (string or pathlib.Path)
+    delimiter - line separator (string)
+    offset - lines to skip at beginning (integer)
+    encoding - encoding of the text file to read. default is UTF-8.
+               set to None to use the operating system default.
+
+    Returns:
         dict; keys = values from the first row, values = rest of the csv file.
     """
     with open(file, "r", encoding=encoding) as csvfile:
@@ -48,26 +47,27 @@ def txt_2_dict_simple(
     skip_empty_lines=False,
 ):
     """
-    requires input: txt file with column header and values separated by a
-        specific separator (delimiter).
-        file - full path to txt file.
-        sep - value separator (delimiter), e.g. ";" in a csv file.
-        colhdr_ix - row index of the column header.
-        encoding - encoding of the text file to read. default is UTF-8.
-                   set to None to use the operating system default.
+    Read csv with header.
 
-        to_float - set "True" if all values are represented as type float.
-                   otherwise, returned values are of type string.
-        ignore_repeated_sep - if set to True, repeated occurrences of "sep" are
-                              ignored during extraction of elements from the
-                              file lines.
-                              Warning: empty fields must then be filled with a
-                              "no-value indicator" (e.g. string NULL)!
-        keys_upper - convert key name (from column header) to upper-case
-        preserve_empty - do not remove empty fields
-        skip_empty_lines - ignore empty lines, just skip them.
+    Input: txt file with column header and values separated by a specific separator (delimiter).
+    file - full path to txt file.
+    sep - value separator (delimiter), e.g. ";" in a csv file.
+    colhdr_ix - row index of the column header.
+    encoding - encoding of the text file to read. default is UTF-8.
+               set to None to use the operating system default.
 
-    returns: dict
+    to_float - set "True" if all values are represented as type float.
+               otherwise, returned values are of type string.
+    ignore_repeated_sep - if set to True, repeated occurrences of "sep" are
+                          ignored during extraction of elements from the
+                          file lines.
+                          Warning: empty fields must then be filled with a
+                          "no-value indicator" (e.g. string NULL)!
+    keys_upper - convert key name (from column header) to upper-case
+    preserve_empty - do not remove empty fields
+    skip_empty_lines - ignore empty lines, just skip them.
+
+    Returns: dict
         {'file_hdr': list, 'data': dict with key for each col header tag}
     """
 

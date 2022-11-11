@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Thu Aug  9 09:46:55 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Averaging, Binning, Mapping."""
 
 from cmath import rect, phase
 from math import radians, degrees
@@ -22,6 +18,7 @@ from scipy.ndimage import uniform_filter1d
 def mean_angle(deg):
     """
     Calculate a mean angle.
+
     input:
         deg - (list or array) values to average
     notes:
@@ -51,7 +48,8 @@ def mean_angle(deg):
 @njit
 def mean_angle_numba(deg):
     """
-    - numba compatible version of mean_angle()
+    Numba-compatible version of mean_angle().
+
     - input must be numpy array of type float!
     """
     deg = deg[np.isfinite(deg)]
@@ -72,7 +70,8 @@ def mean_angle_numba(deg):
 
 def mean_day_frac(dfr, use_numba=True):
     """
-    use the mean_angle function to calculate a mean day fraction (0-1).
+    Calculate a mean day fraction (0-1) with mean_angle function.
+
     the conversion to angle is necessary since day changes cannot be
       calculated as arithmetic mean.
     - dfr: day fraction, 0-1
@@ -105,8 +104,10 @@ def mean_day_frac(dfr, use_numba=True):
 
 def bin_t_10s(t, force_t_range=True, drop_empty=True):
     """
-    bin a time axis to 10 s intervals around 5;
-        lower boundary included, upper boundary excluded (0. <= 5. < 10.)
+    Bin a time axis to 10 s intervals around 5.
+
+    Lower boundary included, upper boundary excluded (0. <= 5. < 10.).
+
     input:
         t - np.ndarray (time vector, unit=second, increasing monotonically)
     keywords:
@@ -166,13 +167,14 @@ def bin_t_10s(t, force_t_range=True, drop_empty=True):
 
 @njit
 def get_npnanmean(v):
+    """Njit'ed nan-mean."""
     return np.nanmean(v)
 
 
 def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=True):
     """
-    use the output of function "bin_time" or "bin_time_10s" to bin
-        a variable 'v' that depends on a variable t.
+    Use the output of function "bin_time" or "bin_time_10s" to bin a variable 'v' that depends on a variable t.
+
     input:
         v - np.ndarray to be binned
         bin_info - config dict returned by bin_time() or bin_time_10s()
@@ -267,7 +269,8 @@ def bin_by_pdresample(
     drop_empty=True,
 ):
     """
-    use pandas DataFrame method "resample" for binning along a time axis.
+    Use pandas DataFrame method "resample" for binning along a time axis.
+
     Can only sample down, see also https://stackoverflow.com/q/66967998/10197418.
 
     Parameters
@@ -291,7 +294,6 @@ def bin_by_pdresample(
     pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
     """
-
     if isinstance(v, list):
         d = {f"v_{i}": y for i, y in enumerate(v)}
     else:
@@ -323,7 +325,8 @@ def bin_by_pdresample(
 
 def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
     """
-    1D binning with numpy.add.reduceat.
+    Bin with numpy.add.reduceat (1D).
+
     ignores NaN or INF by default (finite elements only).
     if ignore_nan is set to False, the whole bin will be NaN if 1 or more NaNs
         fall within the bin.
@@ -349,7 +352,7 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
 
 def moving_avg(v, N):
     """
-    simple moving average.
+    Calculate a simple moving average.
 
     Parameters
     ----------
@@ -377,7 +380,7 @@ def moving_avg(v, N):
 
 def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
     """
-    moving average based on numpy convolution function.
+    Calculate moving average based on numpy convolution function.
 
     Parameters
     ----------
@@ -426,7 +429,7 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
 
 def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
     """
-    moving average based on pandas dataframe rolling function.
+    Calculate moving average based on pandas dataframe rolling function.
 
     Parameters
     ----------
@@ -467,7 +470,9 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
 
 def sp_mvg_avg(v, N, edges="nearest"):
     """
-    Use scipy's uniform_filter1d to calculate a moving average, see the docs at
+    Use scipy's uniform_filter1d to calculate a moving average.
+
+    See the docs at
     https://docs.scipy.org/doc/scipy/reference/generated/scipy.ndimage.uniform_filter1d.html
     Handles NaNs by removing them before interpolation.
 
@@ -497,8 +502,7 @@ def sp_mvg_avg(v, N, edges="nearest"):
 
 def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
     """
-    Map a variable "vcmp" depending on variable "xcmp" to an independent
-        variable "xref".
+    Map a variable "vcmp" depending on variable "xcmp" to an independent variable "xref".
 
     Parameters
     ----------
@@ -535,7 +539,8 @@ def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
 
 def pd_DataFrame_ip(df, new_index):
     """
-    Return a new DataFrame with all numeric columns interpolated to the new_index.
+    Generate a new DataFrame with all numeric columns interpolated to the new_index.
+
     Uses numpy's interp function.
 
     Parameters
@@ -573,8 +578,7 @@ def pd_Series_ip(
     dvar_dst_name: str,
 ) -> pd.DataFrame:
     """
-    Interpolate dependent variable from source dataframe to destination
-    df's independent variable.
+    Interpolate dependent variable from source dataframe to destination df's independent variable.
 
     Modifies dst_df in-place!
 

@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Fri May 22 13:21:48 2020
-
-@author: F. Obersteiner, f/obersteiner//kit/edu
-"""
+"""Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
 import math
 from datetime import datetime
@@ -18,9 +14,7 @@ from pysolar.solar import get_altitude
 
 @njit
 def haversine_dist(lat, lon):
-    """
-    calculate Haversine distance along lat/lon coordinates.
-    """
+    """Calculate Haversine distance along lat/lon coordinates."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     R = 6373  # approximate radius of earth in km
     dist = 0
@@ -49,9 +43,7 @@ def haversine_dist(lat, lon):
 
 
 def geodesic_dist(lat, lon):
-    """
-    calculate geodesic distance along lat/lon coordinates using geopy module.
-    """
+    """Calculate geodesic distance along lat/lon coordinates using geopy module."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     dist = 0.0
     for j in range(lat.shape[0] - 1):
@@ -65,10 +57,7 @@ def geodesic_dist(lat, lon):
 
 
 def sza_pysolar(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
-    """
-    compute solar zenith angel
-    uses get_altitude function from pysolar package
-    """
+    """Compute solar zenith angle with get_altitude function from pysolar package."""
     return 90 - get_altitude(latitude, longitude, UTC)
 
 
@@ -77,7 +66,7 @@ def sza_pysolar(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
 
 def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
     """
-    Returns the solar zenith angle (in degree)
+    Calculate the solar zenith angle (in degree).
 
     UTC         (as datetime.datetime Object)
     longitude   (in degree)
@@ -136,6 +125,8 @@ def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
 
 def get_EoT(date_ts):
     """
+    Calculate equation of time.
+
     input: date_ts, datetime object
     returns: equation of time (float)
     use for: calculation of local solar time
@@ -149,6 +140,8 @@ def get_EoT(date_ts):
 
 def get_LSTdayFrac(longitude, tz_offset, EoT, days_delta, time_delta):
     """
+    Calculate local solar time as a fraction of a day.
+
     input:
         longitude: -180 to +180 degrees west to east, float
         tz_offset: time zone offset to UTC in hours, float

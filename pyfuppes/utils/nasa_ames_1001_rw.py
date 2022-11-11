@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""NA read/write."""
 
 import os
 from datetime import date

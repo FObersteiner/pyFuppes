@@ -1,9 +1,5 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Aug 20 11:23:26 2018
-
-@author: Florian Obersteiner, f.obersteiner@kit.edu
-"""
+"""Filtering and Masking."""
 
 import numpy as np
 from numba import njit
@@ -15,8 +11,8 @@ from scipy.interpolate import interp1d
 
 def mask_repeated(a, N, atol=1e-6):
     """
-    given an array a that consists of sections of repeated elements, mask
-    those elements in a section that repeat more than N times
+    Mask elements that repeat more than N times.
+
     on SO:
         https://stackoverflow.com/a/58482894/10197418
 
@@ -44,7 +40,7 @@ def mask_repeated(a, N, atol=1e-6):
 @njit
 def mask_repeated_nb(arr, n, atol=1e-6):
     """
-    numba version of mask_repeated(). Also works with input of type float.
+    Mask elements that repeat more than N times, njit'ed version.
 
     Parameters
     ----------
@@ -77,9 +73,9 @@ def mask_repeated_nb(arr, n, atol=1e-6):
 @njit
 def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
     """
-    check the elements of array "arr" if the delta between element and
-    following element(s) exceed a threshold "trsh". How many elements to
-    look ahead is defined by "look_ahead"
+    Check the elements of array "arr" if the delta between element and following element(s) exceed a threshold "trsh".
+
+    How many elements to look ahead is defined by "look_ahead"
     """
     n_el = arr.shape[0]
     mask = np.ones(arr.shape).astype(np.bool_)
@@ -113,7 +109,8 @@ def filter_jumps(
     interpol_kind="linear",
 ):
     """
-    wrapper around mask_jumps()
+    Wrap mask_jumps().
+
     ! interpolation assumes equidistant spacing of the independent variable of
       which arr depends !
     """
@@ -159,8 +156,9 @@ def filter_jumps_np(
     interpol_kind="linear",
 ):
     """
+    Mask jumps using numpy functions.
 
-    if v is dependent on another variable x (e.g. time) and if that x
+    If v is dependent on another variable x (e.g. time) and if that x
     is not equidistant, do NOT use interpolation.
 
     Parameters
@@ -190,7 +188,6 @@ def filter_jumps_np(
             'ix_rem': indices of remaining elements
 
     """
-
     ix_del = np.full(v.shape[0], -1, dtype=int)  # deletion index
     ix_rem = np.full(v.shape[0], -1, dtype=int)  # remaining index
 
@@ -252,10 +249,12 @@ def filter_jumps_np(
 
 def del_at_edge(v, n_cut, add=2, out_len="same"):
     """
-    assume v to be a 1D array which contains blocks of NaNs.
-    returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
-    """
+    Extend blocks of NaN elements in an array.
 
+    Assume v to be a 1D array which contains blocks of NaNs.
+
+    Returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
+    """
     tf = np.isfinite(v) * 1.0
 
     mask = np.convolve(
