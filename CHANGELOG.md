@@ -1,11 +1,17 @@
 # Changelog
 
-## v0.2.1 (22/03/2022)
+## v0.2.4 (2022-11-11)
+- update documentation
 
-- `na1001` re-introduced
-- added sphinx docs
+## v0.2.3 (2022-08-29)
+- update cross-correlation time lag calculator
 
+## v0.2.2 (2022-08-29)
+- add pd.Series interpolation
 
-## v0.2.0 (15/03/2022)
+## v0.2.1 (2022-03-22)
+- re-introduce `na1001`
+- add sphinx docs
 
-- revised version, `na1001` excluded
+## v0.2.0 (2022-03-15)
+- exclude `na1001`
