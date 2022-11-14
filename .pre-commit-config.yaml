@@ -12,10 +12,10 @@ repos:
 -   repo: local
     hooks:
       - id: pytest
-        name: pytest-check
+        name: pytest
         stages: [commit]
         types: [python]
         entry: pytest
         language: system
-        pass_filenames: false
+        pass_filenames: true
         always_run: true
