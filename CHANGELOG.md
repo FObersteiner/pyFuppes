@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.2.6 (2022-11-14)
+- change of some function names in V25 tools to idiomatic ones
+- change of class name pyfuppes.na1001.ffi_1001 to .FFI1001
+
+## v0.2.5 (2022-11-14)
+- include V25 tools
+
 ## v0.2.4 (2022-11-11)
 - update documentation
 
