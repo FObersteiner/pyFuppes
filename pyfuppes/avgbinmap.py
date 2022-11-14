@@ -26,7 +26,8 @@ def mean_angle(deg):
       values will be removed before the calculation.
     - result is degrees between -180 and +180
 
-    returns:
+    Returns
+    -------
         mean of deg (float)
     """
     if np.ma.isMaskedArray(deg):
@@ -114,7 +115,8 @@ def bin_t_10s(t, force_t_range=True, drop_empty=True):
         force_t_range (bool) - True enforces bins to fall within range of t
         drop_empty (bool) - False keeps empty bins alive
 
-    returns:
+    Returns
+    -------
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
     if not isinstance(t, np.ndarray):
@@ -183,7 +185,8 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
         return_type (str) - how to bin, defaults to 'arit_mean'
         use_numba (bool) - use njit'ed binning functions or not
 
-    returns:
+    Returns
+    -------
         v binned according to parameters in bin_info
     """
     if not isinstance(v, np.ndarray):
@@ -554,7 +557,6 @@ def pd_DataFrame_ip(df, new_index):
     -------
     df_out : pd.DataFrame
         a new dataframe interpolated to the new index.
-
     """
     df_out = pd.DataFrame(index=new_index)
     df_out.index.name = df.index.name
@@ -586,7 +588,6 @@ def pd_Series_ip(
     -------
     df_dst : pd.DataFrame
         modified input dst_df.
-
     """
     f = interp1d(
         src_df[ivar_src_name].values,

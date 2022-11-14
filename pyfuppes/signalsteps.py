@@ -15,6 +15,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 
+###############################################################################
+
+
 class SteppedData:
     """Class to hold the "stepped" data and its properties."""
 

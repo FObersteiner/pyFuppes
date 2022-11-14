@@ -68,7 +68,8 @@ def find_youngest_file(path, pattern, n=1):
         pattern, string, pattern to look for in files (see pathlib.Path.glob)
         n, integer, how many to return. defaults to 1
 
-    returns
+    Returns
+    -------
         filename(s) of youngest file(s), including path
         None if no file
     """
@@ -90,7 +91,8 @@ def checkbytes_lt128(file):
     """
     Check if all bytes of a file are less than decimal 128.
 
-    Returns :
+    Returns
+    -------
         True for an ASCII encoded text file else False.
     """
     with open(file, "rb") as f:
@@ -110,7 +112,8 @@ def find_fist_elem(arr, val, condition):
         val: scalar value
         condition: e.g. 'operator.ge' (operator package)
 
-    Returns:
+    Returns
+    -------
         index of value matching the condition or None if no match is found.
     """
     if isinstance(arr, list):

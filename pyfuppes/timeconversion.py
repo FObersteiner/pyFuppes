@@ -9,7 +9,7 @@ import xarray as xr
 ### HELPERS ###################################################################
 
 
-def to_list(parm, is_scalar=False):
+def _to_list(parm, is_scalar=False):
     """
     Convert input "parm" to a Python list object.
 
@@ -75,7 +75,7 @@ def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = N
     float; scalar or float; list
         seconds since midnight for the given timestring(s).
     """
-    timestring, ret_scalar = to_list(timestring)
+    timestring, ret_scalar = _to_list(timestring)
 
     if tsfmt == "iso":
         dt = [datetime.fromisoformat(s) for s in timestring]
@@ -126,7 +126,7 @@ def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
     float; scalar or list of float
         seconds after midnight for the given datetime object(s).
     """
-    dt_obj, ret_scalar = to_list(dt_obj)
+    dt_obj, ret_scalar = _to_list(dt_obj)
 
     tzs = [d.tzinfo for d in dt_obj]
     assert len(set(tzs)) == 1, "all timezones must be equal."
@@ -168,7 +168,7 @@ def posix_2_mdns(posixts, ymd: tuple = None):
     float; scalar or list of float
         seconds after midnight for the given POSIX timestamp(s).
     """
-    posixts, ret_scalar = to_list(posixts)
+    posixts, ret_scalar = _to_list(posixts)
 
     if ymd:  # (yyyy, m, d) given, take that as starting point t0:
         t0 = datetime(
@@ -213,7 +213,7 @@ def mdns_2_dtobj(
     datetime object or float (POSIX timestamp)
         ...for the given seconds after midnight.
     """
-    mdns, ret_scalar = to_list(mdns)
+    mdns, ret_scalar = _to_list(mdns)
     # ensure type float:
     if not isinstance(mdns[0], (float, np.float32, np.float64)):
         mdns = list(map(float, mdns))

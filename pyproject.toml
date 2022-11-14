@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.2.4"
+version = "0.2.5"
 description = "A collection of Python tools"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 
