@@ -3,7 +3,7 @@
 import unittest
 from pathlib import Path
 
-from pyfuppes.na1001 import FFI_1001 as na1001
+from pyfuppes.na1001 import FFI1001 as na1001
 
 wd = Path(__file__).parent
 src, dst = wd / "test_input", wd / "test_output"

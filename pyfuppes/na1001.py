@@ -10,9 +10,9 @@ from .utils import nasa_ames_1001_tools as tools
 ###############################################################################
 
 
-class FFI_1001(object):
+class FFI1001(object):
     r"""
-    A class to work with NASA Ames files with format index 1001 in Python.
+    A class to work with NASA Ames files with format index 1001.
 
     Parameters
     ----------
