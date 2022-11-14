@@ -3,7 +3,7 @@
 import unittest
 from pathlib import Path
 
-from pyfuppes.na1001 import ffi_1001 as na1001
+from pyfuppes.na1001 import FFI_1001 as na1001
 
 wd = Path(__file__).parent
 src, dst = wd / "test_input", wd / "test_output"
@@ -31,18 +31,14 @@ class TestNa1001(unittest.TestCase):
     def test_read_valid(self):
         file = src / "valid_1001a.na"
         na = na1001(file, sep_data=" ", rmv_repeated_seps=True)
-        assert na is not None
-        assert na.NV == 2
-        assert na.NLHEAD == 36
+        self.assertIsNotNone(na)
+        self.assertEqual(na.NV, 2)
+        self.assertEqual(na.NLHEAD, 36)
 
     def test_invalid_read_config(self):
         file = src / "valid_1001a.na"
-        err = None
-        try:
+        with self.assertRaises(Exception):
             na1001(file, rmv_repeated_seps=False)
-        except Exception as e:
-            err = e
-        assert err is not None
 
 
 if __name__ == "__main__":

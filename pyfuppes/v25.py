@@ -154,7 +154,7 @@ def _V25logs_cleaned_dump(path):
 # --- EXTERNALS ---------------------------------------------------------------
 
 
-def V25Logs_cleanup(
+def logs_cleanup(
     folder: list, exts: list, drop_info=True, check_info=True, verbose=False
 ):
     """
@@ -221,7 +221,7 @@ def V25Logs_cleanup(
 ###############################################################################
 
 
-def Collect_V25Logs(
+def collect_V25Logs(
     folder, ext, delimiter="\t", colhdr_ix=0, write_mergefile=False, verbose=False
 ):
     r"""
@@ -321,7 +321,7 @@ def Collect_V25Logs(
 ###############################################################################
 
 
-def Collect_OSC_Logs(
+def collect_OSC_Logs(
     folder,
     _ext="OSC",
     delimiter="\t",
