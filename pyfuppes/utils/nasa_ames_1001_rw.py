@@ -12,7 +12,7 @@ from pathlib import Path
 def na1001_cls_read(
     file_path,
     sep=" ",
-    sep_com=";",
+    sep_com=";",  # obsolete
     sep_data="\t",
     auto_nncoml=True,
     strip_lines=True,
@@ -22,7 +22,7 @@ def na1001_cls_read(
     ensure_ascii=True,
 ):
     """
-    Read NASA Ames 1001 formatted text file. expected encoding is ASCII.
+    Read NASA Ames 1001 formatted text file. Expected encoding is ASCII.
 
     See class method for detailled docstring.
     """
@@ -71,8 +71,11 @@ def na1001_cls_read(
         na_1001 = {"SRC": str(file_path)}
 
         tmp = list(map(int, data[0].split()))
-        assert len(tmp) == 2, f"invalid format in {data[0]} (line 1)"
-        assert tmp[1] == 1001, f"invalid FFI in {data[0]} (line 1)"
+        assert len(tmp) == 2, f"invalid format in line 1: '{data[0]}'"
+        assert (
+            tmp[0] >= 15
+        ), f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
+        assert tmp[1] == 1001, f"invalid FFI in line 1 '{data[0]}'"
 
         nlhead = tmp[0]
         na_1001["NLHEAD"] = nlhead
@@ -80,6 +83,8 @@ def na1001_cls_read(
 
         header = data[0:nlhead]
         data = data[nlhead:]
+        if data == [""] or data == ["\n"]:
+            data = None
 
         # test case: no data ->
         assert data, "no data found."
@@ -90,19 +95,21 @@ def na1001_cls_read(
         na_1001["MNAME"] = header[4]
 
         tmp = list(map(int, header[5].split()))
-        assert len(tmp) == 2, f"invalid format {header[5]} (line 6)"
+        assert len(tmp) == 2, f"invalid format in line 6: '{header[5]}'"
         na_1001["IVOL"], na_1001["NVOL"] = tmp[0], tmp[1]
 
         tmp = list(map(int, header[6].split()))
-        assert len(tmp) == 6, f"invalid format {header[6]} (line 7)"
+        assert len(tmp) == 6, f"invalid format line 7: '{header[6]}'"
+
         # check for valid date in line 7 (yyyy mm dd)
-        date(*tmp[:3]), date(*tmp[3:6])
+        assert date(*tmp[:3]) <= date(
+            *tmp[3:6]
+        ), "RDATE must be greater or equal to DATE"
         na_1001["DATE"], na_1001["RDATE"] = tmp[:3], tmp[3:6]
 
         # DX check if the line contains a decimal separator; if so use float else int
         na_1001["DX"] = float(header[7]) if "." in header[7] else int(header[7])
-        na_1001["XNAME"] = header[8].rsplit(sep=sep_com)
-        # CARIBIC: [0] is type, [1] is description, [2] is unit.
+        na_1001["XNAME"] = header[8]  # .rsplit(sep=sep_com)
 
         n_vars = int(header[9])
         na_1001["NV"] = n_vars
@@ -158,9 +165,14 @@ def na1001_cls_read(
         na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
 
         for ix, line in enumerate(data):
+            if line == "" or line == "\n":  # skip empty lines or trailing newline
+                continue
+
             parts = line.rsplit(sep=sep_data)
-            msg = f"{file_path.name}: invalid number of parameters in line {ix+nlhead}, have {len(parts)}, want {n_vars+1}"
-            assert len(parts) == n_vars + 1, msg
+            assert (
+                len(parts) == n_vars + 1
+            ), f"{file_path.name}: invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
+
             na_1001["_X"].append(parts[0].strip())
             if vmiss_to_None:
                 for j in range(n_vars):
@@ -183,15 +195,13 @@ def na1001_cls_write(
     file_path,
     na_1001,
     sep=" ",
-    sep_com=";",
+    sep_com=";",  # obsolete
     sep_data="\t",
     overwrite=0,
     verbose=False,
-    _crlf="\n",
 ):
     """
-    Write content of na1001 class instance to file in NASA Ames 1001 format.
-    encoding is ASCII.
+    Write content of na1001 class instance to file in NASA Ames 1001 format. Encoding is ASCII.
 
     See class method for detailled docstring.
     """
@@ -222,42 +232,42 @@ def na1001_cls_write(
         )
 
     if n_vars_named - na_1001["NV"] != 0:
-        verboseprint("NA output: NV corrected!")
+        verboseprint("NA output: NV corrected")
         na_1001["NV"] = n_vars_named
 
     nscoml_is = len(na_1001["_SCOM"])
     if (nscoml_is - na_1001["NSCOML"]) != 0:
-        verboseprint("NA output: NSCOML corrected!")
+        verboseprint("NA output: NSCOML corrected")
         na_1001["NSCOML"] = nscoml_is
 
     nncoml_is = len(na_1001["_NCOM"])
     if (nncoml_is - na_1001["NNCOML"]) != 0:
-        verboseprint("NA output: NNCOML corrected!")
+        verboseprint("NA output: NNCOML corrected")
         na_1001["NNCOML"] = nncoml_is
 
     nlhead_is = 14 + n_vars_named + nscoml_is + nncoml_is
     if (nlhead_is - na_1001["NLHEAD"]) != 0:
-        verboseprint("NA output: NLHEAD corrected!")
+        verboseprint("NA output: NLHEAD corrected")
         na_1001["NLHEAD"] = nlhead_is
 
     # begin the actual writing process
     with open(file_path, "w", encoding="ascii") as file_obj:
-        block = str(na_1001["NLHEAD"]) + sep + str(na_1001["_FFI"]) + _crlf
+        block = str(na_1001["NLHEAD"]) + sep + str(na_1001["_FFI"]) + "\n"
         file_obj.write(block)
 
-        block = str(na_1001["ONAME"]) + _crlf
+        block = str(na_1001["ONAME"]) + "\n"
         file_obj.write(block)
 
-        block = str(na_1001["ORG"]) + _crlf
+        block = str(na_1001["ORG"]) + "\n"
         file_obj.write(block)
 
-        block = str(na_1001["SNAME"]) + _crlf
+        block = str(na_1001["SNAME"]) + "\n"
         file_obj.write(block)
 
-        block = str(na_1001["MNAME"]) + _crlf
+        block = str(na_1001["MNAME"]) + "\n"
         file_obj.write(block)
 
-        block = str(na_1001["IVOL"]) + sep + str(na_1001["NVOL"]) + _crlf
+        block = str(na_1001["IVOL"]) + sep + str(na_1001["NVOL"]) + "\n"
         file_obj.write(block)
 
         # dates: assume "yyyy m d" in tuple
@@ -273,16 +283,18 @@ def na1001_cls_write(
             + "%2.2u" % na_1001["RDATE"][1]
             + sep
             + "%2.2u" % na_1001["RDATE"][2]
-            + _crlf
+            + "\n"
         )
         file_obj.write(block)
 
-        file_obj.write(f"{na_1001['DX']}{_crlf}")
+        file_obj.write(f"{na_1001['DX']}" + "\n")
 
-        file_obj.write(sep_com.join(na_1001["XNAME"]) + _crlf)
+        # obsolete: CARIBIC
+        # file_obj.write(sep_com.join(na_1001["XNAME"]) + "\n")
+        file_obj.write(na_1001["XNAME"])
 
         n_vars = na_1001["NV"]  # get number of variables
-        block = str(n_vars) + _crlf
+        block = str(n_vars) + "\n"
         file_obj.write(block)
 
         line = ""
@@ -291,7 +303,7 @@ def na1001_cls_write(
         if line.endswith("\n"):
             line = line[0:-1]
         else:
-            line = line[0:-1] + _crlf
+            line = line[0:-1] + "\n"
         file_obj.write(line)
 
         line = ""
@@ -300,34 +312,34 @@ def na1001_cls_write(
         if line.endswith("\n"):
             line = line[0:-1]
         else:
-            line = line[0:-1] + _crlf
+            line = line[0:-1] + "\n"
         file_obj.write(line)
 
         block = na_1001["_VNAME"]
         for i in range(n_vars):
-            file_obj.write(block[i] + _crlf)
+            file_obj.write(block[i] + "\n")
 
         nscoml = na_1001["NSCOML"]  # get number of special comment lines
-        line = str(nscoml) + _crlf
+        line = str(nscoml) + "\n"
         file_obj.write(line)
 
         block = na_1001["_SCOM"]
         for i in range(nscoml):
-            file_obj.write(block[i] + _crlf)
+            file_obj.write(block[i] + "\n")
 
         nncoml = na_1001["NNCOML"]  # get number of normal comment lines
-        line = str(nncoml) + _crlf
+        line = str(nncoml) + "\n"
         file_obj.write(line)
 
         block = na_1001["_NCOM"]
         for i in range(nncoml):
-            file_obj.write(block[i] + _crlf)
+            file_obj.write(block[i] + "\n")
 
         for i, x in enumerate(na_1001["_X"]):
             line = str(x) + sep_data
             for j in range(n_vars):
                 line += str(na_1001["V"][j][i]) + sep_data
-            file_obj.write(line[0:-1] + _crlf)
+            file_obj.write(line[0:-1] + "\n")
 
     return write
 
