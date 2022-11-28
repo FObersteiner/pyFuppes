@@ -122,9 +122,16 @@ def na1001_cls_read(
             offset = 2
             na_1001["VSCAL"] = header[10].split()
             na_1001["VMISS"] = header[11].split()
-        # test case:
-        msg = "vscal, vmiss and vname must have equal number of elements"
-        assert n_vars == len(na_1001["VSCAL"]) == len(na_1001["VMISS"]), msg
+
+        assert (
+            len(na_1001["VSCAL"]) == na_1001["NV"]
+        ), f"number of elements in VSCAL (have: {len(na_1001['VSCAL'])}) must match number of variables specified ({na_1001['NV']})"
+        assert (
+            len(na_1001["VMISS"]) == na_1001["NV"]
+        ), f"number of elements in VMISS (have: {len(na_1001['VMISS'])}) must match number of variables specified ({na_1001['NV']})"
+        assert (
+            n_vars == len(na_1001["VSCAL"]) == len(na_1001["VMISS"])
+        ), "VSCAL, VMISS and NV must have equal number of elements"
 
         na_1001["_VNAME"] = header[10 + offset : 10 + n_vars + offset]
 
@@ -291,7 +298,7 @@ def na1001_cls_write(
 
         # obsolete: CARIBIC
         # file_obj.write(sep_com.join(na_1001["XNAME"]) + "\n")
-        file_obj.write(na_1001["XNAME"])
+        file_obj.write(na_1001["XNAME"] + "\n")
 
         n_vars = na_1001["NV"]  # get number of variables
         block = str(n_vars) + "\n"
