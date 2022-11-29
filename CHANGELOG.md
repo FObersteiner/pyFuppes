@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.7 ( ??? )
+- NASA Ames 1001 backend updates (file format checks etc.)
+
 ## v0.2.6 (2022-11-14)
 - change of some function names in V25 tools to idiomatic ones
 - change of class name pyfuppes.na1001.ffi_1001 to .FFI1001

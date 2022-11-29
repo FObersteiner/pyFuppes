@@ -22,7 +22,9 @@ def naDict_2_npndarr(
 
     See class method for detailled docstring.
     """
-    npDict = {naDict["XNAME"][0]: np.array(naDict["_X"], dtype=xdtype)}
+    npDict = {
+        naDict["XNAME"].split(splitVname)[0]: np.array(naDict["_X"], dtype=xdtype)
+    }
 
     if not selVnames:
         selVnames = [n.split(splitVname)[0] for n in naDict["_VNAME"]]

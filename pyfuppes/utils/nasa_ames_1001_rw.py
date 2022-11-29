@@ -31,166 +31,160 @@ def na1001_cls_read(
     except AttributeError:  # file path is not provided as path object; convert
         file_path = Path(file_path)
 
-    if not os.path.isfile(file_path):  # check if file exists
+    if not file_path.is_file():  # check if file exists
         raise FileExistsError(str(file_path) + "\n    does not exist.")
-    else:
-        # by definition, NASA Ames 1001 is pure ascii. the following lines allow
-        # to read files with other encodings; use with caution
-        encodings = (
-            ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
+
+    # by definition, NASA Ames 1001 is pure ascii. the following lines allow
+    # to read files with other encodings; use with caution
+    encodings = ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
+    data = None
+    for enc in encodings:
+        try:
+            with open(file_path, "r", encoding=enc) as file_obj:
+                data = file_obj.readlines()  # read file content to string list
+        except ValueError:  # invalid encoding, try next
+            pass
+        else:
+            if enc != "ascii":
+                print(
+                    f"warning: using non-ascii encoding {enc} for file {file_path.name}"
+                )
+            break  # found a working encoding
+    if not data:
+        raise ValueError(
+            f"could not decode {file_path.name} (ASCII-only: {ensure_ascii})"
         )
+    # done with encoding
+
+    if strip_lines:
+        for i, line in enumerate(data):
+            data[i] = line.strip()
+
+    if rmv_repeated_seps:
+        for i, line in enumerate(data):
+            while sep + sep in line:
+                line = line.replace(sep + sep, sep)
+            data[i] = line
+
+    na_1001 = {"SRC": str(file_path)}
+
+    tmp = list(map(int, data[0].split()))
+    assert len(tmp) == 2, f"invalid format in line 1: '{data[0]}'"
+    assert (
+        tmp[0] >= 15
+    ), f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
+    assert tmp[1] == 1001, f"invalid FFI in line 1 '{data[0]}'"
+
+    nlhead = tmp[0]
+    na_1001["NLHEAD"] = nlhead
+    na_1001["_FFI"] = tmp[1]
+
+    header = data[0:nlhead]
+    data = data[nlhead:]
+    if data == [""] or data == ["\n"]:
         data = None
-        for enc in encodings:
-            try:
-                with open(file_path, "r", encoding=enc) as file_obj:
-                    data = file_obj.readlines()  # read file content to string list
-            except ValueError:  # invalid encoding, try next
-                pass
-            else:
-                if enc != "ascii":
-                    print(
-                        f"warning: using non-ascii encoding {enc} for file {file_path.name}"
-                    )
-                break  # found a working encoding
-        if not data:
-            raise ValueError(
-                f"could not decode {file_path.name} (ASCII-only: {ensure_ascii}"
-            )
-        # done with encoding
 
-        if strip_lines:
-            for i, line in enumerate(data):
-                data[i] = line.strip()
+    # test case: no data ->
+    assert data, "no data found."
 
-        if rmv_repeated_seps:
-            for i, line in enumerate(data):
-                while sep + sep in line:
-                    line = line.replace(sep + sep, sep)
-                data[i] = line
+    na_1001["ONAME"] = header[1]
+    na_1001["ORG"] = header[2]
+    na_1001["SNAME"] = header[3]
+    na_1001["MNAME"] = header[4]
 
-        na_1001 = {"SRC": str(file_path)}
+    tmp = list(map(int, header[5].split()))
+    assert len(tmp) == 2, f"invalid format in line 6: '{header[5]}'"
+    na_1001["IVOL"], na_1001["NVOL"] = tmp[0], tmp[1]
 
-        tmp = list(map(int, data[0].split()))
-        assert len(tmp) == 2, f"invalid format in line 1: '{data[0]}'"
+    tmp = list(map(int, header[6].split()))
+    assert len(tmp) == 6, f"invalid format line 7: '{header[6]}'"
+
+    # check for valid date in line 7 (yyyy mm dd)
+    assert date(*tmp[:3]) <= date(*tmp[3:6]), "RDATE must be greater or equal to DATE"
+    na_1001["DATE"], na_1001["RDATE"] = tmp[:3], tmp[3:6]
+
+    # DX check if the line contains a decimal separator; if so use float else int
+    na_1001["DX"] = float(header[7]) if "." in header[7] else int(header[7])
+    na_1001["XNAME"] = header[8]  # .rsplit(sep=sep_com)
+
+    n_vars = int(header[9])
+    na_1001["NV"] = n_vars
+
+    if vscale_vmiss_vertical:
+        offset = n_vars * 2
+        na_1001["VSCAL"] = header[10 : 10 + n_vars]
+        na_1001["VMISS"] = header[10 + n_vars : 10 + n_vars * 2]
+    else:
+        offset = 2
+        na_1001["VSCAL"] = header[10].split()
+        na_1001["VMISS"] = header[11].split()
+
+    assert (
+        len(na_1001["VSCAL"]) == na_1001["NV"]
+    ), f"number of elements in VSCAL (have: {len(na_1001['VSCAL'])}) must match number of variables specified ({na_1001['NV']})"
+    assert (
+        len(na_1001["VMISS"]) == na_1001["NV"]
+    ), f"number of elements in VMISS (have: {len(na_1001['VMISS'])}) must match number of variables specified ({na_1001['NV']})"
+    assert (
+        n_vars == len(na_1001["VSCAL"]) == len(na_1001["VMISS"])
+    ), "VSCAL, VMISS and NV must have equal number of elements"
+
+    na_1001["_VNAME"] = header[10 + offset : 10 + n_vars + offset]
+
+    nscoml = int(header[10 + n_vars + offset])
+    na_1001["NSCOML"] = nscoml
+    if nscoml > 0:  # read special comment if nscoml>0
+        na_1001["_SCOM"] = header[n_vars + 11 + offset : n_vars + nscoml + 11 + offset]
+    else:
+        na_1001["_SCOM"] = ""
+    # test case:
+    msg = "nscoml not equal n elements in list na_1001['_SCOM']"
+    assert nscoml == len(na_1001["_SCOM"]), msg
+
+    # read normal comment if nncoml>0
+    if auto_nncoml is True:
+        nncoml = nlhead - (n_vars + nscoml + 12 + offset)
+    else:
+        nncoml = int(header[n_vars + nscoml + 11 + offset])
+    na_1001["NNCOML"] = nncoml
+
+    if nncoml > 0:
+        na_1001["_NCOM"] = header[
+            n_vars + nscoml + 12 + offset : n_vars + nscoml + nncoml + 12 + offset
+        ]
+    else:
+        na_1001["_NCOM"] = ""
+    # test case:
+    msg = "nncoml not equal n elements in list na_1001['_NCOM']"
+    assert nncoml == len(na_1001["_NCOM"]), msg
+    # test case
+    msg = "nlhead must be equal to nncoml + nscoml + n_vars + 14"
+    assert nncoml + nscoml + n_vars + 14 == nlhead, msg
+
+    # done with header, continue with variables.
+    na_1001["_X"] = []  # holds independent variable
+    na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
+
+    for ix, line in enumerate(data):
+        if line == "" or line == "\n":  # skip empty lines or trailing newline
+            continue
+
+        parts = line.rsplit(sep=sep_data)
         assert (
-            tmp[0] >= 15
-        ), f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
-        assert tmp[1] == 1001, f"invalid FFI in line 1 '{data[0]}'"
+            len(parts) == n_vars + 1
+        ), f"{file_path.name}: invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
 
-        nlhead = tmp[0]
-        na_1001["NLHEAD"] = nlhead
-        na_1001["_FFI"] = tmp[1]
-
-        header = data[0:nlhead]
-        data = data[nlhead:]
-        if data == [""] or data == ["\n"]:
-            data = None
-
-        # test case: no data ->
-        assert data, "no data found."
-
-        na_1001["ONAME"] = header[1]
-        na_1001["ORG"] = header[2]
-        na_1001["SNAME"] = header[3]
-        na_1001["MNAME"] = header[4]
-
-        tmp = list(map(int, header[5].split()))
-        assert len(tmp) == 2, f"invalid format in line 6: '{header[5]}'"
-        na_1001["IVOL"], na_1001["NVOL"] = tmp[0], tmp[1]
-
-        tmp = list(map(int, header[6].split()))
-        assert len(tmp) == 6, f"invalid format line 7: '{header[6]}'"
-
-        # check for valid date in line 7 (yyyy mm dd)
-        assert date(*tmp[:3]) <= date(
-            *tmp[3:6]
-        ), "RDATE must be greater or equal to DATE"
-        na_1001["DATE"], na_1001["RDATE"] = tmp[:3], tmp[3:6]
-
-        # DX check if the line contains a decimal separator; if so use float else int
-        na_1001["DX"] = float(header[7]) if "." in header[7] else int(header[7])
-        na_1001["XNAME"] = header[8]  # .rsplit(sep=sep_com)
-
-        n_vars = int(header[9])
-        na_1001["NV"] = n_vars
-
-        if vscale_vmiss_vertical:
-            offset = n_vars * 2
-            na_1001["VSCAL"] = header[10 : 10 + n_vars]
-            na_1001["VMISS"] = header[10 + n_vars : 10 + n_vars * 2]
+        na_1001["_X"].append(parts[0].strip())
+        if vmiss_to_None:
+            for j in range(n_vars):
+                na_1001["V"][j].append(
+                    parts[j + 1].strip()
+                    if parts[j + 1].strip() != na_1001["VMISS"][j]
+                    else None
+                )
         else:
-            offset = 2
-            na_1001["VSCAL"] = header[10].split()
-            na_1001["VMISS"] = header[11].split()
-
-        assert (
-            len(na_1001["VSCAL"]) == na_1001["NV"]
-        ), f"number of elements in VSCAL (have: {len(na_1001['VSCAL'])}) must match number of variables specified ({na_1001['NV']})"
-        assert (
-            len(na_1001["VMISS"]) == na_1001["NV"]
-        ), f"number of elements in VMISS (have: {len(na_1001['VMISS'])}) must match number of variables specified ({na_1001['NV']})"
-        assert (
-            n_vars == len(na_1001["VSCAL"]) == len(na_1001["VMISS"])
-        ), "VSCAL, VMISS and NV must have equal number of elements"
-
-        na_1001["_VNAME"] = header[10 + offset : 10 + n_vars + offset]
-
-        nscoml = int(header[10 + n_vars + offset])
-        na_1001["NSCOML"] = nscoml
-        if nscoml > 0:  # read special comment if nscoml>0
-            na_1001["_SCOM"] = header[
-                n_vars + 11 + offset : n_vars + nscoml + 11 + offset
-            ]
-        else:
-            na_1001["_SCOM"] = ""
-        # test case:
-        msg = "nscoml not equal n elements in list na_1001['_SCOM']"
-        assert nscoml == len(na_1001["_SCOM"]), msg
-
-        # read normal comment if nncoml>0
-        if auto_nncoml is True:
-            nncoml = nlhead - (n_vars + nscoml + 12 + offset)
-        else:
-            nncoml = int(header[n_vars + nscoml + 11 + offset])
-        na_1001["NNCOML"] = nncoml
-
-        if nncoml > 0:
-            na_1001["_NCOM"] = header[
-                n_vars + nscoml + 12 + offset : n_vars + nscoml + nncoml + 12 + offset
-            ]
-        else:
-            na_1001["_NCOM"] = ""
-        # test case:
-        msg = "nncoml not equal n elements in list na_1001['_NCOM']"
-        assert nncoml == len(na_1001["_NCOM"]), msg
-        # test case
-        msg = "nlhead must be equal to nncoml + nscoml + n_vars + 14"
-        assert nncoml + nscoml + n_vars + 14 == nlhead, msg
-
-        # done with header, continue with variables.
-        na_1001["_X"] = []  # holds independent variable
-        na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
-
-        for ix, line in enumerate(data):
-            if line == "" or line == "\n":  # skip empty lines or trailing newline
-                continue
-
-            parts = line.rsplit(sep=sep_data)
-            assert (
-                len(parts) == n_vars + 1
-            ), f"{file_path.name}: invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
-
-            na_1001["_X"].append(parts[0].strip())
-            if vmiss_to_None:
-                for j in range(n_vars):
-                    na_1001["V"][j].append(
-                        parts[j + 1].strip()
-                        if parts[j + 1].strip() != na_1001["VMISS"][j]
-                        else None
-                    )
-            else:
-                for j in range(n_vars):
-                    na_1001["V"][j].append(parts[j + 1].strip())
+            for j in range(n_vars):
+                na_1001["V"][j].append(parts[j + 1].strip())
 
     return na_1001
 
