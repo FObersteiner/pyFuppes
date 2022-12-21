@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.2.7 ( ??? )
+## v0.2.7 (2022-12-21)
 - NASA Ames 1001 backend updates (file format checks etc.)
+- enable installation on Python 3.10
 
 ## v0.2.6 (2022-11-14)
 - change of some function names in V25 tools to idiomatic ones
