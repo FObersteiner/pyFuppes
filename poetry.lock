@@ -681,7 +681,7 @@ files = [
 name = "importlib-metadata"
 version = "5.2.0"
 description = "Read metadata from Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -1413,7 +1413,6 @@ files = [
 ]
 
 [package.dependencies]
-importlib-metadata = {version = "*", markers = "python_version < \"3.9\""}
 llvmlite = ">=0.39.0dev0,<0.40"
 numpy = ">=1.18,<1.24"
 setuptools = "*"
@@ -2673,7 +2672,7 @@ viz = ["matplotlib", "nc-time-axis", "seaborn"]
 name = "zipp"
 version = "3.11.0"
 description = "Backport of pathlib-compatible object wrapper for zip files"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
@@ -2688,4 +2687,4 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "2.0"
 python-versions = ">= 3.8, < 3.11"
-content-hash = "747013e4aaeb6ad189bfc9438ffdba1d799cdaf10323dd3a2dd0fc8514d44159"
+content-hash = "cf02a7f4138aa088e3abbad4b396149d2bb97d94cee8a98cdd2befb59a060223"

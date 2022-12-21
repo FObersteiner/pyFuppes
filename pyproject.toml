@@ -8,13 +8,13 @@ authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 python = ">= 3.8, < 3.11"
 geopy = "2.*"
 matplotlib = "3.*"
-numpy = "^1.23.5"
+numpy = { version = "^1.23.5", python = ">3.9" }
 pandas = "1.*"
 pysolar = "*"
 scipy = "1.*"
 xarray = "2022.*"
-numba = "^0.56.4"
-llvmlite = "^0.39.1"
+numba = { version = "^0.56.4", python = ">3.9" }
+llvmlite = { version = "^0.39.1", python = ">3.9" }
 
 [tool.poetry.dev-dependencies]
 pytest = "7.*"
