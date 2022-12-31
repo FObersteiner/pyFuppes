@@ -29,7 +29,7 @@ def mask_repeated(a, N, atol=1e-6):
     boolean mask
 
     """
-    mask = np.ones(a.size, np.bool_)
+    mask = np.ones(a.shape[0], np.bool_)
     mask[N:] = ~np.isclose(a[N:], a[:-N], atol=atol, equal_nan=True)
     return mask
 
