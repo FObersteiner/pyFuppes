@@ -4,6 +4,7 @@
 from copy import deepcopy
 import functools
 
+import polars
 import numpy as np
 import scipy as sc
 from scipy import signal
@@ -22,7 +23,7 @@ def get_tcorr_parms(t, t_ref, fitorder):
     return parms
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def apply_tcorr_parms(t, parms):
@@ -30,7 +31,7 @@ def apply_tcorr_parms(t, parms):
     return t - np.polyval(parms, t)
 
 
-# ------------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
 
 def time_correction(t, t_ref, fitorder):
@@ -53,6 +54,52 @@ def time_correction(t, t_ref, fitorder):
     parms = get_tcorr_parms(t, t_ref, fitorder)
     t_corr = apply_tcorr_parms(t, parms)
     return {"fitparms": parms, "t_corr": t_corr}
+
+
+###############################################################################
+
+
+def filter_dt_forward(
+    df: polars.DataFrame, datetime_key: str = "datetime"
+) -> polars.DataFrame:
+    """
+    Given a time series dataframe, ensure that the index is increasing strictly.
+
+    Filters forwards, i.e. if one element is less than the previous, than this
+    element is removed (not the previous).
+
+    Parameters
+    ----------
+    df : polars DataFrame
+        DataFrame with datetime index.
+    datetime_key : str, optional
+        Date/time column name. The default is "datetime".
+
+    Returns
+    -------
+    df : polars DataFrame
+        The filtered dataframe.
+    """
+    m = df[datetime_key].diff().fill_null(1) > 0
+    while not m.all():
+        df = df.filter(m)
+        if df.height == 1:
+            return df
+        m = df[datetime_key].diff().fill_null(1) > 0
+    return df
+
+
+def filter_dt_backward(
+    df: polars.DataFrame, datetime_key: str = "datetime"
+) -> polars.DataFrame:
+    """As filter_dt_forward, but backwards filtering."""
+    m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
+    while not m.all():
+        df = df.filter(m)
+        if df.height == 1:
+            return df
+        m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
+    return df
 
 
 ###############################################################################

@@ -3,8 +3,16 @@
 import unittest
 
 import numpy as np
+import polars as pl
 
 from pyfuppes import timecorr
+
+
+def _make_df(l):
+    df = pl.DataFrame({"datetime": l, "values": list(range(len(l)))})
+    return df.with_column(
+        pl.col("datetime").str.strptime(pl.Datetime, fmt="%Y-%m-%d").cast(pl.Datetime)
+    )
 
 
 class TestTimeconv(unittest.TestCase):
@@ -59,6 +67,74 @@ class TestTimeconv(unittest.TestCase):
         r = np.array([2.0, 3.5, 5.0, 6.5, 8.0, 9.5], dtype=np.float32)
         result = timecorr.time_correction(t, r, order)
         self.assertTrue(np.isclose(result["t_corr"], r).all())
+
+    def test_pldt_filter(self):
+        # edge case: first invalid
+        have = ["2022-10-30", "2022-10-28", "2022-10-29"]
+        # want_forward = ["2022-10-30"]
+        # want_backward = ["2022-10-28", "2022-10-29"]
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_forward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0])).all())
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_backward(df)
+
+        self.assertTrue((df["values"] == pl.Series([1, 2])).all())
+
+        # edge case: last invalid
+        have = ["2022-10-29", "2022-10-30", "2022-10-29"]
+        # want_forward = ["2022-10-29", "2022-10-30"]
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_forward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0, 1])).all())
+
+        # some invalid key
+        have = ["2022-10-29", "2022-10-30", "2022-10-28", "2022-10-31"]
+        # want_forward = ["2022-10-29", "2022-10-30", "2022-10-31"]
+        # want_backward = ["2022-10-28", "2022-10-31"]
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_forward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0, 1, 3])).all())
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_backward(df)
+
+        self.assertTrue((df["values"] == pl.Series([2, 3])).all())
+
+        have = ["2022-10-29", "2022-10-30", "2022-11-01", "2022-10-31"]
+        # want_forward = ["2022-10-29", "2022-10-30", "2022-11-01"]
+        # want_backward = ["2022-10-29", "2022-10-30", "2022-10-31"]
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_forward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0, 1, 2])).all())
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_backward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0, 1, 3])).all())
+
+        have = ["2022-10-29", "2022-10-30", "2022-10-28", "2022-10-30"]
+        # want_forward = ["2022-10-29", "2022-10-30"]
+        # want_backward = ["2022-10-28", "2022-10-30"]
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_forward(df)
+
+        self.assertTrue((df["values"] == pl.Series([0, 1])).all())
+
+        df = _make_df(have)
+        df = timecorr.filter_dt_backward(df)
+
+        self.assertTrue((df["values"] == pl.Series([2, 3])).all())
 
     def test_xcorr_timelag(self):
         # signal with peak
