@@ -61,7 +61,7 @@ def time_correction(t, t_ref, fitorder):
 
 def filter_dt_forward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> polars.DataFrame:
+) -> (int, polars.DataFrame):
     """
     Given a time series dataframe, ensure that the index is increasing strictly.
 
@@ -77,29 +77,33 @@ def filter_dt_forward(
 
     Returns
     -------
-    df : polars DataFrame
-        The filtered dataframe.
+    (n, df) : (int, polars DataFrame)
+        The number of removed columns and the filtered dataframe.
     """
+    n_removed = 0
     m = df[datetime_key].diff().fill_null(1) > 0
     while not m.all():
-        df = df.filter(m)
         if df.height == 1:
-            return df
+            return (n_removed, df)
+        df = df.filter(m)
+        n_removed += (~m).sum()
         m = df[datetime_key].diff().fill_null(1) > 0
-    return df
+    return (n_removed, df)
 
 
 def filter_dt_backward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> polars.DataFrame:
+) -> (int, polars.DataFrame):
     """As filter_dt_forward, but backwards filtering."""
+    n_removed = 0
     m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
     while not m.all():
-        df = df.filter(m)
         if df.height == 1:
-            return df
+            return (n_removed, df)
+        df = df.filter(m)
+        n_removed += (~m).sum()
         m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
-    return df
+    return (n_removed, df)
 
 
 ###############################################################################

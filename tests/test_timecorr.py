@@ -75,13 +75,13 @@ class TestTimeconv(unittest.TestCase):
         # want_backward = ["2022-10-28", "2022-10-29"]
 
         df = _make_df(have)
-        df = timecorr.filter_dt_forward(df)
-
+        n, df = timecorr.filter_dt_forward(df)
+        self.assertEqual(n, 2)
         self.assertTrue((df["values"] == pl.Series([0])).all())
 
         df = _make_df(have)
-        df = timecorr.filter_dt_backward(df)
-
+        n, df = timecorr.filter_dt_backward(df)
+        self.assertEqual(n, 1)
         self.assertTrue((df["values"] == pl.Series([1, 2])).all())
 
         # edge case: last invalid
@@ -89,8 +89,8 @@ class TestTimeconv(unittest.TestCase):
         # want_forward = ["2022-10-29", "2022-10-30"]
 
         df = _make_df(have)
-        df = timecorr.filter_dt_forward(df)
-
+        n, df = timecorr.filter_dt_forward(df)
+        self.assertEqual(n, 1)
         self.assertTrue((df["values"] == pl.Series([0, 1])).all())
 
         # some invalid key
@@ -99,13 +99,13 @@ class TestTimeconv(unittest.TestCase):
         # want_backward = ["2022-10-28", "2022-10-31"]
 
         df = _make_df(have)
-        df = timecorr.filter_dt_forward(df)
-
+        n, df = timecorr.filter_dt_forward(df)
+        self.assertEqual(n, 1)
         self.assertTrue((df["values"] == pl.Series([0, 1, 3])).all())
 
         df = _make_df(have)
-        df = timecorr.filter_dt_backward(df)
-
+        n, df = timecorr.filter_dt_backward(df)
+        self.assertEqual(n, 2)
         self.assertTrue((df["values"] == pl.Series([2, 3])).all())
 
         have = ["2022-10-29", "2022-10-30", "2022-11-01", "2022-10-31"]
@@ -113,13 +113,13 @@ class TestTimeconv(unittest.TestCase):
         # want_backward = ["2022-10-29", "2022-10-30", "2022-10-31"]
 
         df = _make_df(have)
-        df = timecorr.filter_dt_forward(df)
-
+        n, df = timecorr.filter_dt_forward(df)
+        self.assertEqual(n, 1)
         self.assertTrue((df["values"] == pl.Series([0, 1, 2])).all())
 
         df = _make_df(have)
-        df = timecorr.filter_dt_backward(df)
-
+        n, df = timecorr.filter_dt_backward(df)
+        self.assertEqual(n, 1)
         self.assertTrue((df["values"] == pl.Series([0, 1, 3])).all())
 
         have = ["2022-10-29", "2022-10-30", "2022-10-28", "2022-10-30"]
@@ -127,13 +127,13 @@ class TestTimeconv(unittest.TestCase):
         # want_backward = ["2022-10-28", "2022-10-30"]
 
         df = _make_df(have)
-        df = timecorr.filter_dt_forward(df)
-
+        n, df = timecorr.filter_dt_forward(df)
+        self.assertEqual(n, 2)
         self.assertTrue((df["values"] == pl.Series([0, 1])).all())
 
         df = _make_df(have)
-        df = timecorr.filter_dt_backward(df)
-
+        n, df = timecorr.filter_dt_backward(df)
+        self.assertEqual(n, 2)
         self.assertTrue((df["values"] == pl.Series([2, 3])).all())
 
     def test_xcorr_timelag(self):
