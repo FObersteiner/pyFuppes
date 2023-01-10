@@ -30,6 +30,7 @@ def mean_angle(deg):
     -------
         mean of deg (float)
     """
+    # TODO: test missing !
     if np.ma.isMaskedArray(deg):
         deg = deg.data
     elif isinstance(deg, np.ndarray):
@@ -53,6 +54,7 @@ def mean_angle_numba(deg):
 
     - input must be numpy array of type float!
     """
+    # TODO: test missing !
     deg = deg[np.isfinite(deg)]
     if len(deg) == 0:
         return np.nan
@@ -79,6 +81,7 @@ def mean_day_frac(dfr, use_numba=True):
     - if input parameter dfr contains NaN or is a numpy masked array, missing
       values will be removed before the calculation.
     """
+    # TODO: test missing !
     if np.ma.isMaskedArray(dfr):
         dfr = dfr.data
     elif isinstance(dfr, np.ndarray):
@@ -119,6 +122,7 @@ def bin_t_10s(t, force_t_range=True, drop_empty=True):
     -------
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
+    # TODO: test missing !
     if not isinstance(t, np.ndarray):
         raise TypeError("Please pass np.ndarray to function.")
 
@@ -189,6 +193,7 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
     -------
         v binned according to parameters in bin_info
     """
+    # TODO: test missing !
     if not isinstance(v, np.ndarray):
         raise TypeError("Please pass np.ndarray to function.")
 
@@ -297,6 +302,7 @@ def bin_by_pdresample(
     pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
     """
+    # TODO: test missing !
     if isinstance(v, list):
         d = {f"v_{i}": y for i, y in enumerate(v)}
     else:
@@ -334,6 +340,7 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
     if ignore_nan is set to False, the whole bin will be NaN if 1 or more NaNs
         fall within the bin.
     """
+    # TODO: test missing !
     if not isinstance(v, np.ndarray):
         v = np.array(v)
 
@@ -369,6 +376,7 @@ def moving_avg(v, N):
     m_avg : list
         averaged data.
     """
+    # TODO: test missing !
     s, m_avg = [0], []
     for i, x in enumerate(v, 1):
         s.append(s[i - 1] + x)
@@ -406,6 +414,7 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
     m_avg : 1d array
         averaged data.
     """
+    # TODO: test missing !
     N = int(N)
 
     if ip_ovr_nan:
@@ -453,6 +462,7 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
     1d array
         averaged data.
     """
+    # TODO: test missing !
     N, min_periods = int(N), int(min_periods)
 
     min_periods = 1 if min_periods < 1 else min_periods
@@ -493,6 +503,7 @@ def sp_mvg_avg(v, N, edges="nearest"):
     avg : np.ndarray
         averaged data.
     """
+    # TODO: test missing !
     m = np.isfinite(v)
     avg = np.empty(v.shape)
     avg[~m] = np.nan
@@ -558,6 +569,7 @@ def pd_DataFrame_ip(df, new_index):
     df_out : pd.DataFrame
         a new dataframe interpolated to the new index.
     """
+    # TODO: test missing !
     df_out = pd.DataFrame(index=new_index)
     df_out.index.name = df.index.name
 
@@ -589,6 +601,7 @@ def pd_Series_ip(
     df_dst : pd.DataFrame
         modified input dst_df.
     """
+    # TODO: test missing !
     f = interp1d(
         src_df[ivar_src_name].values,
         src_df[dvar_src_name].values,
@@ -598,6 +611,55 @@ def pd_Series_ip(
     )
     dst_df[dvar_dst_name] = f(dst_df[ivar_dst_name])
     return dst_df
+
+
+###############################################################################
+
+
+@njit
+def calc_shift(
+    arr: np.ndarray,
+    step: float = 1,
+    lower_bound: float = -2,
+    upper_bound: float = 3,
+    _tol: float = 1e-9,
+) -> np.ndarray:
+    """
+    Calculate shift values that, when added to arr, put the values of arr on a regular grid.
+
+    Parameters
+    ----------
+    arr : np.ndarray
+        irregularly gridded numbers.
+    step : float, optional
+        step size to expect in a regular grid. The default is 1.
+    lower_bound : float, optional
+        shift lower bound, included. The default is -2.
+    upper_bound : float, optional
+        shift upper bound, excluded. The default is 3.
+    _tol : float, optional
+        tolerance for divisibility check. The default is 1e-9.
+
+    Returns
+    -------
+    shift : np.ndarray
+        array with shift values.
+
+    """
+    shift = np.zeros(arr.shape[0])
+    # first element of arr must be evenly divisible by step, otherwise the first
+    # element of shift must account for that
+    m = arr[0] % step
+    dy = abs(step - m)
+    if not (m < _tol or dy < _tol):
+        shift[0] = -(arr[0] % step)
+
+    for i, v in enumerate(arr[1:]):
+        offset = (arr[i] - v + shift[i]) + step
+        if offset < lower_bound or offset >= upper_bound:
+            offset = 0
+        shift[i + 1] = offset
+    return shift
 
 
 ###############################################################################

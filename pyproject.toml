@@ -3,21 +3,21 @@ name = "pyfuppes"
 version = "0.2.7"
 description = "A collection of tools in Python"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
+license = "MIT"
+readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">= 3.8, < 3.11"
 geopy = "2.*"
 matplotlib = "3.*"
-# numpy = { version = "^1.23.5", python = ">3.9" }
-numpy = "^1.23.5"
 pandas = "1.*"
 polars = "0.*"
 pyarrow = "10.*"
 pysolar = "*"
 scipy = "1.*"
 xarray = "2022.*"
-# numba = { version = "^0.56.4", python = ">3.9" }
 numba = "^0.56.4"
+numpy = "^1.23.5"
 llvmlite = { version = "^0.39.1", python = ">3.9" }
 
 [tool.poetry.dev-dependencies]

@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.2.8 (2023-??-??)
-- add polars helper functions (timecorr: filter non-monotonic datetime series)
+## v0.2.8 (2023-01-10)
+- add `polars` helper functions (timecorr: filter non-monotonic datetime series)
+- add `calc_shift` function, used for FAIRO cl timestamp re-gridding
 
 ## v0.2.7 (2022-12-21)
 - NASA Ames 1001 backend updates (file format checks etc.)
