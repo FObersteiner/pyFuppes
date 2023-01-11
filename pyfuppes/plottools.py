@@ -8,7 +8,7 @@ import numpy as np
 
 
 def get_plot_range(
-    v, add_percent=5, v_min_lim=False, v_max_lim=False, xrange=False, x=False
+    v, add_percent=5, v_min_lim=None, v_max_lim=None, xrange=None, x=None
 ):
     """
     Adjust y-axis range of matplotlib pyplot for a given vector v.
@@ -37,10 +37,13 @@ def get_plot_range(
     if hasattr(v, "mask"):  # numpy masked array: only use non-masked values
         v = v[~v.mask]
 
-    v = np.array(v, dtype=float)  # ensure array type
+    if not isinstance(v, np.ndarray):
+        v = np.array(v)  # ensure array type
 
-    if x and xrange:
-        x = np.sort(np.array(x))  # monotonically increasing x-vector (e.g. time)
+    if x is not None and xrange is not None:
+        if not isinstance(x, np.ndarray):
+            x = np.array(x)
+        x = np.sort(x)  # monotonically increasing x-vector (e.g. time)
         if len(x) == len(v):
             w_xvd = (x >= xrange[0]) & (x <= xrange[1])
             v = v[w_xvd]
