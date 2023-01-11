@@ -65,7 +65,7 @@ def filter_dt_forward(
     """
     Given a time series dataframe, ensure that the index is increasing strictly.
 
-    Filters forwards, i.e. if one element is less than the previous, than this
+    Filters forwards, i.e. if one element is less than the previous, then this
     element is removed (not the previous).
 
     Parameters
@@ -94,7 +94,11 @@ def filter_dt_forward(
 def filter_dt_backward(
     df: polars.DataFrame, datetime_key: str = "datetime"
 ) -> (int, polars.DataFrame):
-    """As filter_dt_forward, but backwards filtering."""
+    """
+    As filter_dt_forward, but backwards filtering.
+
+    If one element is less than the previous, then the previous element is removed.
+    """
     n_removed = 0
     m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
     while not m.all():
