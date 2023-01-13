@@ -62,7 +62,7 @@ class TestCfg(unittest.TestCase):
                 dvar_dst_name="v1_ip",
                 kind="linear",  # no effect with pl_Series_ip1d_lite
                 bounds_error=False,  # no effect with pl_Series_ip1d_lite
-                fill_value="extrapolate",  # no effect with pl_Series_ip1d_lite
+                fill_value="extrapolate",
             )
             self.assertIsNone(
                 assert_series_equal(
@@ -78,7 +78,7 @@ class TestCfg(unittest.TestCase):
                 dvar_dst_name="v1_ip",
                 kind="linear",  # no effect with pl_Series_ip1d_lite
                 bounds_error=False,  # no effect with pl_Series_ip1d_lite
-                fill_value=np.nan,  # no effect with pl_Series_ip1d_lite
+                fill_value=np.nan,
             )
             self.assertIsNone(
                 assert_series_equal(
