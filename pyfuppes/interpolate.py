@@ -79,7 +79,7 @@ def pl_Series_interp1d(
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
-    **kwargs  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 ) -> pd.DataFrame:
     """
     Interpolate dependent variable from source dataframe to destination df's independent variable.
@@ -114,10 +114,10 @@ def pl_Series_ip1d_lite(
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
-    **kwargs  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 ) -> pd.DataFrame:
     """
-    Lite version of pl_Series_interp1d, extrapolation only.
+    Lite version of pl_Series_interp1d
 
     See https://stackoverflow.com/a/74819498/10197418
     """
@@ -130,7 +130,13 @@ def pl_Series_ip1d_lite(
     column = src_df[dvar_src_name].to_numpy()
     slope = (column[hi] - column[lo]) / (old[hi] - old[lo])
 
-    dst_df = dst_df.with_column(
-        pl.Series(slope * (new - old[lo]) + column[lo]).alias(dvar_dst_name)
-    )
-    return dst_df
+    out = pl.Series(slope * (new - old[lo]) + column[lo]).alias(dvar_dst_name)
+
+    if (
+        fill := kwargs.get("fill_value")
+    ) is not None:  # cannot use None as fill_value !
+        if fill != "extrapolate":
+            m = (new > old.max()) | (new < old.min())
+            out[m] = fill
+
+    return dst_df.with_column(out)

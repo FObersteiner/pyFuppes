@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import unittest
 
+import numpy as np
 import polars as pl
 from polars.testing import assert_series_equal
 
@@ -66,6 +67,23 @@ class TestCfg(unittest.TestCase):
             self.assertIsNone(
                 assert_series_equal(
                     df_dst["v1_ip"], pl.Series("v1_ip", [1.0, 2.0, 3.0, 4.0, 5.0, 6.0])
+                )
+            )
+            df_dst = func(
+                df_src,
+                df_dst,
+                ivar_src_name="dt",
+                ivar_dst_name="dt",
+                dvar_src_name="v1",
+                dvar_dst_name="v1_ip",
+                kind="linear",  # no effect with pl_Series_ip1d_lite
+                bounds_error=False,  # no effect with pl_Series_ip1d_lite
+                fill_value=np.nan,  # no effect with pl_Series_ip1d_lite
+            )
+            self.assertIsNone(
+                assert_series_equal(
+                    df_dst["v1_ip"],
+                    pl.Series("v1_ip", [np.nan, 2.0, 3.0, 4.0, 5.0, np.nan]),
                 )
             )
             # high to low freq:
