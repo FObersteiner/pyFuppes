@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.9 (2023-xx-xx)
+- work on interpolation functions (esp. for polars Series / df)
+
 ## v0.2.8 (2023-01-10)
 - add `polars` helper functions (timecorr: filter non-monotonic datetime series)
 - add `calc_shift` function, used for FAIRO cl timestamp re-gridding
