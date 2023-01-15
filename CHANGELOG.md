@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.9 (2023-xx-xx)
+## v0.2.9 (2023-01-15)
 - work on interpolation functions (esp. for polars Series / df)
 
 ## v0.2.8 (2023-01-10)
