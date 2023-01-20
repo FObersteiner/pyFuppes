@@ -15,7 +15,7 @@ polars = "0.*"
 pyarrow = "10.*"
 pysolar = "*"
 scipy = "1.*"
-xarray = "2022.*"
+xarray = "^2022"
 numba = "^0.56.4"
 numpy = "^1.23.5"
 llvmlite = { version = "^0.39.1", python = ">3.9" }
