@@ -71,11 +71,25 @@ def mask_repeated_nb(arr, n, atol=1e-6):
 
 
 @njit
-def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
+def mask_jumps(arr, threshold, look_ahead, abs_delta=False):
     """
-    Check the elements of array "arr" if the delta between element and following element(s) exceed a threshold "trsh".
+    Check elements of array "arr" if difference between subsequent elements exceeds threshold.
 
-    How many elements to look ahead is defined by "look_ahead"
+    Parameters
+    ----------
+    arr : np.ndarray
+        Numpy 1darray to analyze.
+    threshold : [float, int]
+        Maximum allowed difference between subsequent elements.
+    look_ahead : int
+        How many elements to look ahead if a difference exceedes threshold.
+    abs_delta : bool, optional
+        Consider the absolute difference. The default is False.
+
+    Returns
+    -------
+    mask : np.ndarray
+        Boolean mask.
     """
     n_el = arr.shape[0]
     mask = np.ones(arr.shape).astype(np.bool_)
@@ -83,10 +97,10 @@ def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
     while i < n_el - 1:
         cur, nxt = arr[i], arr[i + 1]
         delta_0 = np.absolute(nxt - cur) if abs_delta else nxt - cur
-        if delta_0 > thrsh:
+        if delta_0 > threshold:
             for value in arr[i + 1 : i + look_ahead + 1]:
                 delta_1 = np.absolute(value - cur) if abs_delta else value - cur
-                if delta_1 > thrsh:
+                if delta_1 > threshold:
                     mask[i + 1] = False
                     i += 1
                 else:
@@ -100,7 +114,7 @@ def mask_jumps(arr, thrsh, look_ahead, abs_delta=False):
 
 def filter_jumps(
     arr,
-    thrsh,
+    threshold,
     look_ahead,
     abs_delta=False,
     vmiss=np.nan,
@@ -111,8 +125,8 @@ def filter_jumps(
     """
     Wrap mask_jumps().
 
-    ! interpolation assumes equidistant spacing of the independent variable of
-      which arr depends !
+    (!) interpolation assumes equidistant spacing of the independent variable on
+      which arr depends.
     """
     if not isinstance(arr, np.ndarray):
         raise ValueError("input array must be of class numpy ndarray.")
@@ -128,7 +142,7 @@ def filter_jumps(
         result[vmiss] = np.nan
     if remove_repeated:
         result[~mask_repeated(result)] = np.nan
-    mask = mask_jumps(result, thrsh, look_ahead, abs_delta=abs_delta)
+    mask = mask_jumps(result, threshold, look_ahead, abs_delta=abs_delta)
     result[~mask] = np.nan
     if interpol_jumps:
         f_ip = interp1d(
@@ -184,7 +198,7 @@ def filter_jumps_np(
     Returns
     -------
     dict. 'filtered': filtered data
-            'ix_del': idices of deleted elements
+            'ix_del': indices of deleted elements
             'ix_rem': indices of remaining elements
 
     """
@@ -218,7 +232,7 @@ def filter_jumps_np(
         else:  # no jump,...
             buffer[0] = v_ix
             if remove_doubles:  # check for double values...
-                if delta == 0.0:  # double found!
+                if np.isclose(delta, 0.0):  # double found!
                     v[ix] = no_val
                     ix_del[ix] = ix
                 else:  # no double

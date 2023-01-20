@@ -129,7 +129,7 @@ class TestTimeconv(unittest.TestCase):
         want = np.array([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], dtype=float)
         shift = avgbinmap.calc_shift(have, step=1, lower_bound=-2, upper_bound=3)
         self.assertTrue(np.isclose(have + shift, want).all())
-        # TODO: add more test
+        # TODO: add more tests ?
 
 
 if __name__ == "__main__":
