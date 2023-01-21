@@ -61,7 +61,7 @@ def time_correction(t, t_ref, fitorder):
 
 def filter_dt_forward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> (int, polars.DataFrame):
+) -> tuple[int, polars.DataFrame]:
     """
     Given a time series dataframe, ensure that the index is increasing strictly.
 
@@ -93,7 +93,7 @@ def filter_dt_forward(
 
 def filter_dt_backward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> (int, polars.DataFrame):
+) -> tuple[int, polars.DataFrame]:
     """
     As filter_dt_forward, but backwards filtering.
 
@@ -136,7 +136,7 @@ def xcorr_timelag(
     https://en.wikipedia.org/wiki/Cross-correlation#Time_delay_analysis
 
     a positive lag of g vs. f (reference) means that g lags behind in time.
-    vice versa, if the lag is negative, g's signal precedes that of f in time.
+    vice versa, if the lag is negative, g's signal preceedes that of f in time.
 
     Parameters
     ----------
