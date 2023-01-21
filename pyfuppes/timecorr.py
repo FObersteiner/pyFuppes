@@ -3,6 +3,7 @@
 
 from copy import deepcopy
 import functools
+from typing import Tuple
 
 import polars
 import numpy as np
@@ -61,7 +62,7 @@ def time_correction(t, t_ref, fitorder):
 
 def filter_dt_forward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> tuple[int, polars.DataFrame]:
+) -> Tuple[int, polars.DataFrame]:
     """
     Given a time series dataframe, ensure that the index is increasing strictly.
 
@@ -93,7 +94,7 @@ def filter_dt_forward(
 
 def filter_dt_backward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> tuple[int, polars.DataFrame]:
+) -> Tuple[int, polars.DataFrame]:
     """
     As filter_dt_forward, but backwards filtering.
 
@@ -129,7 +130,7 @@ def xcorr_timelag(
     corrmode="positive",
     boundaries=None,
     xcorr_func=signal.correlate,
-):
+) -> float:
     """
     Analyze time lag between two time series f and g by cross-correlation.
 
