@@ -80,7 +80,7 @@ def pl_Series_interp1d(
     ivar_dst_name: str,
     dvar_dst_name: str,
     **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-) -> pd.DataFrame:
+) -> pl.DataFrame:
     """
     Interpolate dependent variable from source dataframe to destination df's independent variable.
 
@@ -98,7 +98,7 @@ def pl_Series_interp1d(
         src_df[dvar_src_name],
         **kwargs,
     )
-    dst_df = dst_df.with_column(
+    dst_df = dst_df.with_columns(
         pl.Series(f(dst_df[ivar_dst_name])).alias(dvar_dst_name)
     )
     return dst_df
@@ -115,7 +115,7 @@ def pl_Series_ip1d_lite(
     ivar_dst_name: str,
     dvar_dst_name: str,
     **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
-) -> pd.DataFrame:
+) -> pl.DataFrame:
     """
     Lite version of pl_Series_interp1d
 
