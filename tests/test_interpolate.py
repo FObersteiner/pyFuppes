@@ -41,7 +41,7 @@ class TestCfg(unittest.TestCase):
                     ]
                 }
             )
-            df_dst = df_dst.with_column(pl.col("dt").str.strptime(pl.Datetime))
+            df_dst = df_dst.with_columns(pl.col("dt").str.strptime(pl.Datetime))
             df_src = pl.DataFrame(
                 {
                     "dt": [
@@ -52,7 +52,7 @@ class TestCfg(unittest.TestCase):
                     "v1": [1.5, 3.5, 5.5],
                 }
             )
-            df_src = df_src.with_column(pl.col("dt").str.strptime(pl.Datetime))
+            df_src = df_src.with_columns(pl.col("dt").str.strptime(pl.Datetime))
             df_dst = func(
                 df_src,
                 df_dst,
@@ -100,7 +100,7 @@ class TestCfg(unittest.TestCase):
                     "v1": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
                 }
             )
-            df_src = df_src.with_column(pl.col("dt").str.strptime(pl.Datetime))
+            df_src = df_src.with_columns(pl.col("dt").str.strptime(pl.Datetime))
             df_dst = pl.DataFrame(
                 {
                     "dt": [
@@ -110,7 +110,7 @@ class TestCfg(unittest.TestCase):
                     ],
                 }
             )
-            df_dst = df_dst.with_column(pl.col("dt").str.strptime(pl.Datetime))
+            df_dst = df_dst.with_columns(pl.col("dt").str.strptime(pl.Datetime))
             df_dst = func(
                 df_src,
                 df_dst,

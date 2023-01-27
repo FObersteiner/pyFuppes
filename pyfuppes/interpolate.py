@@ -139,4 +139,4 @@ def pl_Series_ip1d_lite(
             m = (new > old.max()) | (new < old.min())
             out[m] = fill
 
-    return dst_df.with_column(out)
+    return dst_df.with_columns(out)

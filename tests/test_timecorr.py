@@ -10,7 +10,7 @@ from pyfuppes import timecorr
 
 def _make_df(l):
     df = pl.DataFrame({"datetime": l, "values": list(range(len(l)))})
-    return df.with_column(
+    return df.with_columns(
         pl.col("datetime").str.strptime(pl.Datetime, fmt="%Y-%m-%d").cast(pl.Datetime)
     )
 
