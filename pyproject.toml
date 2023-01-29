@@ -8,15 +8,15 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = ">= 3.8, < 3.11"
-geopy = "^2.0"
+geopy = ">= 2.0"
 matplotlib = "^3.0"
-pandas = "^1.0"
-polars = "^0.15"
-pyarrow = "^10.0"
+pandas = ">= 1.0"
+polars = ">= 0.15"
+pyarrow = ">= 10.0"
 pysolar = "^0.10"
-scipy = "^1.1"
+scipy = ">= 1.1"
 xarray = ">= 2022, >=2023"
-numba = "^0.56.4"
+numba = "^0.56.4" # the numba-numpy combination needs specific versions
 numpy = "^1.23.5"
 llvmlite = { version = "^0.39.1", python = ">3.9" }
 
