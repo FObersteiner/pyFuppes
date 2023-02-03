@@ -1,9 +1,16 @@
 # -*- coding: utf-8 -*-
 """NA helpers."""
 
-import numpy as np
-import pandas as pd
+from datetime import datetime
 
+import pandas as pd
+import polars as pl
+import numpy as np
+
+
+###############################################################################
+
+MICROSECONDS_PER_SECOND = 1_000_000
 
 ###############################################################################
 
@@ -89,6 +96,49 @@ def naDict_2_pddf(
                 tz="UTC",
             ),
             inplace=True,
+        )
+
+    return df
+
+
+###############################################################################
+
+
+def naDict_2_poldf(
+    naDict, sep_colhdr="\t", idx_colhdr=-1, add_datetime=False, _dtype=float
+):
+    """
+    Convert variables from na1001 class instance to pandas dataframe.
+
+    See class method for detailled docstring.
+    """
+    # column names for the DataFrame:
+    keys = naDict["_NCOM"][idx_colhdr].split(sep_colhdr)
+
+    # # begin extraction with independent variable:
+    values = [np.array(naDict["_X"], dtype=_dtype)]
+
+    # # include scaling factors and missing values:
+    vmiss = [float(s) for s in naDict["VMISS"]]
+    vscal = [float(s) for s in naDict["VSCAL"]]
+
+    # for each variable...
+    for i, v_n in enumerate(naDict["V"]):
+        # cast list of string to np.array:
+        arr = np.array(v_n, dtype=_dtype)
+        # replace missing values with np.nan:
+        arr[np.isclose(arr, vmiss[i])] = np.nan
+        # add array to list of arrays:
+        values.append(arr * vscal[i])
+
+    df = pl.DataFrame(dict(zip(keys, values)))
+
+    if add_datetime:
+        df = df.with_columns(
+            (
+                datetime(*naDict["DATE"])
+                + pl.duration(microseconds=pl.col(keys[0]) * MICROSECONDS_PER_SECOND)
+            ).alias("datetime")
         )
 
     return df

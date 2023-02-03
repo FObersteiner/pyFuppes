@@ -3,6 +3,8 @@
 import unittest
 from pathlib import Path
 
+import polars as pl
+
 from pyfuppes.na1001 import FFI1001 as na1001
 
 try:
@@ -59,6 +61,13 @@ class TestNa1001(unittest.TestCase):
             else:
                 result = na1001(path)
                 self.assertIsNotNone(result)
+
+    def test_poldf(self):
+        file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid0.txt"
+        na = na1001(file, sep_data="\t")
+        df = na.to_poldf(add_datetime=True)
+        self.assertTrue(isinstance(df, pl.DataFrame))
+        self.assertTrue("datetime" in df.columns)
 
 
 if __name__ == "__main__":

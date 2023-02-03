@@ -226,7 +226,7 @@ class FFI1001(object):
         idx_colhdr : int, optional
             look for column header in NCOM at index idx_colhdr. Default is -1.
         dtype : numpy array data type, optional
-            data type to use for conversion to DataFrame. Default is np.float64.
+            data type to use for conversion to DataFrame. Default is float.
         add_datetime_index: boolean, optional
             add a DateTime index to the df. The default is False.
 
@@ -237,3 +237,25 @@ class FFI1001(object):
 
         """
         return tools.naDict_2_pddf(self.__dict__, **kwargs)
+
+    # ------------------------------------------------------------------------------
+    def to_poldf(self, **kwargs):
+        """
+        Make a polars DataFrame from NA 1001 data (X and V).
+
+        Parameters
+        ----------
+        sep_colhdr : str, optional
+            separator used in column header (last line of NCOM). Default is tab.
+        idx_colhdr : int, optional
+            look for column header in NCOM at index idx_colhdr. Default is -1.
+        add_datetime: boolean, optional
+            add a DateTime column to the df. The default is False.
+
+        Returns
+        -------
+        polars.DataFrame
+            dataframe with a column for X and one for each parameter in V.
+
+        """
+        return tools.naDict_2_poldf(self.__dict__, **kwargs)
