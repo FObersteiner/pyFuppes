@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.10 (2023-02-??)
+- add option to make polars df from na1001 class instance
+
 ## v0.2.9 (2023-01-22)
 - interpolation functions, esp. for polars Series / df
 
