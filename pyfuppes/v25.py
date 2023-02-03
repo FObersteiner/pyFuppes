@@ -187,7 +187,6 @@ def logs_cleanup(
         exts = [exts]
 
     if todo:
-
         sel_files = list(sorted(_get_sel_files(todo, exts)))
 
         for file in sel_files:
@@ -254,7 +253,6 @@ def collect_V25Logs(
     sel_files = list(sorted(_get_sel_files(folder, [ext])))
 
     if sel_files:
-
         verboseprint(f"loading {sel_files[0].name}")
 
         data = _txt_2_dict(
@@ -371,7 +369,6 @@ def collect_OSC_Logs(
     sel_files = list(sorted(_get_sel_files(folder, [_ext])))
 
     if sel_files:
-
         verboseprint(f"loading {sel_files[0].name}")
 
         # read header
@@ -406,7 +403,6 @@ def collect_OSC_Logs(
 
         if len(sel_files) > 1:
             for file in sel_files[1:]:
-
                 verboseprint(f"loading {file.name}")
 
                 with open(file, "r") as file_obj:

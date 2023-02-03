@@ -77,6 +77,7 @@ def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
     Code adapted from https://www.python-forum.de/viewtopic.php?t=21117
     (2018-10-17 8:10 UTC)
     """
+
     # define trigonometry with degrees
     def cos2(x):
         return math.cos(math.radians(x))
