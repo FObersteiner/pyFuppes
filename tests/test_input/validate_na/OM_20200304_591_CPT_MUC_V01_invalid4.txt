@@ -1,0 +1,61 @@
+37 1001
+F. Obersteiner; A. Zahn; f.obersteiner@kit.edu; andreas.zahn@kit.edu
+Institute for Meteorology and Climate Research (IMK), Karlsruhe Institute of Technology (KIT), 76021 Karlsruhe, P.O. Box 3640, Germany
+Ozone measured with the dual-beam UV-photometer that is part of the FAIRO instrument during IAGOS-CARIBIC (onboard A340-600 D-AIHE of Lufthansa)
+IAGOS-CARIBIC (CARIBIC-2), http://www.caribic-atmospheric.com/
+1 1
+2020 03 04 2019 09 22
+0
+TimeCRef; CARIBIC_reference_time_since_0_hours_UTC_on_first_date_in_line_7; [s]
+1
+1
+9999
+Ozone; Ozone volume mixing ratio; [ppbV]
+8
+FileFormatVersionInfo: CARIBIC_NAmes_v02 standard # This file was created according to the conventions for CARIBIC NASA Ames data files, given by 'Info_Nasa_Ames_Format_02.zip'.
+FlightNo: 591
+FlightRoute: CPT MUC # IATA code of DepartureAirport and ArrivalAirport
+DepartureAirport: Cape Town
+ArrivalAirport: Munich
+FileName: OM_20200304_591_CPT_MUC_V01.txt
+ExceptionToConsider: no
+ChangeLog: 0
+14
+FAIRO eval software version: 2019.11.21a
+Info on adjustments of the independent variable:
+Measurement time-stamp is synchronized to CARIBIC master PC time.
+Info on measurement uncertainty:
+Uncertainty is estimated to be at least 1 ppb OR 2.0% for the UV photometer and 2.5% combined for the chemiluminescence detector (use whatever value is larger).
+#
+The following two lines contain standard names and units according to the 'NetCDF Climate and Forecast (CF) Metadata Convention', see http://cfconventions.org/. Each entry (name or unit) corresponds to a certain column; the entry before the first tab belongs to the independent column.
+CF_StandardNames: time	mole_fraction_of_ozone_in_air
+CF_Units: [s]	[1e-9]
+The following four lines contain: Start date like in line 7 (formatted as YYYYMMDD), followed by the multiplicators like in line 11; Line number containing the KeyLabel 'ExceptionToConsider' (0 if no such exception is mentioned), followed by the NaN-values like in line 12; Units like in lines 13ff; Column headers.
+20200304	1
+0	9999
+[s]	[ppbV]
+TimeCRef	Ozone
+28493.90	9999
+28497.90	9999
+28501.89	9999
+28505.90	9999
+28509.89	9999
+28513.90	9999
+28517.90	9999
+28521.90	9999
+28525.89	9999
+28529.89	48.65
+28533.89	48.95
+28537.88	48.50
+28541.89	49.02
+28545.88	48.30
+28549.88	47.99
+28553.88	48.14
+28557.87	47.65
+28561.87	47.09
+28565.87	47.30
+28569.87	46.48
+28573.86	47.34
+28577.86	47.49
+28581.86	46.35
+28585.86	46.71
