@@ -81,11 +81,11 @@ class FFI1001(object):
 
     __KEYS = list(_defaults.keys())
 
-    def __init__(self, filename=None, **kwargs):
+    def __init__(self, file=None, **kwargs):
         for k, v in _defaults.items():  # self.__INID.items():
             setattr(self, k, v)
-        if filename is not None:
-            self.__from_file(filename, **kwargs)
+        if file is not None:
+            self.__from_file(file, **kwargs)
 
     def __repr__(self):
         s = "NASA Ames 1001\n"

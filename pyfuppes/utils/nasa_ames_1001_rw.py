@@ -10,7 +10,7 @@ from pathlib import Path
 
 
 def na1001_cls_read(
-    file_path,
+    input_data,
     sep=" ",
     sep_com=";",  # obsolete
     sep_data="\t",
@@ -27,33 +27,38 @@ def na1001_cls_read(
     See class method for detailled docstring.
     """
     try:
-        file_path.is_file()
-    except AttributeError:  # file path is not provided as path object; convert
-        file_path = Path(file_path)
+        data = input_data.getvalue()  # works on io.StringIO
+    except AttributeError:
+        if isinstance(input_data, str):  # file path is provided as string; need Path
+            input_data = Path(input_data)
 
-    if not file_path.is_file():  # check if file exists
-        raise FileExistsError(str(file_path) + "\n    does not exist.")
+        if not input_data.is_file():  # check if file exists
+            raise FileExistsError(str(input_data) + "\n    does not exist.")
 
-    # by definition, NASA Ames 1001 is pure ASCII. the following lines allow
-    # to read files with other encodings; use with caution
-    encodings = ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
-    data = None
-    for enc in encodings:
-        try:
-            with open(file_path, "r", encoding=enc) as file_obj:
-                data = file_obj.readlines()  # read file content to string list
-        except ValueError:  # invalid encoding, try next
-            pass
-        else:
-            if enc != "ascii":
-                print(
-                    f"warning: non-ascii encoding '{enc}' used in file {file_path.name}"
-                )
-            break  # found a working encoding
-    if not data:
-        raise ValueError(
-            f"could not decode {file_path.name} (ASCII-only: {ensure_ascii})"
+        # by definition, NASA Ames 1001 is pure ASCII. the following lines allow
+        # to read files with other encodings; use with caution
+        encodings = (
+            ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
         )
+        data = None
+        for enc in encodings:
+            try:
+                with open(input_data, "r", encoding=enc) as file_obj:
+                    data = file_obj.readlines()  # read file content to string list
+            except ValueError:  # invalid encoding, try next
+                pass
+            else:
+                if enc != "ascii":
+                    print(
+                        f"warning: non-ascii encoding '{enc}' used in file {input_data.name}"
+                    )
+                break  # found a working encoding
+        if not data:
+            raise ValueError(
+                f"could not decode {input_data.name} (ASCII-only: {ensure_ascii})"
+            )
+
+        na_1001 = {"SRC": input_data.as_posix()}
 
     if strip_lines:
         for i, line in enumerate(data):
@@ -64,8 +69,6 @@ def na1001_cls_read(
             while sep + sep in line:
                 line = line.replace(sep + sep, sep)
             data[i] = line
-
-    na_1001 = {"SRC": str(file_path)}
 
     tmp = list(map(int, data[0].split()))
     assert len(tmp) == 2, f"invalid format in line 1: '{data[0]}'"
@@ -174,7 +177,7 @@ def na1001_cls_read(
         parts = line.rsplit(sep=sep_data)
         assert (
             len(parts) == n_vars + 1
-        ), f"{file_path.name}: invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
+        ), f"invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
 
         na_1001["_X"].append(parts[0].strip())
         if vmiss_to_None:
