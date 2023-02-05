@@ -10,6 +10,38 @@ from .utils import nasa_ames_1001_tools as tools
 ###############################################################################
 
 
+# initialize class instance with some parameters:
+_defaults = {
+    "NLHEAD": 14,
+    "ONAME": "",
+    "ORG": "",
+    "SNAME": "",
+    "MNAME": "",
+    "IVOL": 1,
+    "NVOL": 1,
+    "DATE": (1970, 1, 1),
+    "RDATE": (1970, 1, 1),
+    "DX": 0,
+    "XNAME": "",
+    "NV": 0,
+    "VSCAL": 1.0,
+    "VMISS": -9999,
+    "_VNAME": "",
+    "NSCOML": 0,
+    "_SCOM": "",
+    "NNCOML": 0,
+    "_NCOM": "",
+    "_X": "",
+    "V": "",
+    "_FFI": 1001,
+    "SRC": "",
+    "HEADER": "",
+}
+
+
+###############################################################################
+
+
 class FFI1001(object):
     r"""
     A class to work with NASA Ames files with format index 1001.
@@ -47,37 +79,10 @@ class FFI1001(object):
     FFI 1001 class instance.
     """
 
-    # initialize class instance with some parameters:
-    __INID = {
-        "NLHEAD": 14,
-        "ONAME": "",
-        "ORG": "",
-        "SNAME": "",
-        "MNAME": "",
-        "IVOL": 1,
-        "NVOL": 1,
-        "DATE": (1970, 1, 1),
-        "RDATE": (1970, 1, 1),
-        "DX": 0,
-        "XNAME": "",
-        "NV": 0,
-        "VSCAL": 1.0,
-        "VMISS": -9999,
-        "_VNAME": "",
-        "NSCOML": 0,
-        "_SCOM": "",
-        "NNCOML": 0,
-        "_NCOM": "",
-        "_X": "",
-        "V": "",
-        "_FFI": 1001,
-        "SRC": "",
-    }
-
-    __KEYS = list(__INID.keys())
+    __KEYS = list(_defaults.keys())
 
     def __init__(self, filename=None, **kwargs):
-        for k, v in self.__INID.items():
+        for k, v in _defaults.items():  # self.__INID.items():
             setattr(self, k, v)
         if filename is not None:
             self.__from_file(filename, **kwargs)

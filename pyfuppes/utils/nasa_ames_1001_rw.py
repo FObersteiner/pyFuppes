@@ -34,7 +34,7 @@ def na1001_cls_read(
     if not file_path.is_file():  # check if file exists
         raise FileExistsError(str(file_path) + "\n    does not exist.")
 
-    # by definition, NASA Ames 1001 is pure ascii. the following lines allow
+    # by definition, NASA Ames 1001 is pure ASCII. the following lines allow
     # to read files with other encodings; use with caution
     encodings = ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
     data = None
@@ -47,14 +47,13 @@ def na1001_cls_read(
         else:
             if enc != "ascii":
                 print(
-                    f"warning: using non-ascii encoding {enc} for file {file_path.name}"
+                    f"warning: non-ascii encoding '{enc}' used in file {file_path.name}"
                 )
             break  # found a working encoding
     if not data:
         raise ValueError(
             f"could not decode {file_path.name} (ASCII-only: {ensure_ascii})"
         )
-    # done with encoding
 
     if strip_lines:
         for i, line in enumerate(data):
@@ -79,7 +78,7 @@ def na1001_cls_read(
     na_1001["NLHEAD"] = nlhead
     na_1001["_FFI"] = tmp[1]
 
-    header = data[0:nlhead]
+    header = data[:nlhead]
     data = data[nlhead:]
     if data == [""] or data == ["\n"]:
         data = None
@@ -137,7 +136,7 @@ def na1001_cls_read(
         na_1001["_SCOM"] = header[n_vars + 11 + offset : n_vars + nscoml + 11 + offset]
     else:
         na_1001["_SCOM"] = ""
-    # test case:
+
     msg = "nscoml not equal n elements in list na_1001['_SCOM']"
     assert nscoml == len(na_1001["_SCOM"]), msg
 
@@ -154,14 +153,17 @@ def na1001_cls_read(
         ]
     else:
         na_1001["_NCOM"] = ""
-    # test case:
+
     msg = "nncoml not equal n elements in list na_1001['_NCOM']"
     assert nncoml == len(na_1001["_NCOM"]), msg
-    # test case
+
     msg = "nlhead must be equal to nncoml + nscoml + n_vars + 14"
     assert nncoml + nscoml + n_vars + 14 == nlhead, msg
 
-    # done with header, continue with variables.
+    # done with header, we can set HEADER variable now
+    na_1001["HEADER"] = "\n".join(header)
+
+    # continue with variables
     na_1001["_X"] = []  # holds independent variable
     na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
 

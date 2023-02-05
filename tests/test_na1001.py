@@ -41,6 +41,11 @@ class TestNa1001(unittest.TestCase):
         self.assertIsNotNone(na)
         self.assertEqual(na.NV, 2)
         self.assertEqual(na.NLHEAD, 36)
+        self.assertEqual(na.HEADER.count("\n") + 1, na.NLHEAD)
+
+        file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid0.txt"
+        na = na1001(file, sep_data="\t")
+        self.assertEqual(na.HEADER.count("\n") + 1, na.NLHEAD)
 
     def test_invalid_read_config(self):
         file = src / "validate_na/valid_1001a.na"
