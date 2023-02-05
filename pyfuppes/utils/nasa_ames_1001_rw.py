@@ -161,7 +161,7 @@ def na1001_cls_read(
     assert nncoml + nscoml + n_vars + 14 == nlhead, msg
 
     # done with header, we can set HEADER variable now
-    na_1001["HEADER"] = "\n".join(header)
+    na_1001["HEADER"] = header
 
     # continue with variables
     na_1001["_X"] = []  # holds independent variable
