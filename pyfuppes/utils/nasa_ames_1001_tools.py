@@ -105,7 +105,12 @@ def naDict_2_pddf(
 
 
 def naDict_2_poldf(
-    naDict, sep_colhdr="\t", idx_colhdr=-1, add_datetime=False, _dtype=float
+    naDict,
+    sep_colhdr="\t",
+    idx_colhdr=-1,
+    add_datetime=False,
+    nan_to_none=False,
+    _dtype=float,
 ):
     """
     Convert variables from na1001 class instance to pandas dataframe.
@@ -141,4 +146,6 @@ def naDict_2_poldf(
             ).alias("datetime")
         )
 
+    if nan_to_none:
+        return df.fill_nan(None)
     return df

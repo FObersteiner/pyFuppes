@@ -256,6 +256,8 @@ class FFI1001(object):
             look for column header in NCOM at index idx_colhdr. Default is -1.
         add_datetime: boolean, optional
             add a DateTime column to the df. The default is False.
+        nan_to_none: boolean, optional
+            fill NaN values with polars' Null. THe default is False.
 
         Returns
         -------
