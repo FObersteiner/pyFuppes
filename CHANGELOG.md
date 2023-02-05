@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.2.10 (2023-02-??)
+## v0.2.10 (2023-02-05)
 - add option to make polars df from na1001 class instance
+- add 'HEADER' key to na1001 class to contain all the lines from the file header as a list
 
 ## v0.2.9 (2023-01-22)
 - interpolation functions, esp. for polars Series / df
