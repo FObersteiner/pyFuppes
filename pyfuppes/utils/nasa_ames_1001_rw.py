@@ -10,9 +10,8 @@ from pathlib import Path
 
 
 def na1001_cls_read(
-    input_data,
+    file,
     sep=" ",
-    sep_com=";",  # obsolete
     sep_data="\t",
     auto_nncoml=True,
     strip_lines=True,
@@ -20,74 +19,73 @@ def na1001_cls_read(
     vscale_vmiss_vertical=False,
     vmiss_to_None=False,
     ensure_ascii=True,
+    allow_emtpy_data=False,
 ):
     """
     Read NASA Ames 1001 formatted text file. Expected encoding is ASCII.
 
     See class method for detailled docstring.
     """
-    try:
-        data = input_data.getvalue()  # works on io.StringIO
-    except AttributeError:
-        if isinstance(input_data, str):  # file path is provided as string; need Path
-            input_data = Path(input_data)
+    na_1001 = {}
+    if hasattr(file, "read"):  # if it has a read method, assume buffered IO
+        na_1001["SRC"] = "BaseIO"
+        data = file.read()
+        if not isinstance(data, bytes):
+            data = bytes(data, "utf-8")
+    else:
+        file = Path(file)
+        na_1001["SRC"] = file.as_posix()
+        with open(file, "rb") as f:
+            data = f.read()
 
-        if not input_data.is_file():  # check if file exists
-            raise FileExistsError(str(input_data) + "\n    does not exist.")
+    # by definition, NASA Ames 1001 is pure ASCII. the following lines allow
+    # to read files with other encodings; use with caution
+    encodings = ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
 
-        # by definition, NASA Ames 1001 is pure ASCII. the following lines allow
-        # to read files with other encodings; use with caution
-        encodings = (
-            ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
-        )
-        data = None
-        for enc in encodings:
-            try:
-                with open(input_data, "r", encoding=enc) as file_obj:
-                    data = file_obj.readlines()  # read file content to string list
-            except ValueError:  # invalid encoding, try next
-                pass
-            else:
-                if enc != "ascii":
-                    print(
-                        f"warning: non-ascii encoding '{enc}' used in file {input_data.name}"
-                    )
-                break  # found a working encoding
-        if not data:
-            raise ValueError(
-                f"could not decode {input_data.name} (ASCII-only: {ensure_ascii})"
-            )
+    for enc in encodings:
+        try:
+            decoded = data.decode(enc)
+        except ValueError:  # invalid encoding, try next
+            pass
+        else:
+            if enc != "ascii":
+                print(
+                    f"warning: non-ascii encoding '{enc}' used in file {na_1001['SRC']}"
+                )
+            break  # found a working encoding
+    if not decoded:
+        raise ValueError(f"could not decode input (ASCII-only: {ensure_ascii})")
 
-        na_1001 = {"SRC": input_data.as_posix()}
+    file_content = decoded.split("\n")
 
     if strip_lines:
-        for i, line in enumerate(data):
-            data[i] = line.strip()
+        for i, line in enumerate(file_content):
+            file_content[i] = line.strip()
 
     if rmv_repeated_seps:
-        for i, line in enumerate(data):
+        for i, line in enumerate(file_content):
             while sep + sep in line:
                 line = line.replace(sep + sep, sep)
-            data[i] = line
+            file_content[i] = line
 
-    tmp = list(map(int, data[0].split()))
-    assert len(tmp) == 2, f"invalid format in line 1: '{data[0]}'"
+    tmp = list(map(int, file_content[0].split()))
+    assert len(tmp) == 2, f"invalid format in line 1: '{file_content[0]}'"
     assert (
         tmp[0] >= 15
     ), f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
-    assert tmp[1] == 1001, f"invalid FFI in line 1 '{data[0]}'"
+    assert tmp[1] == 1001, f"invalid FFI in line 1 '{file_content[0]}'"
 
     nlhead = tmp[0]
     na_1001["NLHEAD"] = nlhead
     na_1001["_FFI"] = tmp[1]
 
-    header = data[:nlhead]
-    data = data[nlhead:]
+    header = file_content[:nlhead]
+    data = file_content[nlhead:]
     if data == [""] or data == ["\n"]:
         data = None
 
-    # test case: no data ->
-    assert data, "no data found."
+    if not allow_emtpy_data:
+        assert data, "no data found."
 
     na_1001["ONAME"] = header[1]
     na_1001["ORG"] = header[2]
@@ -170,26 +168,27 @@ def na1001_cls_read(
     na_1001["_X"] = []  # holds independent variable
     na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
 
-    for ix, line in enumerate(data):
-        if line == "" or line == "\n":  # skip empty lines or trailing newline
-            continue
+    if data is not None:
+        for ix, line in enumerate(data):
+            if line == "" or line == "\n":  # skip empty lines or trailing newline
+                continue
 
-        parts = line.rsplit(sep=sep_data)
-        assert (
-            len(parts) == n_vars + 1
-        ), f"invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
+            parts = line.rsplit(sep=sep_data)
+            assert (
+                len(parts) == n_vars + 1
+            ), f"invalid number of parameters in line {ix+nlhead+1}, have {len(parts)} ({parts}), want {n_vars+1}"
 
-        na_1001["_X"].append(parts[0].strip())
-        if vmiss_to_None:
-            for j in range(n_vars):
-                na_1001["V"][j].append(
-                    parts[j + 1].strip()
-                    if parts[j + 1].strip() != na_1001["VMISS"][j]
-                    else None
-                )
-        else:
-            for j in range(n_vars):
-                na_1001["V"][j].append(parts[j + 1].strip())
+            na_1001["_X"].append(parts[0].strip())
+            if vmiss_to_None:
+                for j in range(n_vars):
+                    na_1001["V"][j].append(
+                        parts[j + 1].strip()
+                        if parts[j + 1].strip() != na_1001["VMISS"][j]
+                        else None
+                    )
+            else:
+                for j in range(n_vars):
+                    na_1001["V"][j].append(parts[j + 1].strip())
 
     return na_1001
 
@@ -201,7 +200,6 @@ def na1001_cls_write(
     file_path,
     na_1001,
     sep=" ",
-    sep_com=";",  # obsolete
     sep_data="\t",
     overwrite=0,
     verbose=False,

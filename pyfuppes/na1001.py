@@ -38,6 +38,30 @@ _defaults = {
     "HEADER": "",
 }
 
+_show = (
+    "_FFI",
+    "SRC",
+    "NLHEAD",
+    "ONAME",
+    "ORG",
+    "SNAME",
+    "MNAME",
+    "IVOL",
+    "NVOL",
+    "DATE",
+    "RDATE",
+    "DX",
+    "XNAME",
+    "NV",
+    "VSCAL",
+    "VMISS",
+    "_VNAME",
+    "NSCOML",
+    "_SCOM",
+    "NNCOML",
+    "_NCOM",
+)
+
 
 ###############################################################################
 
@@ -48,31 +72,30 @@ class FFI1001(object):
 
     Parameters
     ----------
-    filename : str or pathlib.Path
-        filepath and -name of the source.
+    file : str or pathlib.Path or file-like
+        data source.
     sep : str, optional
         General delimiter. The default is " ".
-    sep_com : str, optional
-        Delimiter used exclusively in comment block. The default is ";".
     sep_data : str, optional
         Delimiter used exclusively in data block. The default is "\t".
-    auto_nncoml : bool, optional
-        Automatically determine number of lines in comment blocks.
-        The default is True.
     strip_lines : bool, optional
         Remove surrounding whitespaces from all lines before parsing.
         The default is True.
+    auto_nncoml : bool, optional
+        Automatically determine number of lines in comment blocks.
+        The default is True.
     rmv_repeated_seps : bool, optional
-        Strip repeated delimiters (e.g. double space). The default is False.
+        Remove repeated delimiters (e.g. double space). The default is False.
     vscale_vmiss_vertical : bool, optional
         VSCALE and VMISS parameters are arranged vertically over multiple
         lines (1 entry per line) instead of in one line each.
         The default is False.
     vmiss_to_None : bool, optional
-        Set True if missing values should be replaced with None.
-        The default is False.
+        Set True if missing values should be replaced with None. The default is False.
     ensure_ascii : bool, optional
-        Allow only ASCII characters. The default is True.
+        Enforce ASCII-decoding of the input. The default is True.
+    allow_emtpy_data : bool, optional
+        Allow header-only input. The default is False.
 
     Returns
     -------
@@ -88,13 +111,8 @@ class FFI1001(object):
             self.__from_file(file, **kwargs)
 
     def __repr__(self):
-        s = "NASA Ames 1001\n"
-        s += f"SRC: {self.SRC}\n---\n"
-        s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[3:4])
-        s += "\n" + ", ".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
-        s += f"\nXNAME: {self.XNAME}"
-        sv = "\n".join(v for v in self.VNAME) if self.VNAME else None
-        s += f"\nNV: {self.NV}, VNAMES:\n{sv}"
+        s = "NASA Ames 1001\n---\n"
+        s += "".join([f"{k.strip('_')} : {self.__dict__[k]}\n" for k in _show])
         return s
 
     def __str__(self):
@@ -257,7 +275,7 @@ class FFI1001(object):
         add_datetime: boolean, optional
             add a DateTime column to the df. The default is False.
         nan_to_none: boolean, optional
-            fill NaN values with polars' Null. THe default is False.
+            fill NaN values with polars' Null. The default is False.
 
         Returns
         -------

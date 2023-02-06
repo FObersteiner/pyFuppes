@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.11 (2023-02-06)
+- na1001: add option to create FFI1001 from buffered IO
+
 ## v0.2.10 (2023-02-05)
 - add option to make polars df from na1001 class instance
 - add 'HEADER' key to na1001 class to contain all the lines from the file header as a list
