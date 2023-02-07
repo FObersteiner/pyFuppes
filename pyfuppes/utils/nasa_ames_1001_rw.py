@@ -81,7 +81,7 @@ def na1001_cls_read(
 
     header = file_content[:nlhead]
     data = file_content[nlhead:]
-    if data == [""] or data == ["\n"]:
+    if all(x == "" for x in data) or data == ["\n"]:
         data = None
 
     if not allow_emtpy_data:
