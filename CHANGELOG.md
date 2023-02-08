@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.12 (2023-02-??)
+- numberstring: change output format of NumStr format analyser (to be used in f-string)
+
 ## v0.2.11 (2023-02-06)
 - na1001: add option to create FFI1001 from buffered IO
 

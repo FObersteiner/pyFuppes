@@ -47,14 +47,29 @@ class TestNumberstring(unittest.TestCase):
             "+.7",
         ]
         for s in valid:
-            result = numberstring.NumStr().analyse_format(s)
+            result = numberstring.NumStr(s).analyse_format()
             self.assertIsNotNone(result)
             self.assertIsInstance(result, tuple)
 
         invalid = ["tesT", "Test45", "7,7E2", "204-100", "."]
         for s in invalid:
             with self.assertRaises(TypeError):
-                numberstring.NumStr().analyse_format(s)
+                numberstring.NumStr(s).analyse_format()
+
+    def test_NumStr_roundtrip(self):
+        round_trip_ok = [
+            "45",
+            "45.3379\n",
+            "-7",
+            "-45.30",
+            " 12 ",
+            "+5.3",
+            "+10",
+        ]
+        for s in round_trip_ok:
+            result = numberstring.NumStr(s).analyse_format()
+            fmt, value = result[0], result[1](s)
+            self.assertEqual(s.strip(), f"{value:{fmt}}")
 
     def test_dec2str_stripped(self):
         NUMBERS = [0.010701]
