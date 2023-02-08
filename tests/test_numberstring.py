@@ -36,7 +36,7 @@ class TestNumberstring(unittest.TestCase):
             "-45.3",
             "-3.4E3",
             " 12 ",
-            "8.8E1",
+            "8.8e1",
             "+5.3",
             "+4.",
             "+10",
@@ -48,6 +48,7 @@ class TestNumberstring(unittest.TestCase):
         ]
         for s in valid:
             result = numberstring.NumStr(s).analyse_format()
+            # print(s, result[0])
             self.assertIsNotNone(result)
             self.assertIsInstance(result, tuple)
 

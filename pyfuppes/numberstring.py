@@ -65,34 +65,35 @@ class NumStr:
             raise TypeError("ambiguous result -->", string, gen_class)
 
         # 3. based on the general classification, parse the string
-        method_name = "parse_" + str(gen_class[0])
+        method_name = "_parse_" + str(gen_class[0])
         method = getattr(self, method_name, lambda *args: "Undefined Format!")
         return method(string)
 
-    def parse_dec(self, s):
+    def _parse_dec(self, s):
         """Number is a decimal."""
         lst = s.split(self.dec_sep)
         result = "f" if not lst[1] else "." + str(len(lst[1])) + "f"
         result = "+" + result if "+" in lst[0] else result
         return (result, float)
 
-    def parse_no_dec(self, s):
+    def _parse_no_dec(self, s):
         """Number is an integer."""
         result = "+d" if "+" in s else "d"
         return (result, int)
 
-    def parse_exp_dec(self, s):
+    def _parse_exp_dec(self, s):
         """Number is a decimal in exponential notation."""
         lst_dec = s.split(self.dec_sep)
         lst_e = lst_dec[1].upper().split("E")
         result = "." + str(len(lst_e[0])) + "E"
-        result = result.replace(":", ":+") if "+" in lst_dec[0] else result
+        result = result.lower() if "e" in s else result
         return (result, float)
 
-    def parse_exp_no_dec(self, s):
+    def _parse_exp_no_dec(self, s):
         """Number is in exponential notation but has no decimal points."""
         lst_e = s.upper().split("E")
-        result = "+E" if "+" in lst_e[0] else "E"
+        result = "+.0E" if "+" in lst_e[0] else ".0E"
+        result = result.lower() if "e" in s else result
         return (result, float)
 
 
