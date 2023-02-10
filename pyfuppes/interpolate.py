@@ -94,12 +94,12 @@ def pl_Series_interp1d(
         modified input dst_df.
     """
     f = interp1d(
-        src_df[ivar_src_name].dt.timestamp().to_numpy(),
+        src_df[ivar_src_name].dt.timestamp(),
         src_df[dvar_src_name],
         **kwargs,
     )
     dst_df = dst_df.with_columns(
-        pl.Series(f(dst_df[ivar_dst_name])).alias(dvar_dst_name)
+        pl.Series(f(dst_df[ivar_dst_name].dt.timestamp())).alias(dvar_dst_name)
     )
     return dst_df
 
