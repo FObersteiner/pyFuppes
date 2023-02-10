@@ -94,7 +94,7 @@ def pl_Series_interp1d(
         modified input dst_df.
     """
     f = interp1d(
-        src_df[ivar_src_name].dt.timestamp(),
+        src_df[ivar_src_name].dt.timestamp().to_numpy(),
         src_df[dvar_src_name],
         **kwargs,
     )
