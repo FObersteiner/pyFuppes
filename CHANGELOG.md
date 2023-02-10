@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.2.12 (2023-02-??)
+## v0.2.12 (2023-02-10)
 - numberstring: change output format of NumStr format analyser (to be used in f-string)
 
 ## v0.2.11 (2023-02-06)
