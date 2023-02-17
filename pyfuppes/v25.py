@@ -6,6 +6,20 @@ import os
 from pathlib import Path
 import platform
 
+import tomli as toml_r
+
+try:
+    wd = Path(__file__).parent
+except NameError:
+    wd = Path.cwd()  # same as os.getcwd()
+assert wd.is_dir(), "faild to obtain working directory"
+
+
+# CONSTANTS -------------------------------------------------------------------
+
+CLEANUP_DONE = "V25Logs_cleaned.done"
+PATH_V25_DATA_CFG = "../v25_config/v25_data_cfg.toml"
+
 
 # --- INTERNALS ---------------------------------------------------------------
 
@@ -122,21 +136,21 @@ def _insensitive_pattern(pattern):
 # -----------------------------------------------------------------------------
 
 
-def _get_sel_files(folders, exts, insensitive=True):
+def _get_sel_files(folders, file_extensions, insensitive=True):
     """
-    Return a generator object containing all files in "folders" having one of the extensions listed in "exts".
+    Return a generator object containing all files in "folders" having one of the extensions listed in "file_extensions".
 
     Keyword "insensitive" only has an effect on Unix platforms - on Windows, glob is always case-insensitive.
     """
     msg = "all inputs must be of type list."
-    assert all((isinstance(i, list) for i in (folders, exts))), msg
+    assert all((isinstance(i, list) for i in (folders, file_extensions))), msg
 
     if insensitive and platform.system().lower() != "windows":
-        exts = [_insensitive_pattern(e) for e in exts]
+        file_extensions = [_insensitive_pattern(e) for e in file_extensions]
 
     sel_files = chain()
     for f in folders:
-        for e in exts:
+        for e in file_extensions:
             sel_files = chain(sel_files, f.glob(f"*{e}"))
 
     return sel_files
@@ -147,27 +161,31 @@ def _get_sel_files(folders, exts, insensitive=True):
 
 def _V25logs_cleaned_dump(path):
     """Dump an empty file signaling that this folder of V25 logfiles has been cleaned."""
-    with open(path / "V25Logs_cleaned.done", "w", encoding="UTF-8") as fobj:
-        fobj.write("# files in this folder were cleaned.\n")
+    with open(path / CLEANUP_DONE, "w", encoding="UTF-8") as fobj:
+        fobj.write("# files in this directory were cleaned.\n")
 
 
 # --- EXTERNALS ---------------------------------------------------------------
 
 
 def logs_cleanup(
-    folder: list, exts: list, drop_info=True, check_info=True, verbose=False
+    directories: list,
+    file_extensions: list,
+    drop_info=True,
+    check_info=True,
+    verbose=False,
 ):
     """
     Delete empty files and remove incomplete lines from V25 logfiles.
 
     Parameters
     ----------
-    folder : list
+    directories : list
         where to clean.
-    exts : list
-        list with file extensions specifying the files to clean.
+    file_extensions : list
+        list with file extensions specifying the file types to clean.
     drop_info : bool, optional
-        drop a file saying "this folder was cleaned". The default is True.
+        drop a file saying "this directories was cleaned". The default is True.
     check_info : bool, optional
         check for drop_info file. The default is True.
     verbose : true, optional
@@ -178,19 +196,29 @@ def logs_cleanup(
     None.
     """
     verboseprint = print if verbose else lambda *a, **k: None
-    folder = _to_list_of_Path(folder)
+    directories = _to_list_of_Path(directories)
 
     if check_info:
-        todo = [f for f in folder if "V25Logs_cleaned.done" not in os.listdir(f)]
+        directories = [f for f in directories if CLEANUP_DONE not in os.listdir(f)]
 
-    if not isinstance(exts, list):
-        exts = [exts]
+    if not isinstance(file_extensions, list):
+        file_extensions = [file_extensions]
 
-    if todo:
-        sel_files = list(sorted(_get_sel_files(todo, exts)))
+    if directories:
+        # load file specifications
+        with open(wd / PATH_V25_DATA_CFG, "rb") as fp:
+            cfg = toml_r(fp)
+        # make sure config file contains minimum line info for all extension
+        for e in file_extensions:
+            assert (
+                e.upper in cfg.keys()
+            ), f"no specification found for file exension {e}"
+
+        # only check files with specified extension
+        sel_files = list(sorted(_get_sel_files(directories, file_extensions)))
 
         for file in sel_files:
-            with open(file, "r") as file_obj:
+            with open(file, "r", encoding="utf-8") as file_obj:
                 data = file_obj.readlines()
 
             if len(data) <= 1:  # empty file or header only
@@ -210,11 +238,11 @@ def logs_cleanup(
         verboseprint("*v25_logcleaner* Done.")
 
         if drop_info:
-            for f in todo:
+            for f in directories:
                 if "V25Logs_cleaned.done" not in os.listdir(f):
                     _V25logs_cleaned_dump(f)
     else:
-        verboseprint(f"nothing to clean in {str(folder)}")
+        verboseprint(f"nothing to clean in any of {str(directories)}")
 
 
 ###############################################################################
