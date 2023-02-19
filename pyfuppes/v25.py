@@ -17,8 +17,9 @@ assert wd.is_dir(), "faild to obtain working directory"
 
 # CONSTANTS -------------------------------------------------------------------
 
-CLEANUP_DONE = "V25Logs_cleaned.done"
-PATH_V25_DATA_CFG = "../v25_config/v25_data_cfg.toml"
+CLEANUP_DONE = "V25Logs_cleanup.done"
+PATH_V25_DATA_CFG = wd / "v25_config/v25_data_cfg.toml"
+V25_DATA_SEP = "\t"
 
 
 # --- INTERNALS ---------------------------------------------------------------
@@ -161,8 +162,8 @@ def _get_sel_files(folders, file_extensions, insensitive=True):
 
 def _V25logs_cleaned_dump(path):
     """Dump an empty file signaling that this folder of V25 logfiles has been cleaned."""
-    with open(path / CLEANUP_DONE, "w", encoding="UTF-8") as fobj:
-        fobj.write("# files in this directory were cleaned.\n")
+    with open(path / CLEANUP_DONE, "w", encoding="UTF-8") as _:
+        pass
 
 
 # --- EXTERNALS ---------------------------------------------------------------
@@ -173,6 +174,7 @@ def logs_cleanup(
     file_extensions: list,
     drop_info=True,
     check_info=True,
+    add_osc_datetime=True,
     verbose=False,
 ):
     """
@@ -188,6 +190,8 @@ def logs_cleanup(
         drop a file saying "this directories was cleaned". The default is True.
     check_info : bool, optional
         check for drop_info file. The default is True.
+    add_osc_datetime : bool, optional
+        prepend a datetime column to OSC files. The header datetime is repeated. The default is True.
     verbose : true, optional
         some print-outs to the console. The default is False.
 
@@ -196,6 +200,7 @@ def logs_cleanup(
     None.
     """
     verboseprint = print if verbose else lambda *a, **k: None
+
     directories = _to_list_of_Path(directories)
 
     if check_info:
@@ -204,52 +209,90 @@ def logs_cleanup(
     if not isinstance(file_extensions, list):
         file_extensions = [file_extensions]
 
-    if directories:
-        # load file specifications
-        with open(wd / PATH_V25_DATA_CFG, "rb") as fp:
-            cfg = toml_r(fp)
-        # make sure config file contains minimum line info for all extension
-        for e in file_extensions:
-            assert (
-                e.upper in cfg.keys()
-            ), f"no specification found for file exension {e}"
-
-        # only check files with specified extension
-        sel_files = list(sorted(_get_sel_files(directories, file_extensions)))
-
-        for file in sel_files:
-            with open(file, "r", encoding="utf-8") as file_obj:
-                data = file_obj.readlines()
-
-            if len(data) <= 1:  # empty file or header only
-                verboseprint(f"*v25_logcleaner* deleted {file.name}")
-                os.remove(file)
-                continue
-
-            if data[-1][-1] != "\n":  # incomplete last line
-                if len(data) <= 2:  # file would be header only if incomplete line
-                    verboseprint(f"*v25_logcleaner* deleted {file.name}")
-                    os.remove(file)
-                    continue
-                with open(file, "w", encoding="UTF-8") as file_obj:
-                    file_obj.writelines(data[0:-2])
-                verboseprint(f"*v25_logcleaner* deleted last line in {file.name}")
-
-        verboseprint("*v25_logcleaner* Done.")
-
-        if drop_info:
-            for f in directories:
-                if "V25Logs_cleaned.done" not in os.listdir(f):
-                    _V25logs_cleaned_dump(f)
-    else:
+    if not directories:
         verboseprint(f"nothing to clean in any of {str(directories)}")
+        return
+
+    # load file specifications
+    with open(PATH_V25_DATA_CFG, "rb") as fp:
+        cfg = toml_r.load(fp)
+    # make sure config file contains minimum line info for all extension
+    for e in file_extensions:
+        assert e.upper() in cfg.keys(), f"no specification found for file exension {e}"
+
+    # only check files with specified extension
+    sel_files = list(sorted(_get_sel_files(directories, file_extensions)))
+
+    for file in sel_files:
+        write = False
+        with open(file, "r", encoding="utf-8") as file_obj:
+            data = file_obj.readlines()
+
+        # minimum lines is always 2
+        if len(data) <= 2:
+            verboseprint(
+                f"*v25_logcleaner* deleted {file.name} which has insufficient lines"
+            )
+            file.unlink()
+            continue
+
+        # ensure last row has enough columns
+        while (
+            len([elem for elem in data[-1].strip(" \n").split(V25_DATA_SEP) if elem])
+            < cfg[file.suffix.strip(".").upper()]["n_cols"]
+        ):
+            write = True
+            data = data[:-1]
+            verboseprint(
+                f"*v25_logcleaner* deleted last line in {file.name} which has insufficient elements"
+            )
+
+        # now check minimum lines per file type
+        if (
+            len(data) < cfg[file.suffix.strip(".").upper()]["min_n_lines"]
+        ):  # empty file or header only
+            verboseprint(
+                f"*v25_logcleaner* deleted {file.name} which has insufficient lines"
+            )
+            file.unlink()
+            continue
+
+        # analyse the last element in the last line; compare to last element in previous line
+        # TODO ?
+
+        # OSC files must get a timestamp column
+        if add_osc_datetime and file.suffix.strip(".").upper() == "OSC":
+            verboseprint(f"*v25_logcleaner* update OSC file {file.name}")
+            write = True
+            dtstr = data[0].strip("\n")
+            # verify by parsing to datetime:
+            _ = datetime.strptime(dtstr, "%d.%m.%y %H:%M:%S.%f")
+            data[4] = V25_DATA_SEP + "DateTime" + data[4]
+            data[5:] = [V25_DATA_SEP + dtstr + line for line in data[5:]]
+
+        # only overwrite the file if changes must be made
+        if write:
+            with open(file, "w", encoding="utf-8") as fp:
+                fp.writelines(data)
+
+    verboseprint("*v25_logcleaner* done.")
+
+    if drop_info:
+        for d in directories:
+            if not list(d.glob(CLEANUP_DONE)):
+                _V25logs_cleaned_dump(d)
 
 
 ###############################################################################
 
 
 def collect_V25Logs(
-    folder, ext, delimiter="\t", colhdr_ix=0, write_mergefile=False, verbose=False
+    folder,
+    ext,
+    delimiter=V25_DATA_SEP,
+    colhdr_ix=0,
+    write_mergefile=False,
+    verbose=False,
 ):
     r"""
     Collect multiple logfiles of one type into one dictionary.
@@ -350,7 +393,7 @@ def collect_V25Logs(
 def collect_OSC_Logs(
     folder,
     _ext="OSC",
-    delimiter="\t",
+    delimiter=V25_DATA_SEP,
     header_delimiter=" ",
     min_len=6,
     ix_t_start=0,

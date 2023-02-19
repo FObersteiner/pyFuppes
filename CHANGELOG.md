@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.13 (2023-02-19)
+- revised v25 data cleaner
+
 ## v0.2.12 (2023-02-10)
 - numberstring: change output format of NumStr format analyser (to be used in f-string)
 
