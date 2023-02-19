@@ -41,7 +41,6 @@ class TestTimeconv(unittest.TestCase):
         # run cleaner
         _ = v25.logs_cleanup(
             [src / "tmp/v25_cleaner/have"],
-            ["OMC", "OSC", "HAL", "MAS", "DAT", "T_P"],
             verbose=True,
         )
         # have and want must now be identical, "delete" files must not exist in want

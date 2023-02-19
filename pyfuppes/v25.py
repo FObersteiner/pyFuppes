@@ -3,15 +3,15 @@
 from datetime import datetime, timezone
 from itertools import chain
 import os
-from pathlib import Path
+import pathlib
 import platform
 
 import tomli as toml_r
 
 try:
-    wd = Path(__file__).parent
+    wd = pathlib.Path(__file__).parent
 except NameError:
-    wd = Path.cwd()  # same as os.getcwd()
+    wd = pathlib.Path.cwd()  # same as os.getcwd()
 assert wd.is_dir(), "faild to obtain working directory"
 
 
@@ -119,7 +119,7 @@ def _to_list_of_Path(folders):
     """Turn input string or list of strings into a list of pathlib Path objects."""
     if not isinstance(folders, list):
         folders = [folders]
-    return [Path(f) for f in folders]
+    return [pathlib.Path(f) for f in folders]
 
 
 # -----------------------------------------------------------------------------
@@ -171,7 +171,7 @@ def _V25logs_cleaned_dump(path):
 
 def logs_cleanup(
     directories: list,
-    file_extensions: list,
+    cfg_path: pathlib.Path = PATH_V25_DATA_CFG,
     drop_info=True,
     check_info=True,
     add_osc_datetime=True,
@@ -206,22 +206,16 @@ def logs_cleanup(
     if check_info:
         directories = [f for f in directories if CLEANUP_DONE not in os.listdir(f)]
 
-    if not isinstance(file_extensions, list):
-        file_extensions = [file_extensions]
-
     if not directories:
         verboseprint(f"nothing to clean in any of {str(directories)}")
         return
 
-    # load file specifications
-    with open(PATH_V25_DATA_CFG, "rb") as fp:
+    # load file specifications;
+    with open(cfg_path, "rb") as fp:
         cfg = toml_r.load(fp)
-    # make sure config file contains minimum line info for all extension
-    for e in file_extensions:
-        assert e.upper() in cfg.keys(), f"no specification found for file exension {e}"
 
-    # only check files with specified extension
-    sel_files = list(sorted(_get_sel_files(directories, file_extensions)))
+    # ...this defines which files are checked
+    sel_files = list(sorted(_get_sel_files(directories, list(cfg.keys()))))
 
     for file in sel_files:
         write = False
@@ -360,7 +354,7 @@ def collect_V25Logs(
 
         if write_mergefile:  # optionally write merged data to file
             n_el = len(data[keys[0]])
-            outfile = Path(
+            outfile = pathlib.Path(
                 os.path.dirname(folder[0])
                 + "/"
                 + os.path.basename(folder[0])
@@ -515,7 +509,7 @@ def collect_OSC_Logs(
             if "N_Oscar" in keys_data:
                 keys_data.pop(keys_data.index("N_Oscar"))
 
-            outfile = Path(
+            outfile = pathlib.Path(
                 os.path.dirname(folder[0])
                 + "/"
                 + os.path.basename(folder[0])
