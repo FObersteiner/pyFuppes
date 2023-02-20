@@ -230,10 +230,17 @@ def logs_cleanup(
             file.unlink()
             continue
 
-        # ensure last row has enough columns
+        # ensure last row has enough columns; determine from first line of data
+        #   unless it's an OSC file
+        if (t := file.suffix.strip(".").upper()) == "OSC":
+            n_cols = cfg[t]["n_cols"]
+        else:
+            n_cols = len(
+                [elem for elem in data[0].strip(" \n").split(V25_DATA_SEP) if elem]
+            )
         while (
             len([elem for elem in data[-1].strip(" \n").split(V25_DATA_SEP) if elem])
-            < cfg[file.suffix.strip(".").upper()]["n_cols"]
+            < n_cols
         ):
             write = True
             data = data[:-1]

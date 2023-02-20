@@ -1,20 +1,22 @@
 # v25_datacleaner configuration
 
+## FAIRO data.
+
 [DAT] # housekeeping data
 min_n_lines = 2 # minimum number of lines in a file of that type
-n_cols = 13
+n_cols = 13     # not used unless [OSC]. n_cols is 12 for CARIBIC FAIRO.
 
 [HAL] # IWG1 data from A/C
 min_n_lines = 2
-n_cols = 15
+n_cols = 15     # not used unless [OSC]
 
 [MAS] # Caribic master data
 min_n_lines = 2
-n_cols = 4
+n_cols = 4      # not used unless [OSC]
 
 [OMC] # Omcal UV photometer
 min_n_lines = 2
-n_cols = 18
+n_cols = 18     # not used unless [OSC]
 
 [OSC] # Oscar CL detector
 min_n_lines = 6
@@ -22,4 +24,6 @@ n_cols = 4
 
 [T_P] # housekeeping data, temperatures and pressures
 min_n_lines = 2
-n_cols = 20
+n_cols = 20     # not used unless [OSC]. n_cols is 19 for CARIBIC FAIRO.
+
+##
