@@ -15,11 +15,12 @@ polars = ">= 0.15"
 pyarrow = ">= 10.0"
 pysolar = ">= 0.10"
 scipy = ">= 1.1"
+netcdf4 = ">= 1.6"
 xarray = ">= 2022, >=2023"
+tomli = ">= 2.0.1"
 numba = "^0.56.4"                # no python 3.11 support as of 2023-02-10
 numpy = "<1.24, >=1.18"          # required by numba 0.56.4
 llvmlite = "<0.40, >=0.39.0dev0" # required by numba 0.56.4
-tomli = ">= 2.0.1"
 
 [tool.poetry.dev-dependencies]
 pytest = "7.*"
