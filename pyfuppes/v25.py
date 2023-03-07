@@ -269,7 +269,7 @@ def logs_cleanup(
             # verify by parsing to datetime:
             _ = datetime.strptime(dtstr, "%d.%m.%y %H:%M:%S.%f")
             # only update the files if this wasn't done before already
-            if not "DateTime" in data[4]:
+            if "DateTime" not in data[4]:
                 data[4] = V25_DATA_SEP + "DateTime" + data[4]
                 data[5:] = [V25_DATA_SEP + dtstr + line for line in data[5:]]
 

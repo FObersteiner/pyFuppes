@@ -25,11 +25,14 @@ llvmlite = "<0.40, >=0.39.0dev0" # required by numba 0.56.4
 [tool.poetry.dev-dependencies]
 pytest = "7.*"
 black = "22.*"
-flake8 = "4.*"
+ruff = ">= 0.0.254"
 jupyter_core = "4.*"
 sphinx-autoapi = "2.*"
 sphinx-rtd-theme = "1.*"
 myst-nb = ">= 0.17"
+
+[tool.ruff] # https://github.com/charliermarsh/ruff
+ignore = ["E501"] # use defaults otherwise
 
 [build-system]
 requires = [

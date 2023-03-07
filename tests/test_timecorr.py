@@ -8,8 +8,8 @@ import polars as pl
 from pyfuppes import timecorr
 
 
-def _make_df(l):
-    df = pl.DataFrame({"datetime": l, "values": list(range(len(l)))})
+def _make_df(dt_list):
+    df = pl.DataFrame({"datetime": dt_list, "values": list(range(len(dt_list)))})
     return df.with_columns(
         pl.col("datetime").str.strptime(pl.Datetime, fmt="%Y-%m-%d").cast(pl.Datetime)
     )
