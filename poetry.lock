@@ -1845,14 +1845,14 @@ files = [
 
 [[package]]
 name = "platformdirs"
-version = "3.1.0"
+version = "3.1.1"
 description = "A small Python package for determining appropriate platform-specific dirs, e.g. a \"user data dir\"."
 category = "dev"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "platformdirs-3.1.0-py3-none-any.whl", hash = "sha256:13b08a53ed71021350c9e300d4ea8668438fb0046ab3937ac9a29913a1a1350a"},
-    {file = "platformdirs-3.1.0.tar.gz", hash = "sha256:accc3665857288317f32c7bebb5a8e482ba717b474f3fc1d18ca7f9214be0cef"},
+    {file = "platformdirs-3.1.1-py3-none-any.whl", hash = "sha256:e5986afb596e4bb5bde29a79ac9061aa955b94fca2399b7aaac4090860920dd8"},
+    {file = "platformdirs-3.1.1.tar.gz", hash = "sha256:024996549ee88ec1a9aa99ff7f8fc819bb59e2c3477b410d90a16d32d6e707aa"},
 ]
 
 [package.extras]
@@ -1877,18 +1877,18 @@ testing = ["pytest", "pytest-benchmark"]
 
 [[package]]
 name = "polars"
-version = "0.16.11"
+version = "0.16.12"
 description = "Blazingly fast DataFrame library"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "polars-0.16.11-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:634e00ff64135760d03d1595a91b05cab1bfc9837086898ec6115bef37424d99"},
-    {file = "polars-0.16.11-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:820d28fa97d167fff6237988cb7770e487e7dd194e67d997d79be03004e3ba63"},
-    {file = "polars-0.16.11-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:4a577d81ae4d1d003a4cef5550f9293cf9ab1ba6175b8f670ba02df20191158f"},
-    {file = "polars-0.16.11-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:868c7ba6ab1567d056fef8f57a1ca0dc87e16c497b0a496288ee5ea122643d29"},
-    {file = "polars-0.16.11-cp37-abi3-win_amd64.whl", hash = "sha256:f911b9e7fbb3eea006945026afde8ee06f15a215ee80d20315c03c9ed5cf5f96"},
-    {file = "polars-0.16.11.tar.gz", hash = "sha256:b4fbb433bba168a5aa21f7c5eaab4f3ec06080ff769c494159b254bed382add2"},
+    {file = "polars-0.16.12-cp37-abi3-macosx_10_7_x86_64.whl", hash = "sha256:efb1405101dd1774abc9425f3fc36afea076980680f20461f1a1d77c835968a1"},
+    {file = "polars-0.16.12-cp37-abi3-macosx_11_0_arm64.whl", hash = "sha256:ebb5a6f34af17c0c9aa5c9c187e560e8b32900dfceda9da04206ce0ce3e625e1"},
+    {file = "polars-0.16.12-cp37-abi3-manylinux_2_17_aarch64.manylinux2014_aarch64.whl", hash = "sha256:3e0f2c4b72ac4e07fb176752390f580b2661b711282b5cd593396dfe0b5b2746"},
+    {file = "polars-0.16.12-cp37-abi3-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", hash = "sha256:91396c4f9e69af8430bf321c965250d521baab6868391163beb90380f795d7f5"},
+    {file = "polars-0.16.12-cp37-abi3-win_amd64.whl", hash = "sha256:24794c308cfd10429fa157aae827988e0c2a48888c443fb8c372b0372337123d"},
+    {file = "polars-0.16.12.tar.gz", hash = "sha256:ef01082193b54a8da4118c6bcc2e2a915f07847a07213d8764f63ba965974a07"},
 ]
 
 [package.dependencies]
@@ -2434,14 +2434,14 @@ test = ["asv", "gmpy2", "mpmath", "pooch", "pytest", "pytest-cov", "pytest-timeo
 
 [[package]]
 name = "setuptools"
-version = "67.5.1"
+version = "67.6.0"
 description = "Easily download, build, install, upgrade, and uninstall Python packages"
 category = "main"
 optional = false
 python-versions = ">=3.7"
 files = [
-    {file = "setuptools-67.5.1-py3-none-any.whl", hash = "sha256:1c39d42bda4cb89f7fdcad52b6762e3c309ec8f8715b27c684176b7d71283242"},
-    {file = "setuptools-67.5.1.tar.gz", hash = "sha256:15136a251127da2d2e77ac7a1bc231eb504654f7e3346d93613a13f2e2787535"},
+    {file = "setuptools-67.6.0-py3-none-any.whl", hash = "sha256:b78aaa36f6b90a074c1fa651168723acbf45d14cb1196b6f02c0fd07f17623b2"},
+    {file = "setuptools-67.6.0.tar.gz", hash = "sha256:2ee892cd5f29f3373097f5a814697e397cf3ce313616df0af11231e2ad118077"},
 ]
 
 [package.extras]
@@ -2848,14 +2848,14 @@ files = [
 
 [[package]]
 name = "urllib3"
-version = "1.26.14"
+version = "1.26.15"
 description = "HTTP library with thread-safe connection pooling, file post, and more."
 category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 files = [
-    {file = "urllib3-1.26.14-py2.py3-none-any.whl", hash = "sha256:75edcdc2f7d85b137124a6c3c9fc3933cdeaa12ecb9a6a959f22797a0feca7e1"},
-    {file = "urllib3-1.26.14.tar.gz", hash = "sha256:076907bf8fd355cde77728471316625a4d2f7e713c125f51953bb5b3eecf4f72"},
+    {file = "urllib3-1.26.15-py2.py3-none-any.whl", hash = "sha256:aa751d169e23c7479ce47a0cb0da579e3ede798f994f5816a74e4f4500dcea42"},
+    {file = "urllib3-1.26.15.tar.gz", hash = "sha256:8a388717b9476f934a21484e8c8e61875ab60644d29b9b39e11e4b9dc1c6b305"},
 ]
 
 [package.extras]
