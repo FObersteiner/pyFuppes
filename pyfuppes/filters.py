@@ -217,10 +217,7 @@ def filter_jumps_np(
             ix_rem[ix] = ix
             continue  # fill buffer if not done so yet
 
-        if use_abs_delta:
-            delta = abs(v_ix - buffer[0])
-        else:
-            delta = v_ix - buffer[0]
+        delta = abs(v_ix - buffer[0]) if use_abs_delta else v_ix - buffer[0]
 
         if delta > max_delta:  # jump found!
             v[ix] = no_val

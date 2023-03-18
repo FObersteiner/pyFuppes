@@ -93,9 +93,8 @@ def _txt_2_dict(
             line = line[:-1] if "\n" in line else line
         else:
             line = line.strip()  # remove surrounding whitespaces
-        if skip_empty_lines:
-            if line == "":  # skip empty lines
-                continue
+        if skip_empty_lines and line == "":  # skip empty lines
+            continue
 
         line = line.rsplit(sep)
 
@@ -215,7 +214,7 @@ def logs_cleanup(
         cfg = toml_r.load(fp)
 
     # ...this defines which files are checked
-    sel_files = list(sorted(_get_sel_files(directories, list(cfg.keys()))))
+    sel_files = sorted(_get_sel_files(directories, list(cfg.keys())))
 
     for file in sel_files:
         write = False
@@ -324,7 +323,7 @@ def collect_V25Logs(
     verboseprint = print if verbose else lambda *a, **k: None
     folder = _to_list_of_Path(folder)
 
-    sel_files = list(sorted(_get_sel_files(folder, [ext])))
+    sel_files = sorted(_get_sel_files(folder, [ext]))
 
     if sel_files:
         verboseprint(f"loading {sel_files[0].name}")
@@ -440,7 +439,7 @@ def collect_OSC_Logs(
     """
     verboseprint = print if verbose else lambda *a, **k: None
     folder = _to_list_of_Path(folder)
-    sel_files = list(sorted(_get_sel_files(folder, [_ext])))
+    sel_files = sorted(_get_sel_files(folder, [_ext]))
 
     if sel_files:
         verboseprint(f"loading {sel_files[0].name}")
