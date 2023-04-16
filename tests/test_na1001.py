@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
-from io import StringIO, BytesIO
+from io import BytesIO, StringIO
 from pathlib import Path
 
 import polars as pl

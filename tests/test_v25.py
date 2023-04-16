@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import unittest
 import shutil
-
+import unittest
 from pathlib import Path
 
 from pyfuppes import v25
-
 
 try:
     wd = Path(__file__).parent
