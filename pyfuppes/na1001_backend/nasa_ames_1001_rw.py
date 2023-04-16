@@ -5,7 +5,6 @@ import os
 from datetime import date
 from pathlib import Path
 
-
 ###############################################################################
 
 
@@ -42,6 +41,7 @@ def na1001_cls_read(
     # to read files with other encodings; use with caution
     encodings = ("ascii",) if ensure_ascii else ("ascii", "utf-8", "cp1252", "latin-1")
 
+    decoded = False
     for enc in encodings:
         try:
             decoded = data.decode(enc)

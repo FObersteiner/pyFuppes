@@ -3,10 +3,9 @@
 
 from datetime import datetime
 
+import numpy as np
 import pandas as pd
 import polars as pl
-import numpy as np
-
 
 ###############################################################################
 
@@ -141,7 +140,7 @@ def naDict_2_poldf(
     if add_datetime:
         df = df.with_columns(
             (
-                datetime(*naDict["DATE"])
+                datetime(*naDict["DATE"])  # this will give µs resolution by default
                 + pl.duration(microseconds=pl.col(keys[0]) * MICROSECONDS_PER_SECOND)
             ).alias("datetime")
         )

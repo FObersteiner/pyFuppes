@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """Tools to handle logfiles from the V25 microcontroller's memory card."""
-from datetime import datetime, timezone
-from itertools import chain
 import os
 import pathlib
 import platform
+from datetime import datetime, timezone
+from itertools import chain
 
 import tomli as toml_r
 

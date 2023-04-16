@@ -4,10 +4,9 @@
 import math
 from datetime import datetime
 
-from numba import njit
 from geopy import distance
+from numba import njit
 from pysolar.solar import get_altitude
-
 
 ###############################################################################
 

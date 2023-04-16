@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 """Averaging, Binning, Mapping."""
 
-from cmath import rect, phase
-from math import radians, degrees
+from cmath import phase, rect
 from copy import deepcopy
+from math import degrees, radians
 
 import numpy as np
 import pandas as pd
 from numba import njit
 from scipy.interpolate import interp1d
 from scipy.ndimage import uniform_filter1d
-
 
 ###############################################################################
 

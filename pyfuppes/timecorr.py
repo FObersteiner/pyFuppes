@@ -1,16 +1,15 @@
 # -*- coding: utf-8 -*-
 """Corrections for time in time series."""
 
-from copy import deepcopy
 import functools
+from copy import deepcopy
 from typing import Tuple
 
-import polars
 import numpy as np
+import polars
 import scipy as sc
-from scipy import signal
 from matplotlib import pyplot as plt
-
+from scipy import signal
 
 ###############################################################################
 
