@@ -49,7 +49,7 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
     f = attrgetter(dim_name)
     t = f(xrda)
-    return ((t - t[0].dt.floor("d")).values / 1e9).astype(float)
+    return (t - t[0].dt.floor("d")).values / 1_000_000_000
 
 
 ###############################################################################
@@ -66,7 +66,7 @@ def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = N
     timestring : str, list of str or np.ndarray with dtype str/obj.
         timestamp given as string.
     tsfmt : str, optional
-        timestring format. The default is "%Y-%m-%d %H:%M:%S.%f".
+        timestring format. Pass "iso" to denote ISO8601 format. The default is "%Y-%m-%d %H:%M:%S.%f".
     ymd : tuple, optional
         starting date as tuple of integers; (year, month, day).
         The default is None.
@@ -84,7 +84,7 @@ def dtstr_2_mdns(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", ymd: tuple = N
         dt = [datetime.strptime(s, tsfmt) for s in timestring]
 
     tzs = [d.tzinfo for d in dt]
-    assert len(set(tzs)) == 1, "all timezones must be equal."
+    assert len(set(tzs)) == 1, "all time zones (tzinfo) must be equal."
 
     if ymd:  # ymd tuple/list supplied, take that as starting point
         t0 = datetime(
@@ -130,7 +130,7 @@ def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
     dt_obj, ret_scalar = _to_list(dt_obj)
 
     tzs = [d.tzinfo for d in dt_obj]
-    assert len(set(tzs)) == 1, "all timezones must be equal."
+    assert len(set(tzs)) == 1, "all time zones (tzinfo) must be equal."
 
     t0 = dt_obj[0]
     if ref_date:
@@ -153,7 +153,7 @@ def dtobj_2_mdns(dt_obj, ref_date: tuple = None, ref_is_first: bool = False):
 
 def posix_2_mdns(posixts, ymd: tuple = None):
     """
-    Convert a POSIX timestamp (or list/array of ...) to seconds after midnight.
+    Convert a POSIX timestamp / UNIX time (or list/array of ...) to seconds after midnight.
 
     Parameters
     ----------
@@ -170,6 +170,9 @@ def posix_2_mdns(posixts, ymd: tuple = None):
         seconds after midnight for the given POSIX timestamp(s).
     """
     posixts, ret_scalar = _to_list(posixts)
+
+    # to floor a Unix time to the date, use  t - t % 86400
+    # here, we need to account for the fact that the reference date might be different.
 
     if ymd:  # (yyyy, m, d) given, take that as starting point t0:
         t0 = datetime(
@@ -249,9 +252,9 @@ def mdns_2_dtobj(
 ###############################################################################
 
 
-def daysSince_2_dtobj(day0, daysSince):
+def daysSince_2_dtobj(day0, days_since):
     """
-    Convert a floating point number "daysSince" to a datetime object.
+    Convert a date and a floating point number "days_since" to a datetime object.
 
     day0: datetime object, from when to count.
 
@@ -266,9 +269,9 @@ def daysSince_2_dtobj(day0, daysSince):
     -------
     datetime object
     """
-    if isinstance(daysSince, (list, np.ndarray)):
-        return [(day0 + timedelta(days=ds)) for ds in daysSince]
-    return day0 + timedelta(days=daysSince)
+    if isinstance(days_since, (list, np.ndarray)):
+        return [(day0 + timedelta(days=ds)) for ds in days_since]
+    return day0 + timedelta(days=days_since)
 
 
 ###############################################################################
@@ -293,8 +296,8 @@ def dtstr_2_posix(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz=timezone.u
 
     Returns
     -------
-    POSIX timestamp
-        UTC seconds since the epoch 1970-01-01.
+    POSIX timestamp / UNIX time
+        UTC seconds since the Unix epoch 1970-01-01.
     """
     if tsfmt == "iso":
         dtobj = datetime.fromisoformat(timestring)
@@ -315,5 +318,4 @@ def dtstr_2_posix(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz=timezone.u
     return dtobj.timestamp()
 
 
-###############################################################################
 ###############################################################################
