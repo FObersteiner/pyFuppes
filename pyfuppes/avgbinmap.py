@@ -10,6 +10,7 @@ import pandas as pd
 from numba import njit
 from scipy.interpolate import interp1d
 from scipy.ndimage import uniform_filter1d
+from scipy.stats import circmean
 
 ###############################################################################
 
@@ -29,7 +30,6 @@ def mean_angle(deg):
     -------
         mean of deg (float)
     """
-    # TODO: test missing !
     if np.ma.isMaskedArray(deg):
         deg = deg.data
     elif isinstance(deg, np.ndarray):
@@ -53,7 +53,6 @@ def mean_angle_numba(deg):
 
     - input must be numpy array of type float!
     """
-    # TODO: test missing !
     deg = deg[np.isfinite(deg)]
     if len(deg) == 0:
         return np.nan
@@ -65,6 +64,27 @@ def mean_angle_numba(deg):
         result += rect(1, radians(d))
 
     return degrees(phase(result / len(deg)))
+
+
+###############################################################################
+
+
+def mean_angle_sc(deg):
+    """
+    scipy.stats.circmean-based version of mean_angle().
+    """
+    if len(deg) == 0:
+        return np.nan
+    if len(deg) == 1:
+        return deg[0]
+
+    result = np.rad2deg(circmean(np.deg2rad(deg), nan_policy="omit"))
+    if np.isclose(result, 0):
+        return 0
+
+    if result > 180:  # map to +-180 for consistency with other functions
+        result -= 360
+    return result
 
 
 ###############################################################################

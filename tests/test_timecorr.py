@@ -11,7 +11,9 @@ from pyfuppes import timecorr
 def _make_df(dt_list):
     df = pl.DataFrame({"datetime": dt_list, "values": list(range(len(dt_list)))})
     return df.with_columns(
-        pl.col("datetime").str.strptime(pl.Datetime, fmt="%Y-%m-%d").cast(pl.Datetime)
+        pl.col("datetime")
+        .str.strptime(pl.Datetime, format="%Y-%m-%d")
+        .cast(pl.Datetime)
     )
 
 

@@ -31,6 +31,7 @@ class TestTimeconv(unittest.TestCase):
             [[350, 10], [90, 180, 270, 360], [10, 20, 30]], (0, -90, 20)
         ):
             self.assertAlmostEqual(avgbinmap.mean_angle(np.array(angles)), mean)
+            self.assertAlmostEqual(avgbinmap.mean_angle_sc(np.array(angles)), mean)
             self.assertAlmostEqual(avgbinmap.mean_angle_numba(np.array(angles)), mean)
 
     def test_mean_dayfrac(self):
