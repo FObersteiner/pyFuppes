@@ -2,7 +2,6 @@
 
 import unittest
 
-
 import numpy as np
 
 from pyfuppes import avgbinmap
@@ -28,12 +27,24 @@ class TestTimeconv(unittest.TestCase):
         pass
 
     def test_mean_angle(self):
-        # TODO
-        pass
+        for angles, mean in zip(
+            [[350, 10], [90, 180, 270, 360], [10, 20, 30]], (0, -90, 20)
+        ):
+            self.assertAlmostEqual(avgbinmap.mean_angle(np.array(angles)), mean)
+            self.assertAlmostEqual(avgbinmap.mean_angle_numba(np.array(angles)), mean)
 
     def test_mean_dayfrac(self):
-        # TODO
-        pass
+        for angles, mean in zip(
+            [[350, 10], [90, 180, 270, 360], [10, 20, 30]], (0, 270, 20)
+        ):
+            self.assertAlmostEqual(
+                avgbinmap.mean_day_frac(np.array(angles) / 360, use_numba=False),
+                mean / 360,
+            )
+            self.assertAlmostEqual(
+                avgbinmap.mean_day_frac(np.array(angles) / 360, use_numba=True),
+                mean / 360,
+            )
 
     def test_bin_t_10s(self):
         # TODO

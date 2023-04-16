@@ -80,7 +80,6 @@ def mean_day_frac(dfr, use_numba=True):
     - if input parameter dfr contains NaN or is a numpy masked array, missing
       values will be removed before the calculation.
     """
-    # TODO: test missing !
     if np.ma.isMaskedArray(dfr):
         dfr = dfr.data
     elif isinstance(dfr, np.ndarray):
@@ -96,7 +95,10 @@ def mean_day_frac(dfr, use_numba=True):
 
     deg_mean = mean_angle_numba(dfr * 360) if use_numba else mean_angle(dfr * 360)
 
-    if deg_mean < 0:  # account for mean degree between -180 and +180
+    if np.isclose(deg_mean, 0):
+        return 0
+
+    if deg_mean < 0:  # account for mean angle between -180 and +180
         deg_mean += 360
 
     return deg_mean / 360

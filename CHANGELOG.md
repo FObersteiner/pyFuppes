@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.14 (2023-xx-xx)
+- avgbinmap / mean_day_frac: bugfix corner case mean day fraction is almost zero but < 0
+
 ## v0.2.13 (2023-02-19)
 - revised v25 data cleaner
 
