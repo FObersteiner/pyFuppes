@@ -1,9 +1,8 @@
 # Changelog
 
-## v0.2.14 (2023-xx-xx)
+## v0.2.14 (2023-04-17)
 - avgbinmap / mean_day_frac: bugfix corner case mean day fraction is almost zero but < 0
 - avgbinmap / add scipy based version of mean angle function
-- create release
 
 ## v0.2.13 (2023-02-19)
 - revised v25 data cleaner
