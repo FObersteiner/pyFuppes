@@ -219,10 +219,8 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
         raise TypeError("Please pass np.ndarray to function.")
 
     if not any(
-        [
-            v.dtype == np.dtype(t)
-            for t in ("int16", "int32", "int64", "float16", "float32", "float64")
-        ]
+        v.dtype == np.dtype(t)
+        for t in ("int16", "int32", "int64", "float16", "float32", "float64")
     ):
         raise TypeError("Please pass valid dtype, int or float.")
 
@@ -230,7 +228,7 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
     _v = deepcopy(v)
 
     # change dtype to float so we can use NaN
-    if any([_v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")]):
+    if any(_v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")):
         _v = _v.astype(np.float)
 
     _v[_v == vmiss] = np.nan
@@ -280,7 +278,7 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
         result = tmp
 
     # round to integers if input type was integer
-    if any([v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")]):
+    if any(v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")):
         result = np.rint(result).astype(v.dtype)
 
     return result

@@ -40,10 +40,10 @@ If you are proposing a feature:
 
 ## Get Started!
 
-Ready to contribute? Here's how to set up `na1001` for local development.
+Ready to contribute? Here's how to set up `pyfuppes` for local development.
 
-1. Download a copy of `na1001` locally.
-2. Install `na1001` using `poetry`:
+1. Download a copy of `pyfuppes` locally.
+2. Install `pyfuppes` using `poetry`:
 
     ```console
     $ poetry install
@@ -69,5 +69,5 @@ Before you submit a pull request, check that it meets these guidelines:
 
 ## Code of Conduct
 
-Please note that the `na1001` project is released with a
+Please note that the `pyfuppes` project is released with a
 Code of Conduct. By contributing to this project you agree to abide by its terms.
