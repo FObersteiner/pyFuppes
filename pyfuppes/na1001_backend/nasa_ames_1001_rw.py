@@ -100,7 +100,9 @@ def na1001_cls_read(
     assert len(tmp) == 6, f"invalid format line 7: '{header[6]}'"
 
     # check for valid date in line 7 (yyyy mm dd)
-    assert date(*tmp[:3]) <= date(*tmp[3:6]), "RDATE must be greater or equal to DATE"
+    assert date(*tmp[:3]) <= date(
+        *tmp[3:6]
+    ), f"RDATE must be greater or equal to DATE, have DATE {date(*tmp[:3])}, RDATE {date(*tmp[3:6])}"
     na_1001["DATE"], na_1001["RDATE"] = tmp[:3], tmp[3:6]
 
     # DX check if the line contains a decimal separator; if so use float else int
