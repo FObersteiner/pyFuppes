@@ -2,7 +2,7 @@
 """Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
 from datetime import datetime
-from math import cos, sin, acos, atan2, radians, sqrt, degrees, floor
+from math import cos, sin, acos, asin, radians, sqrt, degrees, floor
 
 from geopy import distance
 from numba import njit
@@ -15,20 +15,21 @@ from pysolar.solar import get_altitude
 def haversine_dist(lat, lon):
     """Calculate Haversine distance along lat/lon coordinates in km. Code gets numba-JIT compiled."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
-    R = 6371  # approximate radius of earth in km
+    R = 6372.8  # approximate radius of earth in km
     dist = 0
 
-    lat1 = radians(lat[0])
-    lon1 = radians(lon[0])
+    lat1, lon1 = lat[0], lon[0]
     for j in range(1, lat.shape[0]):
-        lat0, lat1 = lat1, radians(lat[j])
-        lon0, lon1 = lon1, radians(lon[j])
+        lat0, lat1 = lat1, lat[j]
+        lon0, lon1 = lon1, lon[j]
 
-        dlon = lon1 - lon0
-        dlat = lat1 - lat0
+        dLat = radians(lat1 - lat0)
+        dLon = radians(lon1 - lon0)
+        lat0 = radians(lat0)
+        lat1 = radians(lat1)
 
-        a = sin(dlat / 2) ** 2 + cos(lat0) * cos(lat1) * sin(dlon / 2) ** 2
-        c = 2 * atan2(sqrt(a), sqrt(1 - a))
+        a = sin(dLat / 2) ** 2 + cos(lat0) * cos(lat1) * sin(dLon / 2) ** 2
+        c = 2 * asin(sqrt(a))
 
         dist += R * c
 
