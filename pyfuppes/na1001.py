@@ -186,8 +186,6 @@ class FFI1001(object):
             filepath and -name of the destination.
         sep : str, optional
             General delimiter. The default is " ".
-        sep_com : str, optional
-            Delimiter to use in the commentary section. The default is ";".
         sep_data : str, optional
             Delimiter to separate data columns. The default is "\t".
         overwrite : int, optional
