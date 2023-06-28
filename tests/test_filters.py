@@ -7,7 +7,7 @@ import numpy as np
 from pyfuppes import filters
 
 
-class TestTimeconv(unittest.TestCase):
+class TestFilters(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests

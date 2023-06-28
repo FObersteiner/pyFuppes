@@ -17,7 +17,7 @@ def _make_df(dt_list):
     )
 
 
-class TestTimeconv(unittest.TestCase):
+class TestTimecorr(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
