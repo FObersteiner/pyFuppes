@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.15 (2023-06-29)
+- Python 3.11 compatible versions of numba JIT-compiled functions
+
 ## v0.2.14 (2023-04-17)
 - avgbinmap / mean_day_frac: bugfix corner case mean day fraction is almost zero but < 0
 - avgbinmap / add scipy based version of mean angle function
