@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
-import math
 from datetime import datetime
+from math import cos, sin, acos, asin, radians, sqrt, degrees, floor
 
 from geopy import distance
 from numba import njit
@@ -13,25 +13,23 @@ from pysolar.solar import get_altitude
 
 @njit
 def haversine_dist(lat, lon):
-    """Calculate Haversine distance along lat/lon coordinates."""
+    """Calculate Haversine distance along lat/lon coordinates in km. Code gets numba-JIT compiled."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
-    R = 6373  # approximate radius of earth in km
+    R = 6372.8  # approximate radius of earth in km
     dist = 0
 
-    lat1 = math.radians(lat[0])
-    lon1 = math.radians(lon[0])
+    lat1, lon1 = lat[0], lon[0]
     for j in range(1, lat.shape[0]):
-        lat0, lat1 = lat1, math.radians(lat[j])
-        lon0, lon1 = lon1, math.radians(lon[j])
+        lat0, lat1 = lat1, lat[j]
+        lon0, lon1 = lon1, lon[j]
 
-        dlon = lon1 - lon0
-        dlat = lat1 - lat0
+        dLat = radians(lat1 - lat0)
+        dLon = radians(lon1 - lon0)
+        lat0 = radians(lat0)
+        lat1 = radians(lat1)
 
-        a = (
-            math.sin(dlat / 2) ** 2
-            + math.cos(lat0) * math.cos(lat1) * math.sin(dlon / 2) ** 2
-        )
-        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+        a = sin(dLat / 2) ** 2 + cos(lat0) * cos(lat1) * sin(dLon / 2) ** 2
+        c = 2 * asin(sqrt(a))
 
         dist += R * c
 
@@ -79,13 +77,13 @@ def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
 
     # define trigonometry with degrees
     def cos2(x):
-        return math.cos(math.radians(x))
+        return cos(radians(x))
 
     def sin2(x):
-        return math.sin(math.radians(x))
+        return sin(radians(x))
 
     def acos2(x):
-        return math.degrees(math.acos(x))
+        return degrees(acos(x))
 
     # parameter
     day_of_year = UTC.timetuple().tm_yday
@@ -132,7 +130,7 @@ def get_EoT(date_ts):
     use for: calculation of local solar time
     """
     B = (360 / 365) * (date_ts.timetuple().tm_yday - 81)
-    return 9.87 * math.sin(2 * B) - 7.53 * math.cos(B) - 1.5 * math.sin(B)
+    return 9.87 * sin(2 * B) - 7.53 * cos(B) - 1.5 * sin(B)
 
 
 ###############################################################################
@@ -155,5 +153,5 @@ def get_LSTdayFrac(longitude, tz_offset, EoT, days_delta, time_delta):
     t_corr = (4 * (longitude - LSTM) + EoT) / 60 / 24  # [d]
     LST_frac = (time_delta + tz_offset / 24 - days_delta) + t_corr
     if LST_frac > 1:
-        LST_frac -= math.floor(LST_frac)
+        LST_frac -= floor(LST_frac)
     return LST_frac

@@ -7,7 +7,7 @@ import numpy as np
 from pyfuppes import avgbinmap
 
 
-class TestTimeconv(unittest.TestCase):
+class TestAvgbinmap(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests

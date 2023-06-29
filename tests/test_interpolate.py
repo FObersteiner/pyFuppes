@@ -8,7 +8,7 @@ from polars.testing import assert_series_equal
 from pyfuppes import interpolate
 
 
-class TestCfg(unittest.TestCase):
+class TestInterpolate(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         pass

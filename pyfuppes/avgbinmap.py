@@ -4,6 +4,7 @@
 from cmath import phase, rect
 from copy import deepcopy
 from math import degrees, radians
+from math import cos, sin, atan2, pi
 
 import numpy as np
 import pandas as pd
@@ -47,23 +48,29 @@ def mean_angle(deg):
 
 
 @njit
-def mean_angle_numba(deg):
+def mean_angle_numba(angles):
     """
-    Numba-compatible version of mean_angle().
+    mean_angle(), numba-JIT compiled.
 
     - input must be numpy array of type float!
+
+    C version: https://rosettacode.org/wiki/Averages/Mean_angle
     """
-    deg = deg[np.isfinite(deg)]
-    if len(deg) == 0:
+    angles = angles[np.isfinite(angles)]
+    if len(angles) == 0:
         return np.nan
-    elif len(deg) == 1:
-        return deg[0]
+    elif len(angles) == 1:
+        return angles[0]
 
-    result = 0
-    for d in deg:
-        result += rect(1, radians(d))
+    size = len(angles)
+    y_part = 0.0
+    x_part = 0.0
 
-    return degrees(phase(result / len(deg)))
+    for i in range(size):
+        x_part += cos(angles[i] * pi / 180)
+        y_part += sin(angles[i] * pi / 180)
+
+    return atan2(y_part / size, x_part / size) * 180 / pi
 
 
 ###############################################################################
@@ -194,7 +201,7 @@ def bin_t_10s(t, force_t_range=True, drop_empty=True):
 
 @njit
 def get_npnanmean(v):
-    """Njit'ed nan-mean."""
+    """nan-mean, numba-JIT compiled."""
     return np.nanmean(v)
 
 
@@ -579,7 +586,7 @@ def calc_shift(
     _tol: float = 1e-9,
 ) -> np.ndarray:
     """
-    Calculate shift values that, when added to arr, put the values of arr on a regular grid.
+    Calculate shift-values that, when added to arr, put the values of arr on a regular grid. Code gets numba-JIT compiled.
 
     Parameters
     ----------

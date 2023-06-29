@@ -15,7 +15,7 @@ assert wd.is_dir(), "faild to obtain working directory"
 src, dst = wd / "test_input", wd / "test_output"
 
 
-class TestTimeconv(unittest.TestCase):
+class TestV25tools(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
