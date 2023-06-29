@@ -1,23 +1,26 @@
 # pyfuppes
-A collection of tools in Python.
-* Free software: MIT license
 
+A collection of tools in Python.
 
 ## Installation
 
-from `wheel` file:
-* check `/dist` directory for a wheel file
-* *or* (fork and) clone the repo, then run `poetry build` in the repo's directory to create one for the latest version
+from wheel file:
+
+- check `/dist` directory for a `*.whl` file that can be installed e.g. via `pip`
+
+via [poetry](https://python-poetry.org/):
+
+- (fork and) clone the repo, then run `poetry install` in the repo's directory
 
 editable via `pip`:
-* (fork and) clone the repo, then `pip install -e .`
 
+- (fork and) clone the repo, then run `pip install -e .` in the repo's directory
 
 ## Requirements
 
-* see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
+- Python 3.9, 3.10 or 3.11
+- see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
 
-
-## Content
+## Content / Docs
 
 See https://pyfuppes.readthedocs.io/en/latest/ or directly go to [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
