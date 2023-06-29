@@ -89,10 +89,10 @@ def _txt_2_dict(
 
     content = content[1 + colhdr_ix :]
     for ix, line in enumerate(content):
-        if preserve_empty:  # only remove linefeed (if first field is empty)
-            line = line[:-1] if "\n" in line else line
-        else:
-            line = line.strip()  # remove surrounding whitespaces
+        # preserve_empty: only remove linefeed (if first field is empty)
+        # else: remove surrounding whitespaces
+        line = line[:-1] if "\n" in line else line if preserve_empty else line.strip()
+
         if skip_empty_lines and line == "":  # skip empty lines
             continue
 

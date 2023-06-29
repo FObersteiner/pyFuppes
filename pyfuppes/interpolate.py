@@ -132,11 +132,9 @@ def pl_Series_ip1d_lite(
 
     out = pl.Series(slope * (new - old[lo]) + column[lo]).alias(dvar_dst_name)
 
-    if (
-        fill := kwargs.get("fill_value")
-    ) is not None:  # cannot use None as fill_value !
-        if fill != "extrapolate":
-            m = (new > old.max()) | (new < old.min())
-            out[m] = fill
+    fill = kwargs.get("fill_value")
+    if fill is not None and fill != "extrapolate":  # cannot use None as fill_value !
+        m = (new > old.max()) | (new < old.min())
+        out[m] = fill
 
     return dst_df.with_columns(out)

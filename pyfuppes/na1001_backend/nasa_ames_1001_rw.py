@@ -306,19 +306,13 @@ def na1001_cls_write(
         line = ""
         for i in range(n_vars):
             line += str(na_1001["VSCAL"][i]) + sep
-        if line.endswith("\n"):
-            line = line[0:-1]
-        else:
-            line = line[0:-1] + "\n"
+        line = line[0:-1] if line.endswith("\n") else line[0:-1] + "\n"
         file_obj.write(line)
 
         line = ""
         for i in range(n_vars):
             line += str(na_1001["VMISS"][i]) + sep
-        if line.endswith("\n"):
-            line = line[0:-1]
-        else:
-            line = line[0:-1] + "\n"
+        line = line[0:-1] if line.endswith("\n") else line[0:-1] + "\n"
         file_obj.write(line)
 
         block = na_1001["_VNAME"]

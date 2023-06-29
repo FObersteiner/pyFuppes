@@ -58,13 +58,11 @@ def get_plot_range(
     offset = (abs(v_min) + abs(v_max)) / 2 * add_percent / 100
     result = [v_min - offset, v_max + offset]
 
-    if v_min_lim:
-        if result[0] < v_min_lim:
-            result[0] = v_min_lim
+    if v_min_lim and result[0] < v_min_lim:
+        result[0] = v_min_lim
 
-    if v_max_lim:
-        if result[1] > v_max_lim:
-            result[1] = v_max_lim
+    if v_max_lim and result[1] > v_max_lim:
+        result[1] = v_max_lim
 
     return result
 

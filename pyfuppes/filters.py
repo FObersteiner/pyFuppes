@@ -222,9 +222,8 @@ def filter_jumps_np(
             v[ix] = no_val
             ix_del[ix] = ix
             buffer[1] += 1
-            if reset_buffer_after:
-                if buffer[1] == reset_buffer_after:
-                    buffer = [v_ix, 0]
+            if reset_buffer_after and buffer[1] == reset_buffer_after:
+                buffer = [v_ix, 0]
         else:  # no jump,...
             buffer[0] = v_ix
             if remove_doubles:  # check for double values...

@@ -33,7 +33,7 @@ myst-nb = ">=0.17"
 
 [tool.ruff] # https://github.com/charliermarsh/ruff
 ignore = ["E501"]      # use defaults otherwise
-extend-select = ["C4"]
+extend-select = ["C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
 # "SIM" : code simplifications

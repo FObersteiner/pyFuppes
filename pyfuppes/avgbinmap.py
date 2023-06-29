@@ -329,10 +329,7 @@ def bin_by_pdresample(
         data binned (arithmetic mean) to resampled time axis.
     """
     # TODO: test missing !
-    if isinstance(v, list):
-        d = {f"v_{i}": y for i, y in enumerate(v)}
-    else:
-        d = {"v_0": v}
+    d = {f"v_{i}": y for i, y in enumerate(v)} if isinstance(v, list) else {"v_0": v}
 
     df = pd.DataFrame(d, index=pd.to_datetime(t, unit="s"))
     df = df.resample(rule).mean()

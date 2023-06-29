@@ -100,13 +100,12 @@ def txt_2_dict_simple(
 
     content = content[1 + colhdr_ix :]
     for ix, line in enumerate(content):
-        if preserve_empty:  # only remove linefeed (if first field is empty)
-            line = line[:-1] if "\n" in line else line
-        else:
-            line = line.strip()  # remove surrounding whitespaces
-        if skip_empty_lines:
-            if line == "":  # skip empty lines
-                continue
+        # preserve_empty: only remove linefeed (if first field is empty)
+        # else: remove surrounding whitespaces
+        line = line[:-1] if "\n" in line else line if preserve_empty else line.strip()
+
+        if skip_empty_lines and line == "":  # skip empty lines
+            continue
 
         line = line.rsplit(sep)
 
