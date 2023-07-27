@@ -104,6 +104,7 @@ class FFI1001(object):
     __KEYS = list(_defaults.keys())
 
     def __init__(self, file=None, **kwargs):
+        # TODO : attrs should be declared explicitly
         for k, v in _defaults.items():  # self.__INID.items():
             setattr(self, k, v)
         if file is not None:
