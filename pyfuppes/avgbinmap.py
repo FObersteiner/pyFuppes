@@ -236,7 +236,7 @@ def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=Tru
 
     # change dtype to float so we can use NaN
     if any(_v.dtype == np.dtype(t) for t in ("int16", "int32", "int64")):
-        _v = _v.astype(np.float)
+        _v = _v.astype(float)
 
     _v[_v == vmiss] = np.nan
 
@@ -367,7 +367,7 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
     if not isinstance(v, np.ndarray):
         v = np.array(v)
 
-    bins = np.linspace(0, v.size, nbins + 1, True).astype(np.int)
+    bins = np.linspace(0, v.size, nbins + 1, True).astype(int)
 
     if ignore_nan:
         mask = np.isfinite(v)
@@ -592,7 +592,7 @@ def calc_shift(
     step : float, optional
         step size to expect in a regular grid. The default is 1.
     lower_bound : float, optional
-        shift lower bound, included. The default is -2.
+        shift lower bound, included. The default is-2.
     upper_bound : float, optional
         shift upper bound, excluded. The default is 3.
     _tol : float, optional

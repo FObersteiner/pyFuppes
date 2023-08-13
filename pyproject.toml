@@ -32,7 +32,7 @@ sphinx-rtd-theme = ">=1.0"
 myst-nb = ">=0.17"
 
 [tool.ruff] # https://github.com/charliermarsh/ruff
-ignore = ["E501"]      # use defaults otherwise
+ignore = ["E501"]             # use defaults otherwise
 extend-select = ["C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
