@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.3.1 (2023-08-16)
+- na1001 refactor
+  - better pyright integration: define FFI1001 keys in ` __init__`  with defaults, to describe the types
+  - removed ` __KEYS`  and _show; now part of ` __str__`  and ` __repr__` where needed
+  - keys `HEADER` and `SRC` are now prefixed with and underscore to indicate private attrs
+  - add a setter for `V`, as dependent variables are internally stored in attr `_V`
+
 ## v0.3.0 (2023-06-29)
 - Python 3.11 compatible versions of numba JIT-compiled functions
 - drop Python 3.8 support

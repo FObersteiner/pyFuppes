@@ -44,11 +44,11 @@ class TestNa1001(unittest.TestCase):
         self.assertTrue(len(s) > 10)
         self.assertEqual(na.NV, 2)
         self.assertEqual(na.NLHEAD, 36)
-        self.assertEqual(len(na.HEADER), na.NLHEAD)
+        self.assertEqual(len(na._HEADER), na.NLHEAD)
 
         file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid0.txt"
         na = na1001(file, sep_data="\t")
-        self.assertEqual(len(na.HEADER), na.NLHEAD)
+        self.assertEqual(len(na._HEADER), na.NLHEAD)
 
     def test_invalid_read_config(self):
         file = src / "validate_na/valid_1001a.na"
@@ -112,10 +112,10 @@ TimeCRef	Ozone"""
             _ = na1001(StringIO(s))  # header-only not allowed by default
 
         na = na1001(StringIO(s), allow_emtpy_data=True)
-        self.assertEqual(len(na.HEADER), na.NLHEAD)
+        self.assertEqual(len(na._HEADER), na.NLHEAD)
 
         na = na1001(BytesIO(bytes(s, "utf-8")), allow_emtpy_data=True)
-        self.assertEqual(len(na.HEADER), na.NLHEAD)
+        self.assertEqual(len(na._HEADER), na.NLHEAD)
 
     def test_poldf(self):
         file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid0.txt"

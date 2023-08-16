@@ -7,6 +7,32 @@ from pathlib import Path
 
 ###############################################################################
 
+KEYS = [
+    "NLHEAD",
+    "ONAME",
+    "ORG",
+    "SNAME",
+    "MNAME",
+    "IVOL",
+    "NVOL",
+    "DATE",
+    "RDATE",
+    "DX",
+    "XNAME",
+    "NV",
+    "VSCAL",
+    "VMISS",
+    "_VNAME",
+    "NSCOML",
+    "_SCOM",
+    "NNCOML",
+    "_NCOM",
+    "_X",
+    "_V",
+    "_SRC",
+    "_HEADER",
+]
+
 
 def na1001_cls_read(
     file,
@@ -27,13 +53,13 @@ def na1001_cls_read(
     """
     na_1001 = {}
     if hasattr(file, "read"):  # if it has a read method, assume buffered IO
-        na_1001["SRC"] = "BaseIO"
+        na_1001["_SRC"] = "BaseIO"
         data = file.read()
         if not isinstance(data, bytes):
             data = bytes(data, "utf-8")
     else:
         file = Path(file)
-        na_1001["SRC"] = file.as_posix()
+        na_1001["_SRC"] = file.as_posix()
         with open(file, "rb") as f:
             data = f.read()
 
@@ -77,7 +103,7 @@ def na1001_cls_read(
 
     nlhead = tmp[0]
     na_1001["NLHEAD"] = nlhead
-    na_1001["_FFI"] = tmp[1]
+    na_1001["FFI"] = tmp[1]
 
     header = file_content[:nlhead]
     data = file_content[nlhead:]
@@ -164,11 +190,11 @@ def na1001_cls_read(
     assert nncoml + nscoml + n_vars + 14 == nlhead, msg
 
     # done with header, we can set HEADER variable now
-    na_1001["HEADER"] = header
+    na_1001["_HEADER"] = header
 
     # continue with variables
     na_1001["_X"] = []  # holds independent variable
-    na_1001["V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
+    na_1001["_V"] = [[] for _ in range(n_vars)]  # list for each dependent variable
 
     if data is not None:
         for ix, line in enumerate(data):
@@ -183,14 +209,14 @@ def na1001_cls_read(
             na_1001["_X"].append(parts[0].strip())
             if vmiss_to_None:
                 for j in range(n_vars):
-                    na_1001["V"][j].append(
+                    na_1001["_V"][j].append(
                         parts[j + 1].strip()
                         if parts[j + 1].strip() != na_1001["VMISS"][j]
                         else None
                     )
             else:
                 for j in range(n_vars):
-                    na_1001["V"][j].append(parts[j + 1].strip())
+                    na_1001["_V"][j].append(parts[j + 1].strip())
 
     return na_1001
 
@@ -230,7 +256,7 @@ def na1001_cls_write(
 
     # check n variables and comment lines; adjust values if incorrect
     n_vars_named = len(na_1001["_VNAME"])
-    n_vars_data = len(na_1001["V"])
+    n_vars_data = len(na_1001["_V"])
     if n_vars_named != n_vars_data:
         raise ValueError(
             "NA error: n vars in V and VNAME not equal, "
@@ -258,7 +284,7 @@ def na1001_cls_write(
 
     # begin the actual writing process
     with open(file_path, "w", encoding="ascii") as file_obj:
-        block = str(na_1001["NLHEAD"]) + sep + str(na_1001["_FFI"]) + "\n"
+        block = str(na_1001["NLHEAD"]) + sep + str(na_1001["FFI"]) + "\n"
         file_obj.write(block)
 
         block = str(na_1001["ONAME"]) + "\n"
@@ -338,7 +364,7 @@ def na1001_cls_write(
         for i, x in enumerate(na_1001["_X"]):
             line = str(x) + sep_data
             for j in range(n_vars):
-                line += str(na_1001["V"][j][i]) + sep_data
+                line += str(na_1001["_V"][j][i]) + sep_data
             file_obj.write(line[0:-1] + "\n")
 
     return write

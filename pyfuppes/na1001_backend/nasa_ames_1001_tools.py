@@ -43,7 +43,7 @@ def naDict_2_npndarr(
             )
         else:
             ix = naDict["_VNAME"].index(parm)
-        npDict[parm] = np.array(naDict["V"][ix], dtype=vdtype)
+        npDict[parm] = np.array(naDict["_V"][ix], dtype=vdtype)
 
         # check vmiss: make sure that vmiss=0 also works by checking for type
         # boolean. Might be a bit confusing since vmiss=True would also result
@@ -78,7 +78,7 @@ def naDict_2_pddf(
     vscal = [float(s) for s in naDict["VSCAL"]]
 
     # for each variable...
-    for i, v_n in enumerate(naDict["V"]):
+    for i, v_n in enumerate(naDict["_V"]):
         # cast list of string to np.array:
         arr = np.array(v_n, dtype=dtype)
         # replace missing values with np.nan:
@@ -127,7 +127,7 @@ def naDict_2_poldf(
     vscal = [float(s) for s in naDict["VSCAL"]]
 
     # for each variable...
-    for i, v_n in enumerate(naDict["V"]):
+    for i, v_n in enumerate(naDict["_V"]):
         # cast list of string to np.array:
         arr = np.array(v_n, dtype=_dtype)
         # replace missing values with np.nan:

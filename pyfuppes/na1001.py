@@ -6,61 +6,6 @@ import numpy as np
 from .na1001_backend import nasa_ames_1001_rw as rw
 from .na1001_backend import nasa_ames_1001_tools as tools
 
-###############################################################################
-
-
-# initialize class instance with some parameters:
-_defaults = {
-    "NLHEAD": 14,
-    "ONAME": "",
-    "ORG": "",
-    "SNAME": "",
-    "MNAME": "",
-    "IVOL": 1,
-    "NVOL": 1,
-    "DATE": (1970, 1, 1),
-    "RDATE": (1970, 1, 1),
-    "DX": 0,
-    "XNAME": "",
-    "NV": 0,
-    "VSCAL": 1.0,
-    "VMISS": -9999,
-    "_VNAME": "",
-    "NSCOML": 0,
-    "_SCOM": "",
-    "NNCOML": 0,
-    "_NCOM": "",
-    "_X": "",
-    "V": "",
-    "_FFI": 1001,
-    "SRC": "",
-    "HEADER": "",
-}
-
-_show = (
-    "_FFI",
-    "SRC",
-    "NLHEAD",
-    "ONAME",
-    "ORG",
-    "SNAME",
-    "MNAME",
-    "IVOL",
-    "NVOL",
-    "DATE",
-    "RDATE",
-    "DX",
-    "XNAME",
-    "NV",
-    "VSCAL",
-    "VMISS",
-    "_VNAME",
-    "NSCOML",
-    "_SCOM",
-    "NNCOML",
-    "_NCOM",
-)
-
 
 ###############################################################################
 
@@ -101,26 +46,38 @@ class FFI1001(object):
     FFI 1001 class instance.
     """
 
-    __KEYS = list(_defaults.keys())
-
     def __init__(self, file=None, **kwargs):
-        # TODO : attrs should be declared explicitly
-        for k, v in _defaults.items():  # self.__INID.items():
-            setattr(self, k, v)
+        self.NLHEAD = 14  # minimum number of header lines is 14
+        self.ONAME = "data origin"
+        self.ORG = "organization"
+        self.SNAME = "sampling description"
+        self.MNAME = "mission name"
+        self.IVOL = 1
+        self.NVOL = 1
+        self.DATE = [1970, 1, 1]
+        self.RDATE = [1970, 1, 1]
+        self.DX = 0
+        self.XNAME = "x name"
+        self.NV = 1
+        self.VSCAL = ["1"]
+        self.VMISS = ["-9999"]
+        self._VNAME = ["v names"]
+        self.NSCOML = 0
+        self._SCOM = ["special comments"]
+        self.NNCOML = 0
+        self._NCOM = ["normal comments"]
+        self._X = [""]
+        self.V = [[""]]
+        self._SRC = "path to file"
+        self._HEADER = "file header"
+
         if file is not None:
             self.__from_file(file, **kwargs)
 
-    def __repr__(self):
-        s = "NASA Ames 1001\n---\n"
-        s += "".join([f"{k.strip('_')} : {self.__dict__[k]}\n" for k in _show])
-        return s
-
-    def __str__(self):
-        s = "NASA Ames 1001\n"
-        s += f"SRC: {self.SRC}\n---\n"
-        s += "\n".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[1:4])
-        s += "\n" + ", ".join(f"{k}: {getattr(self, k)}" for k in self.__KEYS[7:9])
-        return s
+    @property
+    def FFI(self):
+        """FFI is always 1001, as the class name indicates..."""
+        return 1001
 
     @property
     def SCOM(self):
@@ -169,11 +126,23 @@ class FFI1001(object):
         dx = int(dx) if np.isclose(dx, int(dx)) else dx
         self.DX = dx
 
+    @property
+    def V(self):
+        """Dependent variable"""
+        return self._V
+
+    @V.setter
+    def V(self, vlists):
+        assert (
+            len(vlists) == self.NV
+        ), f"try to set {len(vlists)} dependent variables, but VNAMES specify {self.NV}"
+        self._V = vlists
+
     # ------------------------------------------------------------------------------
     def __from_file(self, file, **kwargs):
         """Load NASA Ames 1001 from text file."""
         nadict = rw.na1001_cls_read(file, **kwargs)
-        for k in self.__KEYS:
+        for k in rw.KEYS:
             setattr(self, k, nadict[k])
 
     # ------------------------------------------------------------------------------
@@ -282,3 +251,42 @@ class FFI1001(object):
 
         """
         return tools.naDict_2_poldf(self.__dict__, **kwargs)
+
+    # ------------------------------------------------------------------------------
+    def __repr__(self):
+        s = f"NASA Ames {self.FFI}\n---\n"
+        s += "".join(
+            [
+                f"{k.strip('_')} : {self.__dict__[k]}\n"
+                for k in (
+                    "_SRC",
+                    "NLHEAD",
+                    "ONAME",
+                    "ORG",
+                    "SNAME",
+                    "MNAME",
+                    "IVOL",
+                    "NVOL",
+                    "DATE",
+                    "RDATE",
+                    "DX",
+                    "XNAME",
+                    "NV",
+                    "VSCAL",
+                    "VMISS",
+                    "_VNAME",
+                    "NSCOML",
+                    "_SCOM",
+                    "NNCOML",
+                    "_NCOM",
+                )
+            ]
+        )
+        return s
+
+    def __str__(self):
+        s = "NASA Ames 1001\n"
+        s += f"SRC: {self._SRC}\n---\n"
+        s += "\n".join(f"{k}: {getattr(self, k)}" for k in ["ONAME", "ORG", "SNAME"])
+        s += "\n" + ", ".join(f"{k}: {getattr(self, k)}" for k in ["DATE", "RDATE"])
+        return s
