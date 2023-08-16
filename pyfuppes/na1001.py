@@ -6,7 +6,6 @@ import numpy as np
 from .na1001_backend import nasa_ames_1001_rw as rw
 from .na1001_backend import nasa_ames_1001_tools as tools
 
-
 ###############################################################################
 
 
@@ -175,7 +174,7 @@ class FFI1001(object):
     # ------------------------------------------------------------------------------
     def to_dict_nparray(self, **kwargs):
         """
-        Make dictionary of numpy 1D arrays from ffi_1001 class instance.
+        Make dictionary of numpy 1D arrays from FFI1001 class instance.
 
         Parameters
         ----------
