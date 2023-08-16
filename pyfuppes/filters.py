@@ -140,7 +140,7 @@ def filter_jumps(
     if not np.isnan(vmiss):
         result[vmiss] = np.nan
     if remove_repeated:
-        result[~mask_repeated(result)] = np.nan
+        result[~mask_repeated(result, 2)] = np.nan
     mask = mask_jumps(result, threshold, look_ahead, abs_delta=abs_delta)
     result[~mask] = np.nan
     if interpol_jumps:

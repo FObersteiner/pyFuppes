@@ -25,5 +25,3 @@ n_cols = 4
 [T_P] # housekeeping data, temperatures and pressures
 min_n_lines = 2
 n_cols = 20     # not used unless [OSC]. n_cols is 19 for CARIBIC FAIRO.
-
-##

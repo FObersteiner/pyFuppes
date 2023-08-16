@@ -3,7 +3,6 @@
 
 import functools
 from copy import deepcopy
-from typing import Tuple
 
 import numpy as np
 import polars
@@ -14,7 +13,7 @@ from scipy import signal
 ###############################################################################
 
 
-def get_tcorr_parms(t, t_ref, fitorder):
+def get_tcorr_parms(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> np.ndarray:
     """Calculate fit parameters for time correction."""
     try:
         parms = np.polyfit(t, t - t_ref, fitorder)
@@ -26,7 +25,7 @@ def get_tcorr_parms(t, t_ref, fitorder):
 # -----------------------------------------------------------------------------
 
 
-def apply_tcorr_parms(t, parms):
+def apply_tcorr_parms(t: np.ndarray, parms: np.ndarray) -> np.ndarray:
     """Subtract fitted time correction from t."""
     return t - np.polyval(parms, t)
 
@@ -34,7 +33,9 @@ def apply_tcorr_parms(t, parms):
 # -----------------------------------------------------------------------------
 
 
-def time_correction(t, t_ref, fitorder):
+def time_correction(
+    t: np.ndarray, t_ref: np.ndarray, fitorder: int
+) -> dict[str, np.ndarray]:
     """
     Fit a polynomial to the delta between a time vector and a reference time vector.
 
@@ -61,7 +62,7 @@ def time_correction(t, t_ref, fitorder):
 
 def filter_dt_forward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> Tuple[int, polars.DataFrame]:
+) -> tuple[int, polars.DataFrame]:
     """
     Given a time series dataframe, ensure that the index is increasing strictly.
 
@@ -84,16 +85,16 @@ def filter_dt_forward(
     m = df[datetime_key].diff().fill_null(1) > 0
     while not m.all():
         if df.height == 1:
-            return (n_removed, df)
+            return (int(n_removed), df)
         df = df.filter(m)
         n_removed += (~m).sum()
         m = df[datetime_key].diff().fill_null(1) > 0
-    return (n_removed, df)
+    return (int(n_removed), df)
 
 
 def filter_dt_backward(
     df: polars.DataFrame, datetime_key: str = "datetime"
-) -> Tuple[int, polars.DataFrame]:
+) -> tuple[int, polars.DataFrame]:
     """
     As filter_dt_forward, but backwards filtering.
 
@@ -103,11 +104,11 @@ def filter_dt_backward(
     m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
     while not m.all():
         if df.height == 1:
-            return (n_removed, df)
+            return (int(n_removed), df)
         df = df.filter(m)
         n_removed += (~m).sum()
         m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
-    return (n_removed, df)
+    return (int(n_removed), df)
 
 
 ###############################################################################

@@ -3,8 +3,7 @@
 
 from cmath import phase, rect
 from copy import deepcopy
-from math import degrees, radians
-from math import cos, sin, atan2, pi
+from math import atan2, cos, degrees, pi, radians, sin
 
 import numpy as np
 import pandas as pd

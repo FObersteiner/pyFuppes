@@ -2,7 +2,7 @@
 """Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
 from datetime import datetime
-from math import cos, sin, acos, asin, radians, sqrt, degrees, floor
+from math import acos, asin, cos, degrees, floor, radians, sin, sqrt
 
 from geopy import distance
 from numba import njit

@@ -23,10 +23,11 @@ def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8"):
     """
     with open(file, "r", encoding=encoding) as csvfile:
         data = csvfile.read().splitlines()
-        if offset > 0:
-            data = data[offset:]
-        for i, line in enumerate(data):
-            data[i] = [v for v in line.split(delimiter) if v]
+    if offset > 0:
+        data = data[offset:]
+    separated = []
+    for line in data:
+        separated.append([v for v in line.split(delimiter) if v])
     return {item[0]: list(item[1:]) for item in zip(*data)}
 
 
