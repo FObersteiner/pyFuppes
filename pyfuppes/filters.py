@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """Filtering and Masking."""
 
+from typing import Union
+
 import numpy as np
 from numba import njit
 from scipy.interpolate import interp1d
@@ -8,7 +10,7 @@ from scipy.interpolate import interp1d
 ###############################################################################
 
 
-def mask_repeated(a, N, atol=1e-6):
+def mask_repeated(a: np.ndarray, N: int, atol: float = 1e-6) -> np.ndarray:
     """
     Mask elements that repeat more than N times.
 
@@ -37,7 +39,7 @@ def mask_repeated(a, N, atol=1e-6):
 
 
 @njit
-def mask_repeated_nb(arr, n, atol=1e-6):
+def mask_repeated_nb(arr: np.ndarray, n: int, atol: float = 1e-6) -> np.ndarray:
     """
     Mask elements that repeat more than N times, njit'ed version.
 
@@ -70,7 +72,12 @@ def mask_repeated_nb(arr, n, atol=1e-6):
 
 
 @njit
-def mask_jumps(arr, threshold, look_ahead, abs_delta=False):
+def mask_jumps(
+    arr: np.ndarray,
+    threshold: Union[float, int],
+    look_ahead: int,
+    abs_delta: bool = False,
+) -> np.ndarray:
     """
     Check elements of array "arr" if difference between subsequent elements exceeds threshold.
 
@@ -112,15 +119,15 @@ def mask_jumps(arr, threshold, look_ahead, abs_delta=False):
 
 
 def filter_jumps(
-    arr,
-    threshold,
-    look_ahead,
-    abs_delta=False,
-    vmiss=np.nan,
-    remove_repeated=False,
-    interpol_jumps=False,
-    interpol_kind="linear",
-):
+    arr: np.ndarray,
+    threshold: float,
+    look_ahead: int,
+    abs_delta: bool = False,
+    vmiss: float = np.nan,
+    remove_repeated: bool = False,
+    interpol_jumps: bool = False,
+    interpol_kind: str = "linear",
+) -> tuple[np.ndarray, np.ndarray]:
     """
     Wrap mask_jumps().
 
@@ -159,15 +166,15 @@ def filter_jumps(
 
 
 def filter_jumps_np(
-    v,
-    max_delta,
-    no_val=np.nan,
-    use_abs_delta=True,
-    reset_buffer_after=3,
-    remove_doubles=False,
-    interpol_jumps=False,
-    interpol_kind="linear",
-):
+    v: np.ndarray,
+    max_delta: float,
+    no_val: float = np.nan,
+    use_abs_delta: bool = True,
+    reset_buffer_after: int = 3,
+    remove_doubles: bool = False,
+    interpol_jumps: bool = False,
+    interpol_kind: str = "linear",
+) -> dict:
     """
     Mask jumps using numpy functions.
 
@@ -256,7 +263,9 @@ def filter_jumps_np(
 ###############################################################################
 
 
-def del_at_edge(v, n_cut, add=2, out_len="same"):
+def del_at_edge(
+    v: np.ndarray, n_cut: int, add: int = 2, out_len: str = "same"
+) -> np.ndarray:
     """
     Extend blocks of NaN elements in an array.
 

@@ -4,7 +4,7 @@
 from cmath import phase, rect
 from copy import deepcopy
 from math import atan2, cos, degrees, pi, radians, sin
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -16,7 +16,7 @@ from scipy.stats import circmean
 ###############################################################################
 
 
-def mean_angle(deg: list | np.ndarray | np.ma.masked_array) -> float:
+def mean_angle(deg: Union[list, np.ndarray, np.ma.masked_array]) -> float:
     """
     Calculate a mean angle.
 
@@ -98,7 +98,7 @@ def mean_angle_sc(deg: np.ndarray) -> float:
 
 
 def mean_day_frac(
-    dfr: list | np.ndarray | np.ma.masked_array, use_numba: bool = True
+    dfr: Union[list, np.ndarray, np.ma.masked_array], use_numba: bool = True
 ) -> float:
     """
     Calculate a mean day fraction (0-1) with mean_angle function.
@@ -212,7 +212,11 @@ def get_npnanmean(v: np.ndarray):
 
 
 def bin_y_of_t(
-    v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=True
+    v: np.ndarray,
+    bin_info: dict,
+    vmiss: float = np.nan,
+    return_type: str = "arit_mean",
+    use_numba: bool = True,
 ) -> np.ndarray:
     """
     Use the output of function "bin_time" or "bin_time_10s" to bin a variable 'v' that depends on a variable t.
@@ -391,7 +395,7 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.
 ###############################################################################
 
 
-def moving_avg(v: list | np.ndarray, N: int) -> list:
+def moving_avg(v: Union[list, np.ndarray], N: int) -> list:
     """
     Calculate a simple moving average.
 
@@ -475,7 +479,7 @@ def np_mvg_avg(
 
 
 def pd_mvg_avg(
-    v: list | np.ndarray, N: int, ip_ovr_nan: bool = False, min_periods: int = 1
+    v: Union[list, np.ndarray], N: int, ip_ovr_nan: bool = False, min_periods: int = 1
 ) -> np.ndarray:
     """
     Calculate moving average based on pandas dataframe rolling function.
