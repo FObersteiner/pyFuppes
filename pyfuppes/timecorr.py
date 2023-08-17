@@ -227,11 +227,11 @@ def xcorr_timelag(
     g = f_ip(xnorm)
 
     if show_plots:
-        p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")
-        p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")
-        plots = p0 + p1 + p2 + p3
+        p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")  # type: ignore
+        p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")  # type: ignore
+        plots = p0 + p1 + p2 + p3  # type: ignore
         lbls = [p.get_label() for p in plots]
-        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")
+        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")  # type: ignore
 
     # cross-correlate f vs. g (i.e. y1 vs. y2):
     corr = xcorr_func(f, g)
@@ -267,11 +267,11 @@ def xcorr_timelag(
     delay = delay_arr[select(corr)]
 
     if show_plots:
-        ax[1].plot(delay_arr, corr, "k", label="xcorr")
-        ax[1].axvline(x=delay, color="r", linewidth=2)
-        ax[1].set_xlabel("lag")
-        ax[1].set_ylabel("correlation coefficient")
-        ax[1].set_title(f"{ynames[1]} vs. {ynames[0]} lag: {delay:+.3f}")
+        ax[1].plot(delay_arr, corr, "k", label="xcorr")  # type: ignore
+        ax[1].axvline(x=delay, color="r", linewidth=2)  # type: ignore
+        ax[1].set_xlabel("lag")  # type: ignore
+        ax[1].set_ylabel("correlation coefficient")  # type: ignore
+        ax[1].set_title(f"{ynames[1]} vs. {ynames[0]} lag: {delay:+.3f}")  # type: ignore
 
     return delay
 

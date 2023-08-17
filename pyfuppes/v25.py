@@ -114,7 +114,7 @@ def _txt_2_dict(
 # -----------------------------------------------------------------------------
 
 
-def _to_list_of_Path(folders):
+def _to_list_of_Path(folders: list) -> list:
     """Turn input string or list of strings into a list of pathlib Path objects."""
     if not isinstance(folders, list):
         folders = [folders]
@@ -124,7 +124,7 @@ def _to_list_of_Path(folders):
 # -----------------------------------------------------------------------------
 
 
-def _insensitive_pattern(pattern):
+def _insensitive_pattern(pattern: str) -> str:
     """Return a case-insensitive pattern to use in glob.glob or path.glob."""
 
     def either(c):

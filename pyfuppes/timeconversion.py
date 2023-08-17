@@ -3,7 +3,7 @@
 
 from datetime import datetime, timedelta, timezone
 from operator import attrgetter
-from typing import Optional
+from typing import Optional, Union
 
 import numpy as np
 import xarray as xr
@@ -11,7 +11,7 @@ import xarray as xr
 ### HELPERS ###################################################################
 
 
-def _to_list(parm, is_scalar=False) -> tuple[list | np.ndarray, bool]:
+def _to_list(parm, is_scalar=False) -> tuple[Union[list, np.ndarray], bool]:
     """
     Convert input "parm" to a Python list object.
 
@@ -259,7 +259,7 @@ def mdns_2_dtobj(
 ###############################################################################
 
 
-def daysSince_2_dtobj(day0, days_since):
+def daysSince_2_dtobj(day0: datetime, days_since: Union[int, float]):
     """
     Convert a date and a floating point number "days_since" to a datetime object.
 
@@ -284,7 +284,9 @@ def daysSince_2_dtobj(day0, days_since):
 ###############################################################################
 
 
-def dtstr_2_posix(timestring, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz=timezone.utc):
+def dtstr_2_posix(
+    timestring: str, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz: timezone = timezone.utc
+):
     """
     Convert timestring without time zone information to Unix time.
 

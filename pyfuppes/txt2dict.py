@@ -5,7 +5,7 @@
 ###############################################################################
 
 
-def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8"):
+def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8") -> dict:
     """
     Most basic csv reader (delimiter-separated text file).
 
@@ -46,7 +46,7 @@ def txt_2_dict_simple(
     keys_upper=False,
     preserve_empty=True,
     skip_empty_lines=False,
-):
+) -> dict:
     """
     Read csv with header.
 
