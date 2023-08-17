@@ -4,6 +4,7 @@
 from cmath import phase, rect
 from copy import deepcopy
 from math import atan2, cos, degrees, pi, radians, sin
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -15,7 +16,7 @@ from scipy.stats import circmean
 ###############################################################################
 
 
-def mean_angle(deg):
+def mean_angle(deg: list | np.ndarray | np.ma.masked_array) -> float:
     """
     Calculate a mean angle.
 
@@ -30,7 +31,7 @@ def mean_angle(deg):
     -------
         mean of deg (float)
     """
-    if np.ma.isMaskedArray(deg):
+    if isinstance(deg, np.ma.masked_array):
         deg = deg.data
     elif isinstance(deg, np.ndarray):
         deg = deg[np.isfinite(deg)]
@@ -47,7 +48,7 @@ def mean_angle(deg):
 
 
 @njit
-def mean_angle_numba(angles):
+def mean_angle_numba(angles: np.ndarray) -> float:
     """
     mean_angle(), numba-JIT compiled.
 
@@ -75,7 +76,7 @@ def mean_angle_numba(angles):
 ###############################################################################
 
 
-def mean_angle_sc(deg):
+def mean_angle_sc(deg: np.ndarray) -> float:
     """
     scipy.stats.circmean-based version of mean_angle().
     """
@@ -86,17 +87,19 @@ def mean_angle_sc(deg):
 
     result = np.rad2deg(circmean(np.deg2rad(deg), nan_policy="omit"))
     if np.isclose(result, 0):
-        return 0
+        return 0.0
 
     if result > 180:  # map to +-180 for consistency with other functions
         result -= 360
-    return result
+    return float(result)
 
 
 ###############################################################################
 
 
-def mean_day_frac(dfr, use_numba=True):
+def mean_day_frac(
+    dfr: list | np.ndarray | np.ma.masked_array, use_numba: bool = True
+) -> float:
     """
     Calculate a mean day fraction (0-1) with mean_angle function.
 
@@ -106,23 +109,25 @@ def mean_day_frac(dfr, use_numba=True):
     - if input parameter dfr contains NaN or is a numpy masked array, missing
       values will be removed before the calculation.
     """
-    if np.ma.isMaskedArray(dfr):
-        dfr = dfr.data
+    if isinstance(dfr, np.ma.masked_array):
+        _dfr = dfr.data
     elif isinstance(dfr, np.ndarray):
-        dfr = dfr[np.isfinite(dfr)]
+        _dfr = dfr[np.isfinite(dfr)]
     else:
-        dfr = np.array(dfr, dtype=float)
-        dfr = dfr[np.isfinite(dfr)]
+        _dfr = np.array(dfr, dtype=float)
+        _dfr = _dfr[np.isfinite(_dfr)]
 
-    if len(dfr) == 0:
+    # _dfr is now guaranteed to be of np.ndarray
+
+    if len(_dfr) == 0:
         return np.nan
-    elif len(dfr) == 1:
-        return dfr[0]
+    elif len(_dfr) == 1:
+        return _dfr[0]
 
-    deg_mean = mean_angle_numba(dfr * 360) if use_numba else mean_angle(dfr * 360)
+    deg_mean = mean_angle_numba(_dfr * 360) if use_numba else mean_angle(_dfr * 360)
 
     if np.isclose(deg_mean, 0):
-        return 0
+        return 0.0
 
     if deg_mean < 0:  # account for mean angle between -180 and +180
         deg_mean += 360
@@ -133,7 +138,9 @@ def mean_day_frac(dfr, use_numba=True):
 ###############################################################################
 
 
-def bin_t_10s(t, force_t_range=True, drop_empty=True):
+def bin_t_10s(
+    t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True
+) -> dict[str, Optional[np.ndarray]]:
     """
     Bin a time axis to 10 s intervals around 5.
 
@@ -199,12 +206,14 @@ def bin_t_10s(t, force_t_range=True, drop_empty=True):
 
 
 @njit
-def get_npnanmean(v):
+def get_npnanmean(v: np.ndarray):
     """nan-mean, numba-JIT compiled."""
     return np.nanmean(v)
 
 
-def bin_y_of_t(v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=True):
+def bin_y_of_t(
+    v, bin_info, vmiss=np.nan, return_type="arit_mean", use_numba=True
+) -> np.ndarray:
     """
     Use the output of function "bin_time" or "bin_time_10s" to bin a variable 'v' that depends on a variable t.
 
@@ -300,7 +309,7 @@ def bin_by_pdresample(
     offset=pd.Timedelta(seconds=5),
     force_t_range=True,
     drop_empty=True,
-):
+) -> pd.DataFrame:
     """
     Use pandas DataFrame method "resample" for binning along a time axis.
 
@@ -354,7 +363,7 @@ def bin_by_pdresample(
 ###############################################################################
 
 
-def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
+def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.ndarray:
     """
     Bin with numpy.add.reduceat (1D).
 
@@ -382,7 +391,7 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan=True):
 ###############################################################################
 
 
-def moving_avg(v, N):
+def moving_avg(v: list | np.ndarray, N: int) -> list:
     """
     Calculate a simple moving average.
 
@@ -411,7 +420,13 @@ def moving_avg(v, N):
 ###############################################################################
 
 
-def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
+def np_mvg_avg(
+    v: np.ndarray,
+    N: int,
+    ip_ovr_nan: bool = False,
+    mode: str = "same",
+    edges: str = "expand",
+) -> np.ndarray:
     """
     Calculate moving average based on numpy convolution function.
 
@@ -437,8 +452,6 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
         averaged data.
     """
     # TODO: test missing !
-    N = int(N)
-
     if ip_ovr_nan:
         x = np.linspace(0, len(v) - 1, num=len(v))
         fip = interp1d(
@@ -461,7 +474,9 @@ def np_mvg_avg(v, N, ip_ovr_nan=False, mode="same", edges="expand"):
 ###############################################################################
 
 
-def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
+def pd_mvg_avg(
+    v: list | np.ndarray, N: int, ip_ovr_nan: bool = False, min_periods: int = 1
+) -> np.ndarray:
     """
     Calculate moving average based on pandas dataframe rolling function.
 
@@ -503,7 +518,7 @@ def pd_mvg_avg(v, N, ip_ovr_nan=False, min_periods=1):
 ###############################################################################
 
 
-def sp_mvg_avg(v, N, edges="nearest"):
+def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     """
     Use scipy's uniform_filter1d to calculate a moving average.
 
@@ -536,7 +551,9 @@ def sp_mvg_avg(v, N, edges="nearest"):
 ###############################################################################
 
 
-def map_dependent(xref, xcmp, vcmp, vmiss=np.nan):
+def map_dependent(
+    xref: np.ndarray, xcmp: np.ndarray, vcmp: np.ndarray, vmiss: float = np.nan
+) -> np.ndarray:
     """
     Map a variable "vcmp" depending on variable "xcmp" to an independent variable "xref".
 
