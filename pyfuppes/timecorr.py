@@ -3,6 +3,7 @@
 
 import functools
 from copy import deepcopy
+from typing import Callable, Optional
 
 import numpy as np
 import polars
@@ -33,9 +34,7 @@ def apply_tcorr_parms(t: np.ndarray, parms: np.ndarray) -> np.ndarray:
 # -----------------------------------------------------------------------------
 
 
-def time_correction(
-    t: np.ndarray, t_ref: np.ndarray, fitorder: int
-) -> dict[str, np.ndarray]:
+def time_correction(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str, np.ndarray]:
     """
     Fit a polynomial to the delta between a time vector and a reference time vector.
 
@@ -115,21 +114,21 @@ def filter_dt_backward(
 
 
 def xcorr_timelag(
-    x1,
-    y1,
-    x2,
-    y2,
-    xrange=None,
-    upscale=100,
-    rmv_NaN=True,
-    pad_to_zero=True,
-    normalize_y=True,
+    x1: np.ndarray,
+    y1: np.ndarray,
+    x2: np.ndarray,
+    y2: np.ndarray,
+    xrange: Optional[tuple[float, float]] = None,
+    upscale: int = 100,
+    rmv_NaN: bool = True,
+    pad_to_zero: bool = True,
+    normalize_y: bool = True,
     # detrend_y=True, # possible future feature
-    show_plots=True,
-    ynames=("f", "g"),
-    corrmode="positive",
-    boundaries=None,
-    xcorr_func=signal.correlate,
+    show_plots: bool = True,
+    ynames: tuple[str, str] = ("f", "g"),
+    corrmode: str = "positive",
+    boundaries: Optional[tuple[float, float]] = None,
+    xcorr_func: Callable = signal.correlate,
 ) -> float:
     """
     Analyze time lag between two time series f and g by cross-correlation.
@@ -201,7 +200,7 @@ def xcorr_timelag(
         y2 /= np.nanmax(y2)
 
     if show_plots:
-        fig, ax = plt.subplots(2, 1, figsize=(14, 10))
+        _, ax = plt.subplots(2, 1, figsize=(14, 10))
         plt.subplots_adjust(top=0.94, bottom=0.06, left=0.06, right=0.94)
         p0 = ax[0].plot(x1, y1, "r", label=f"{ynames[0]}")
         ax[0].set_xlabel("x", weight="bold")
@@ -238,15 +237,11 @@ def xcorr_timelag(
 
     # need to know used correl function to make delay array...
     # check first if functools.partial was used.
-    usedfunc = (
-        xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func
-    )
+    usedfunc = xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func
     if usedfunc.__code__ == np.correlate.__code__:
         delay_arr = np.linspace(-0.5 * n / upscale, 0.5 * n / upscale, int(n))[::-1]
     elif usedfunc.__code__ == sc.signal.correlate.__code__:
-        delay_arr = (
-            np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
-        )
+        delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
     else:
         raise ValueError(f"unknown correl func: {repr(usedfunc)}")
 

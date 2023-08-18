@@ -1,7 +1,11 @@
 # -*- coding: utf-8 -*-
 """NASA Ames FFI 1001 text file format reader / writer."""
+from pathlib import Path
+from typing import Union
 
 import numpy as np
+import pandas as pd
+import polars as pl
 
 from .na1001_backend import nasa_ames_1001_rw as rw
 from .na1001_backend import nasa_ames_1001_tools as tools
@@ -79,42 +83,42 @@ class FFI1001(object):
         return 1001
 
     @property
-    def SCOM(self):
+    def SCOM(self) -> list[str]:
         """Special comments block"""
         return self._SCOM
 
     @SCOM.setter
-    def SCOM(self, value):
+    def SCOM(self, value: list[str]):
         self._SCOM, self.NSCOML = value, len(value)
         self.NLHEAD = 14 + self.NSCOML + self.NNCOML + self.NV
 
     @property
-    def NCOM(self):
+    def NCOM(self) -> list[str]:
         """Normal comments block"""
         return self._NCOM
 
     @NCOM.setter
-    def NCOM(self, value):
+    def NCOM(self, value: list[str]):
         self._NCOM, self.NNCOML = value, len(value)
         self.NLHEAD = 14 + self.NSCOML + self.NNCOML + self.NV
 
     @property
-    def VNAME(self):
+    def VNAME(self) -> list[str]:
         """Variables name block"""
         return self._VNAME
 
     @VNAME.setter
-    def VNAME(self, value):
+    def VNAME(self, value: list[str]):
         self._VNAME, self.NV = value, len(value)
         self.NLHEAD = 14 + self.NSCOML + self.NNCOML
 
     @property
-    def X(self):
+    def X(self) -> list[str]:
         """Independent variable"""
         return self._X
 
     @X.setter
-    def X(self, xarr):
+    def X(self, xarr: list[str]):
         self._X = xarr
         # calculate dx as unique diffs in X,
         # unique with floats might fail, so add a round to 4 decimals:
@@ -126,26 +130,26 @@ class FFI1001(object):
         self.DX = dx
 
     @property
-    def V(self):
+    def V(self) -> list[list[str],]:
         """Dependent variable"""
         return self._V
 
     @V.setter
-    def V(self, vlists):
+    def V(self, vlists: list[list[str],]):
         assert (
             len(vlists) == self.NV
         ), f"try to set {len(vlists)} dependent variables, but VNAMES specify {self.NV}"
         self._V = vlists
 
     # ------------------------------------------------------------------------------
-    def __from_file(self, file, **kwargs):
+    def __from_file(self, file: Union[str, Path], **kwargs):
         """Load NASA Ames 1001 from text file."""
         nadict = rw.na1001_cls_read(file, **kwargs)
         for k in rw.KEYS:
             setattr(self, k, nadict[k])
 
     # ------------------------------------------------------------------------------
-    def to_file(self, file, **kwargs):
+    def to_file(self, file: Union[str, Path], **kwargs):
         """
         Write NASA Ames 1001 file from populated ffi_1001 class.
 
@@ -172,7 +176,7 @@ class FFI1001(object):
         return io
 
     # ------------------------------------------------------------------------------
-    def to_dict_nparray(self, **kwargs):
+    def to_dict_nparray(self, **kwargs) -> dict[str, np.ndarray]:
         """
         Make dictionary of numpy 1D arrays from FFI1001 class instance.
 
@@ -204,7 +208,7 @@ class FFI1001(object):
         return tools.naDict_2_npndarr(self.__dict__, **kwargs)
 
     # ------------------------------------------------------------------------------
-    def to_pddf(self, **kwargs):
+    def to_pddf(self, **kwargs) -> pd.DataFrame:
         """
         Make a pandas DataFrame from NA 1001 data (X and V).
 
@@ -228,7 +232,7 @@ class FFI1001(object):
         return tools.naDict_2_pddf(self.__dict__, **kwargs)
 
     # ------------------------------------------------------------------------------
-    def to_poldf(self, **kwargs):
+    def to_poldf(self, **kwargs) -> pl.DataFrame:
         """
         Make a polars DataFrame from NA 1001 data (X and V).
 
@@ -252,7 +256,7 @@ class FFI1001(object):
         return tools.naDict_2_poldf(self.__dict__, **kwargs)
 
     # ------------------------------------------------------------------------------
-    def __repr__(self):
+    def __repr__(self) -> str:
         s = f"NASA Ames {self.FFI}\n---\n"
         s += "".join(
             [
@@ -283,7 +287,7 @@ class FFI1001(object):
         )
         return s
 
-    def __str__(self):
+    def __str__(self) -> str:
         s = "NASA Ames 1001\n"
         s += f"SRC: {self._SRC}\n---\n"
         s += "\n".join(f"{k}: {getattr(self, k)}" for k in ["ONAME", "ORG", "SNAME"])

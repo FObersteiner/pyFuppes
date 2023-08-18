@@ -2,11 +2,14 @@
 """Number to string and vice versa."""
 
 import re
+from typing import Union
+
+import numpy as np
 
 ###############################################################################
 
 
-class NumStr:
+class NumStr(object):
 
     """Analyse the format of a string representing a number."""
 
@@ -99,7 +102,9 @@ class NumStr:
 ###############################################################################
 
 
-def dec2str_stripped(num, dec_places=3, strip="right"):
+def dec2str_stripped(
+    num: Union[float, list, np.ndarray], dec_places: int = 3, strip: str = "right"
+):
     """
     Convert floating point number to string, with zeros stripped.
 

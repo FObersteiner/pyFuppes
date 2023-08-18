@@ -58,9 +58,7 @@ class TestNa1001(unittest.TestCase):
     def test_validate(self):
         # cases
         # (filepath, expect_fail?)
-        cases = sorted(
-            (f, "invalid" in f.name) for f in (src / "validate_na").glob("*.txt")
-        )
+        cases = sorted((f, "invalid" in f.name) for f in (src / "validate_na").glob("*.txt"))
         self.assertNotEqual([], cases)
         for path, expect_fail in cases:
             if expect_fail:

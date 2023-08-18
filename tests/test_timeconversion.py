@@ -71,9 +71,7 @@ class TestTimeconv(unittest.TestCase):
 
     def test_dtstr_2_posix(self):
         result = timeconversion.dtstr_2_posix("2020-05-15", "%Y-%m-%d")
-        self.assertAlmostEqual(
-            result, datetime(2020, 5, 15, tzinfo=timezone.utc).timestamp()
-        )
+        self.assertAlmostEqual(result, datetime(2020, 5, 15, tzinfo=timezone.utc).timestamp())
 
 
 if __name__ == "__main__":

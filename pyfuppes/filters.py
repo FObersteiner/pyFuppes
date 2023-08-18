@@ -174,7 +174,7 @@ def filter_jumps_np(
     remove_doubles: bool = False,
     interpol_jumps: bool = False,
     interpol_kind: str = "linear",
-) -> dict:
+) -> dict[str, np.ndarray]:
     """
     Mask jumps using numpy functions.
 
@@ -263,9 +263,7 @@ def filter_jumps_np(
 ###############################################################################
 
 
-def del_at_edge(
-    v: np.ndarray, n_cut: int, add: int = 2, out_len: str = "same"
-) -> np.ndarray:
+def del_at_edge(v: np.ndarray, n_cut: int, add: int = 2, out_len: str = "same") -> np.ndarray:
     """
     Extend blocks of NaN elements in an array.
 
@@ -275,9 +273,7 @@ def del_at_edge(
     """
     tf = np.isfinite(v) * 1.0
 
-    mask = np.convolve(
-        tf, np.ones((int(n_cut + add),)) / int(n_cut + add), mode=out_len
-    )
+    mask = np.convolve(tf, np.ones((int(n_cut + add),)) / int(n_cut + add), mode=out_len)
 
     if tf[0] > 0.9:
         mask[0] = 1.0

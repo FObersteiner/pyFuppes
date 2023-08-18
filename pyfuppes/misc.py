@@ -3,6 +3,7 @@
 
 import os
 from pathlib import Path
+from typing import Any, Callable, Optional, Union
 
 import numpy as np
 
@@ -10,7 +11,13 @@ import numpy as np
 
 
 def print_progressbar(
-    iteration, total, prefix="", suffix="", decimals=1, length=100, fill="█"
+    iteration: int,
+    total: int,
+    prefix: str = "",
+    suffix: str = "",
+    decimals: int = 1,
+    length: int = 100,
+    fill: str = "█",
 ):
     """
     Print a progress bar.
@@ -58,7 +65,7 @@ def print_progressbar(
 ###############################################################################
 
 
-def find_youngest_file(path, pattern, n=1):
+def find_youngest_file(path: Path, pattern: str, n: int = 1) -> Optional[list[Path]]:
     """
     Find the file that matches a pattern and has the highest modification timestamp if there are multiple files that match the pattern.
 
@@ -86,7 +93,7 @@ def find_youngest_file(path, pattern, n=1):
 ###############################################################################
 
 
-def checkbytes_lt128(file):
+def checkbytes_lt128(file: Union[str, Path]) -> bool:
     """
     Check if all bytes of a file are less than decimal 128.
 
@@ -102,7 +109,7 @@ def checkbytes_lt128(file):
 ###############################################################################
 
 
-def find_fist_elem(arr, val, condition):
+def find_fist_elem(arr: Union[list, np.ndarray], val: Any, condition: Callable) -> Optional[Any]:
     """
     Find the first element in arr that gives (arr[ix] condition val) == True.
 
@@ -124,7 +131,7 @@ def find_fist_elem(arr, val, condition):
 ###############################################################################
 
 
-def list_chng_elem_index(lst, element, new_index):
+def list_chng_elem_index(lst: list, element: Any, new_index: int) -> Optional[list]:
     """
     Change the index of an element in a list.
 
@@ -141,7 +148,7 @@ def list_chng_elem_index(lst, element, new_index):
 ###############################################################################
 
 
-def set_compare(a, b):
+def set_compare(a: set, b: set) -> tuple[set, set, set]:
     """
     Compare two iterables a and b. set() is used for comparison, so only unique elements will be considered.
 

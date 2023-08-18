@@ -1,11 +1,15 @@
 # -*- coding: utf-8 -*-
 """Text file to dictionary."""
 
+from pathlib import Path
+from typing import Union
 
 ###############################################################################
 
 
-def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8") -> dict:
+def txt_2_dict_basic(
+    file: Union[str, Path], delimiter: str, *, offset: int = 0, encoding: str = "utf-8"
+) -> dict[str, list[str]]:
     """
     Most basic csv reader (delimiter-separated text file).
 
@@ -25,28 +29,29 @@ def txt_2_dict_basic(file, delimiter, *, offset=0, encoding="utf-8") -> dict:
         data = csvfile.read().splitlines()
     if offset > 0:
         data = data[offset:]
+
     separated = []
     for line in data:
         separated.append([v for v in line.split(delimiter) if v])
-    return {item[0]: list(item[1:]) for item in zip(*data)}
+    return {item[0]: list(item[1:]) for item in zip(*separated)}
 
 
 ###############################################################################
 
 
 def txt_2_dict_simple(
-    file,
-    sep=";",
-    colhdr_ix=0,
+    file: Union[str, Path],
+    sep: str = ";",
+    colhdr_ix: int = 0,
     *,
-    encoding="utf-8",
-    to_float=False,
-    ignore_repeated_sep=False,
-    ignore_colhdr=False,
-    keys_upper=False,
-    preserve_empty=True,
-    skip_empty_lines=False,
-) -> dict:
+    encoding: str = "utf-8",
+    to_float: bool = False,
+    ignore_repeated_sep: bool = False,
+    ignore_colhdr: bool = False,
+    keys_upper: bool = False,
+    preserve_empty: bool = True,
+    skip_empty_lines: bool = False,
+) -> dict[str, Union[list[str], dict[str, list[str]]]]:
     """
     Read csv with header.
 

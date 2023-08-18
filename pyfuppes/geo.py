@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
-from datetime import datetime
+from datetime import datetime, timezone
 from math import acos, asin, cos, degrees, floor, radians, sin, sqrt
 
+import numpy as np
 from geopy import distance
 from numba import njit
 from pysolar.solar import get_altitude
@@ -12,7 +13,7 @@ from pysolar.solar import get_altitude
 
 
 @njit
-def haversine_dist(lat, lon):
+def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
     """Calculate Haversine distance along lat/lon coordinates in km. Code gets numba-JIT compiled."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     R = 6372.8  # approximate radius of earth in km
@@ -39,21 +40,23 @@ def haversine_dist(lat, lon):
 ###############################################################################
 
 
-def geodesic_dist(lat, lon):
+def geodesic_dist(lat: np.ndarray, lon: np.ndarray) -> float:
     """Calculate geodesic distance along lat/lon coordinates using geopy module."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     dist = 0.0
     for j in range(lat.shape[0] - 1):
-        dist += distance.geodesic(
-            (lat[j], lon[j]), (lat[j + 1], lon[j + 1]), ellipsoid="WGS-84"
-        ).km
+        dist += distance.geodesic((lat[j], lon[j]), (lat[j + 1], lon[j + 1]), ellipsoid="WGS-84").km
     return dist
 
 
 ###############################################################################
 
 
-def sza_pysolar(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
+def sza_pysolar(
+    UTC: datetime = datetime.now(timezone.utc),
+    latitude: float = 52.37,
+    longitude: float = 9.72,
+) -> float:
     """Compute solar zenith angle with get_altitude function from pysolar package."""
     return 90 - get_altitude(latitude, longitude, UTC)
 
@@ -61,7 +64,11 @@ def sza_pysolar(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
 ###############################################################################
 
 
-def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
+def sza(
+    UTC: datetime = datetime.now(timezone.utc),
+    latitude: float = 52.37,
+    longitude: float = 9.72,
+) -> float:
     """
     Calculate the solar zenith angle (in degree).
 
@@ -105,23 +112,19 @@ def sza(UTC=datetime.utcnow(), latitude=52.37, longitude=9.72):
 
     # sun declination (using DIN 5034-2)
     declination = (
-        0.3948
-        - 23.2559 * cos2(J + 9.1)
-        - 0.3915 * cos2(2 * J + 5.4)
-        - 0.1764 * cos2(3 * J + 26.0)
+        0.3948 - 23.2559 * cos2(J + 9.1) - 0.3915 * cos2(2 * J + 5.4) - 0.1764 * cos2(3 * J + 26.0)
     )
 
     # solar zenith angle
     return acos2(
-        sin2(latitude) * sin2(declination)
-        + cos2(hour_angle) * cos2(latitude) * cos2(declination)
+        sin2(latitude) * sin2(declination) + cos2(hour_angle) * cos2(latitude) * cos2(declination)
     )
 
 
 ###############################################################################
 
 
-def get_EoT(date_ts):
+def get_EoT(date_ts: datetime) -> float:
     """
     Calculate equation of time.
 
@@ -136,7 +139,9 @@ def get_EoT(date_ts):
 ###############################################################################
 
 
-def get_LSTdayFrac(longitude, tz_offset, EoT, days_delta, time_delta):
+def get_LSTdayFrac(
+    longitude: float, tz_offset: float, EoT: float, days_delta: float, time_delta: float
+) -> float:
     """
     Calculate local solar time as a fraction of a day.
 

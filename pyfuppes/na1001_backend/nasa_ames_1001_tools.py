@@ -28,9 +28,7 @@ def naDict_2_npndarr(
 
     See class method for detailled docstring.
     """
-    npDict = {
-        naDict["XNAME"].split(splitVname)[0]: np.array(naDict["_X"], dtype=xdtype)
-    }
+    npDict = {naDict["XNAME"].split(splitVname)[0]: np.array(naDict["_X"], dtype=xdtype)}
 
     if not selVnames:
         selVnames = [n.split(splitVname)[0] for n in naDict["_VNAME"]]
@@ -38,9 +36,7 @@ def naDict_2_npndarr(
     # for each parameter, find its index in naDict['V']
     for parm in selVnames:
         if splitVname:
-            ix = [name.split(splitVname)[splitIdx] for name in naDict["_VNAME"]].index(
-                parm
-            )
+            ix = [name.split(splitVname)[splitIdx] for name in naDict["_VNAME"]].index(parm)
         else:
             ix = naDict["_VNAME"].index(parm)
         npDict[parm] = np.array(naDict["_V"][ix], dtype=vdtype)
@@ -59,9 +55,7 @@ def naDict_2_npndarr(
 ###############################################################################
 
 
-def naDict_2_pddf(
-    naDict, sep_colhdr="\t", idx_colhdr=-1, dtype=float, add_datetime_index=False
-):
+def naDict_2_pddf(naDict, sep_colhdr="\t", idx_colhdr=-1, dtype=float, add_datetime_index=False):
     """
     Convert variables from na1001 class instance to pandas dataframe.
 

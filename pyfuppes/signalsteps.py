@@ -47,12 +47,8 @@ class SteppedData:
     ):
         """You guessed it: a function to detect steps in the signal."""
         if extend_edges:
-            self.values = np.insert(
-                self.values, 0, np.repeat(self.values[0], look_around[0])
-            )
-            self.values = np.append(
-                self.values, np.repeat(self.values[-1], look_around[1])
-            )
+            self.values = np.insert(self.values, 0, np.repeat(self.values[0], look_around[0]))
+            self.values = np.append(self.values, np.repeat(self.values[-1], look_around[1]))
         self.log = np.zeros(len(self.values))
         clrs = ["k"] * len(self.values)
         for i in range(look_around[0], len(self.values) - look_around[1]):
@@ -98,8 +94,8 @@ class SteppedData:
             x_all = np.array(list(range(len(self.values))))
             x_plat = x_all[self.ix_plat]
             _, ax = plt.subplots()
-            ax.scatter(x_all, self.values, c=clrs)
-            ax.plot(x_plat, self.values_plat, color="g")
+            ax.scatter(x_all, self.values, c=clrs)  # type: ignore
+            ax.plot(x_plat, self.values_plat, color="g")  # type: ignore
 
         return self
 
@@ -119,9 +115,7 @@ class SteppedData:
                 self.plat_median.append(np.median(self.values_plat[ix0:ix1]))
                 if ix1 - ix0 > 1:
                     self.plat_stddev.append(np.std(self.values_plat[ix0:ix1]))
-                    self.plat_eom.append(
-                        self.plat_stddev[-1] / np.sqrt(self.plat_nv[-1])
-                    )
+                    self.plat_eom.append(self.plat_stddev[-1] / np.sqrt(self.plat_nv[-1]))
                     self.plat_rsd.append(self.plat_stddev[-1] / self.plat_mean[-1])
                 else:
                     self.plat_stddev.append(np.nan)

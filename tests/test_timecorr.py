@@ -11,9 +11,7 @@ from pyfuppes import timecorr
 def _make_df(dt_list):
     df = pl.DataFrame({"datetime": dt_list, "values": list(range(len(dt_list)))})
     return df.with_columns(
-        pl.col("datetime")
-        .str.strptime(pl.Datetime, format="%Y-%m-%d")
-        .cast(pl.Datetime)
+        pl.col("datetime").str.strptime(pl.Datetime, format="%Y-%m-%d").cast(pl.Datetime)
     )
 
 
@@ -178,9 +176,7 @@ class TestTimecorr(unittest.TestCase):
         x1 = 1 * x0 + shift
         f = sum([np.sin(2 * np.pi * i * x0 / 10) for i in range(1, 5)])
         g = sum([np.sin(2 * np.pi * i * x1 / 10) for i in range(1, 5)])
-        lag = timecorr.xcorr_timelag(
-            x0, f, x0, g, xrange=(x0.min(), x1.max()), show_plots=False
-        )
+        lag = timecorr.xcorr_timelag(x0, f, x0, g, xrange=(x0.min(), x1.max()), show_plots=False)
         # print(l, shift*-1)
         # shift is 90... expect within 2%
         self.assertTrue(abs(lag - 3) < (3 * 0.02))

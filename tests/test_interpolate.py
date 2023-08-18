@@ -122,9 +122,7 @@ class TestInterpolate(unittest.TestCase):
                 bounds_error=True,  # no effect with pl_Series_ip1d_lite
             )
             self.assertIsNone(
-                assert_series_equal(
-                    df_dst["v1_ip"], pl.Series("v1_ip", [1.5, 3.5, 5.5])
-                )
+                assert_series_equal(df_dst["v1_ip"], pl.Series("v1_ip", [1.5, 3.5, 5.5]))
             )
 
 

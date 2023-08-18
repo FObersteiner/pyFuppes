@@ -238,8 +238,7 @@ def bin_y_of_t(
         raise TypeError("Please pass np.ndarray to function.")
 
     if not any(
-        v.dtype == np.dtype(t)
-        for t in ("int16", "int32", "int64", "float16", "float32", "float64")
+        v.dtype == np.dtype(t) for t in ("int16", "int32", "int64", "float16", "float32", "float64")
     ):
         raise TypeError("Please pass valid dtype, int or float.")
 
@@ -260,18 +259,12 @@ def bin_y_of_t(
 
     if return_type == "arit_mean":
         if use_numba:
-            v_binned = [
-                get_npnanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
-            ]
+            v_binned = [get_npnanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
-            v_binned = [
-                np.nanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
-            ]
+            v_binned = [np.nanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
     elif return_type == "mean_day_frac":
         if use_numba:
-            v_binned = [
-                mean_day_frac(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
-            ]
+            v_binned = [mean_day_frac(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
             v_binned = [
                 mean_day_frac(_v[vd_bins == bin_no], use_numba=False)
@@ -279,13 +272,9 @@ def bin_y_of_t(
             ]
     elif return_type == "mean_angle":
         if use_numba:
-            v_binned = [
-                mean_angle_numba(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
-            ]
+            v_binned = [mean_angle_numba(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
-            v_binned = [
-                mean_angle(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)
-            ]
+            v_binned = [mean_angle(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
 
     result = np.array(v_binned)
 
@@ -307,12 +296,12 @@ def bin_y_of_t(
 
 
 def bin_by_pdresample(
-    t,
-    v,
-    rule="10S",
-    offset=pd.Timedelta(seconds=5),
-    force_t_range=True,
-    drop_empty=True,
+    t: np.ndarray,
+    v: np.ndarray,
+    rule: str = "10S",
+    offset: pd.Timedelta = pd.Timedelta(seconds=5),
+    force_t_range: bool = True,
+    drop_empty: bool = True,
 ) -> pd.DataFrame:
     """
     Use pandas DataFrame method "resample" for binning along a time axis.
@@ -509,9 +498,7 @@ def pd_mvg_avg(
     min_periods = 1 if min_periods < 1 else min_periods
 
     df = pd.DataFrame({"v": v})
-    df["rollmean"] = (
-        df["v"].rolling(int(N), center=True, min_periods=min_periods).mean()
-    )
+    df["rollmean"] = df["v"].rolling(int(N), center=True, min_periods=min_periods).mean()
     if ip_ovr_nan:
         df["ip"] = df["rollmean"].interpolate()
         return df["ip"].values

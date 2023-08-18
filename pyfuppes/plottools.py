@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helpers to format plots."""
+from typing import Optional, Union
 
 import numpy as np
 
@@ -7,8 +8,13 @@ import numpy as np
 
 
 def get_plot_range(
-    v, add_percent=5, v_min_lim=None, v_max_lim=None, xrange=None, x=None
-):
+    v: Union[list, np.ndarray, np.ma.masked_array],
+    add_percent: float = 5,
+    v_min_lim: Optional[float] = None,
+    v_max_lim: Optional[float] = None,
+    xrange: Optional[list[float]] = None,
+    x: Optional[Union[list, np.ndarray]] = None,
+) -> list[float]:
     """
     Adjust y-axis range of matplotlib pyplot for a given vector v.
 
@@ -33,7 +39,7 @@ def get_plot_range(
         lower and upper limit.
 
     """
-    if hasattr(v, "mask"):  # numpy masked array: only use non-masked values
+    if isinstance(v, np.ma.masked_array):
         v = v[~v.mask]
 
     if not isinstance(v, np.ndarray):
@@ -70,7 +76,7 @@ def get_plot_range(
 ###############################################################################
 
 
-def nticks_yrange(yrange, nticks, to_multiples_of=10):
+def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -> list[float]:
     """
     Update a plot yrange so that it fits nicely into a certain number of ticks.
 

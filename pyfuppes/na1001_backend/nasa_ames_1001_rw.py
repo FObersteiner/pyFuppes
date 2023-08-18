@@ -75,9 +75,7 @@ def na1001_cls_read(
             pass
         else:
             if enc != "ascii":
-                print(
-                    f"warning: non-ascii encoding '{enc}' used in file {na_1001['SRC']}"
-                )
+                print(f"warning: non-ascii encoding '{enc}' used in file {na_1001['SRC']}")
             break  # found a working encoding
     if not decoded:
         raise ValueError(f"could not decode input (ASCII-only: {ensure_ascii})")
@@ -96,9 +94,7 @@ def na1001_cls_read(
 
     tmp = list(map(int, file_content[0].split()))
     assert len(tmp) == 2, f"invalid format in line 1: '{file_content[0]}'"
-    assert (
-        tmp[0] >= 15
-    ), f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
+    assert tmp[0] >= 15, f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
     assert tmp[1] == 1001, f"invalid FFI in line 1 '{file_content[0]}'"
 
     nlhead = tmp[0]
@@ -247,8 +243,7 @@ def na1001_cls_write(
     if os.path.isfile(file_path):
         if not overwrite:
             verboseprint(
-                f"write failed: {file_path} already exists.\n"
-                "set overwrite keyword to overwrite."
+                f"write failed: {file_path} already exists.\n" "set overwrite keyword to overwrite."
             )
             return 0  # write failed / forbidden
         write = 2  # overwriting
@@ -259,8 +254,7 @@ def na1001_cls_write(
     n_vars_data = len(na_1001["_V"])
     if n_vars_named != n_vars_data:
         raise ValueError(
-            "NA error: n vars in V and VNAME not equal, "
-            f"{n_vars_data} vs. {n_vars_named}!"
+            "NA error: n vars in V and VNAME not equal, " f"{n_vars_data} vs. {n_vars_named}!"
         )
 
     if n_vars_named - na_1001["NV"] != 0:

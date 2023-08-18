@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Convert between types representing date/time."""
 
+import warnings
 from datetime import datetime, timedelta, timezone
 from operator import attrgetter
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
 import numpy as np
 import xarray as xr
@@ -11,7 +12,9 @@ import xarray as xr
 ### HELPERS ###################################################################
 
 
-def _to_list(parm, is_scalar=False) -> tuple[Union[list, np.ndarray], bool]:
+def _to_list(
+    parm: Union[Any, list[Any], np.ndarray], is_scalar: bool = False
+) -> tuple[Union[list, np.ndarray], bool]:
     """
     Convert input "parm" to a Python list object.
 
@@ -57,10 +60,10 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
 
 
 def dtstr_2_mdns(
-    timestring,
+    timestring: Union[str, list],
     tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
     ymd: Optional[tuple[int, ...]] = None,
-):
+) -> Union[float, list[float]]:
     """
     Convert datetime string to seconds since midnight (float).
 
@@ -114,8 +117,10 @@ def dtstr_2_mdns(
 
 
 def dtobj_2_mdns(
-    dt_obj, ref_date: Optional[tuple[int, ...]] = None, ref_is_first: bool = False
-):
+    dt_obj: Union[datetime, list[datetime]],
+    ref_date: Optional[tuple[int, ...]] = None,
+    ref_is_first: bool = False,
+) -> Union[float, list[float]]:
     """
     Convert a Python datetime object (or list/array of ...) to seconds after midnight.
 
@@ -158,7 +163,9 @@ def dtobj_2_mdns(
 ###############################################################################
 
 
-def posix_2_mdns(posixts, ymd: Optional[tuple[int, ...]] = None):
+def posix_2_mdns(
+    posixts: Union[float, list[float]], ymd: Optional[tuple[int, ...]] = None
+) -> Union[float, list[float]]:
     """
     Convert a POSIX timestamp / UNIX time (or list/array of ...) to seconds after midnight.
 
@@ -182,9 +189,7 @@ def posix_2_mdns(posixts, ymd: Optional[tuple[int, ...]] = None):
     # here, we need to account for the fact that the reference date might be different.
 
     if ymd:  # (yyyy, m, d) given, take that as starting point t0:
-        t0 = datetime(
-            year=ymd[0], month=ymd[1], day=ymd[2], tzinfo=timezone.utc
-        ).timestamp()
+        t0 = datetime(year=ymd[0], month=ymd[1], day=ymd[2], tzinfo=timezone.utc).timestamp()
     else:  # take date of first entry as starting point
         t0 = datetime.fromtimestamp(posixts[0], tz=timezone.utc)
         t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
@@ -198,8 +203,12 @@ def posix_2_mdns(posixts, ymd: Optional[tuple[int, ...]] = None):
 
 
 def mdns_2_dtobj(
-    mdns, ref_date, assume_UTC: bool = True, posix: bool = False, str_fmt: str = ""
-):
+    mdns: Union[float, list[float]],
+    ref_date: tuple[int],
+    assume_UTC: bool = True,
+    posix: bool = False,
+    str_fmt: str = "",
+) -> Union[datetime, list[datetime]]:
     """
     Convert seconds after midnight (or list/array of ...) to datetime object.
 
@@ -259,7 +268,9 @@ def mdns_2_dtobj(
 ###############################################################################
 
 
-def daysSince_2_dtobj(day0: datetime, days_since: Union[int, float]):
+def daysSince_2_dtobj(
+    day0: datetime, days_since: Union[int, float]
+) -> Union[datetime, list[datetime]]:
     """
     Convert a date and a floating point number "days_since" to a datetime object.
 
@@ -286,7 +297,7 @@ def daysSince_2_dtobj(day0: datetime, days_since: Union[int, float]):
 
 def dtstr_2_posix(
     timestring: str, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz: timezone = timezone.utc
-):
+) -> float:
     """
     Convert timestring without time zone information to Unix time.
 
@@ -318,7 +329,9 @@ def dtstr_2_posix(
         if tz:  # set the tzinfo if tz argument is provided
             dtobj = dtobj.replace(tzinfo=tz)
         else:  # issue a warning if tz argument is None
-            print("Warning: parsed datetime object won't have tzinfo set!")
+            warnings.warn(
+                "Warning: ambiguous datetime - parsed datetime object won't have tzinfo set!"
+            )
     # else the dtobj already has a tz, so convert if tz argument is given:
     else:
         if tz:
