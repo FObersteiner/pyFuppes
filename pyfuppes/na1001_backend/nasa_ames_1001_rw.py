@@ -95,11 +95,10 @@ def na1001_cls_read(
     tmp = list(map(int, file_content[0].split()))
     assert len(tmp) == 2, f"invalid format in line 1: '{file_content[0]}'"
     assert tmp[0] >= 15, f"NASA Ames FFI 1001 has a least 15 header lines (specified: {tmp[0]})"
-    assert tmp[1] == 1001, f"invalid FFI in line 1 '{file_content[0]}'"
+    assert tmp[1] == 1001, f"reader is for FFI 1001 only, got {tmp[1]}"
 
     nlhead = tmp[0]
     na_1001["NLHEAD"] = nlhead
-    na_1001["FFI"] = tmp[1]
 
     header = file_content[:nlhead]
     data = file_content[nlhead:]
@@ -278,7 +277,7 @@ def na1001_cls_write(
 
     # begin the actual writing process
     with open(file_path, "w", encoding="ascii") as file_obj:
-        block = str(na_1001["NLHEAD"]) + sep + str(na_1001["FFI"]) + "\n"
+        block = str(na_1001["NLHEAD"]) + sep + "1001\n"
         file_obj.write(block)
 
         block = str(na_1001["ONAME"]) + "\n"
