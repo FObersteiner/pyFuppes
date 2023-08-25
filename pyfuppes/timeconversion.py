@@ -53,7 +53,7 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
     f = attrgetter(dim_name)
     t = f(xrda)
-    return (t - t[0].dt.floor("d")).values / 1_000_000_000
+    return (t - t[0].dt.floor("d")).values.astype(int) / 1_000_000_000
 
 
 ###############################################################################
