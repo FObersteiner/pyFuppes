@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.2 (2023-08-25)
+
+- timeconversion fix bug: xrtime_to_mdns now returns float dtype array as intended
+
 ## v0.3.1 (2023-08-21)
 
 - na1001 fix bug: prescribe FFI to be 1001

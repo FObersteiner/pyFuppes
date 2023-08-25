@@ -36,7 +36,6 @@ class TestTimeconv(unittest.TestCase):
             coords={"Time": pd.date_range("2014-09-06", periods=3)},
         )
         t = timeconversion.xrtime_to_mdns(da)
-        print(t.dtype, t.dtype.kind, repr(t.dtype))
         self.assertTrue(isinstance(t, np.ndarray))
         self.assertTrue(t.dtype.kind == "f")  # f --> floating point number
         self.assertListEqual([0.0, 86400.0, 172800.0], list(t))
