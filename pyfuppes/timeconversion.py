@@ -7,6 +7,7 @@ from operator import attrgetter
 from typing import Any, Optional, Union
 
 import numpy as np
+import pandas as pd
 import xarray as xr
 
 ### HELPERS ###################################################################
@@ -34,7 +35,9 @@ def _to_list(
 ### MAIN FUNCTIONS ############################################################
 
 
-def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
+def xrtime_to_mdns(
+    xrda: xr.DataArray, dim_name: str = "Time", ref_date: Optional[pd.Timestamp] = None
+) -> np.ndarray:
     """
     Convert the time vector of an xarray.DataArray to an array representing seconds after midnight.
 
@@ -44,6 +47,8 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
         xarray.DataArray to extract time from.
     dim_name : str, optional
         Attribute name of the time dimension. The default is "Time".
+    ref_date : pd.Timestamp or None
+        Reference date
 
     Returns
     -------
@@ -53,7 +58,11 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
     f = attrgetter(dim_name)
     t = f(xrda)
-    return (t - t[0].dt.floor("d")).values.astype(int) / 1_000_000_000
+
+    # pd.Timestamp cannot be used directly :
+    ref_date = t[0].dt.floor("d") if ref_date is None else ref_date.to_numpy()
+
+    return (t - ref_date).values.astype(int) / 1_000_000_000
 
 
 ###############################################################################
