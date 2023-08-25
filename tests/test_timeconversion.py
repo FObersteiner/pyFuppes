@@ -3,6 +3,10 @@
 import unittest
 from datetime import datetime, timezone
 
+import numpy as np
+import pandas as pd
+import xarray as xr
+
 from pyfuppes import timeconversion
 
 
@@ -24,6 +28,18 @@ class TestTimeconv(unittest.TestCase):
     def tearDown(self):
         # to run after each test
         pass
+
+    def test_xrtime_to_mdns(self):
+        da = xr.DataArray(
+            data=[1, 2, 3],
+            dims=["Time"],
+            coords={"Time": pd.date_range("2014-09-06", periods=3)},
+        )
+        t = timeconversion.xrtime_to_mdns(da)
+        print(t.dtype, t.dtype.kind, repr(t.dtype))
+        self.assertTrue(isinstance(t, np.ndarray))
+        self.assertTrue(t.dtype.kind == "f")  # f --> floating point number
+        self.assertListEqual([0.0, 86400.0, 172800.0], list(t))
 
     def test_dtstr_2_mdns(self):
         # no timezone
