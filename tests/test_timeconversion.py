@@ -38,6 +38,7 @@ class TestTimeconv(unittest.TestCase):
         t = timeconversion.xrtime_to_mdns(da)
         self.assertTrue(isinstance(t, np.ndarray))
         self.assertTrue(t.dtype.kind == "f")  # f --> floating point number
+        self.assertTrue(issubclass(t.dtype.type, np.floating))
         self.assertListEqual([0.0, 86400.0, 172800.0], list(t))
 
     def test_dtstr_2_mdns(self):
