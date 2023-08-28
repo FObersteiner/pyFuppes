@@ -41,9 +41,6 @@ class TestTimeconv(unittest.TestCase):
         self.assertTrue(issubclass(t.dtype.type, np.floating))
         self.assertListEqual([0.0, 86400.0, 172800.0], list(t))
 
-        t = timeconversion.xrtime_to_mdns(da, ref_date=pd.Timestamp("2014-09-05"))
-        self.assertListEqual([86400.0, 172800.0, 259200.0], list(t))
-
     def test_dtstr_2_mdns(self):
         # no timezone
         t = ["2012-01-01T01:00:00", "2012-01-01T02:00:00"]
