@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.3 (2023-08-28)
+
+- function 'del_at_edge' is now 'extend_mask' and can be used to extend the 'True'
+  elements in a boolean mask (tested)
+
 ## v0.3.2 (2023-08-25)
 
 - timeconversion fix bug: xrtime_to_mdns now returns float dtype array as intended
