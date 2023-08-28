@@ -263,26 +263,25 @@ def filter_jumps_np(
 ###############################################################################
 
 
-def del_at_edge(v: np.ndarray, n_cut: int, add: int = 2, out_len: str = "same") -> np.ndarray:
+def extend_mask(m: np.ndarray, n: int) -> np.ndarray:
     """
-    Extend blocks of NaN elements in an array.
+    extend_mask changes elements from False to True around existing 'True' elements.
 
-    Assume v to be a 1D array which contains blocks of NaNs.
+    Parameters
+    ----------
+    m : np.ndarray
+        boolean mask.
+    n : int
+        number of 'True' elements to insert minus one (n=1 has no effect).
+        'True' is inserted right and left of existing 'True' elements in alternating fashion.
 
-    Returns: v with "more NaNs", i.e. range of NaN-blocks is extended by n_cut.
+    Returns
+    -------
+    np.ndarray
+        updated mask.
+
     """
-    tf = np.isfinite(v) * 1.0
-
-    mask = np.convolve(tf, np.ones((int(n_cut + add),)) / int(n_cut + add), mode=out_len)
-
-    if tf[0] > 0.9:
-        mask[0] = 1.0
-    if tf[-1] > 0.9:
-        mask[-1] = 1.0
-
-    mask[np.where(mask < 0.999)] = np.nan
-
-    return v * mask
+    return np.convolve(m, np.ones((n,)) / n, mode="same").astype(np.bool_)
 
 
 ###############################################################################

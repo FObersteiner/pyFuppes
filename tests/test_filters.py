@@ -89,9 +89,68 @@ class TestFilters(unittest.TestCase):
         # TODO
         pass
 
-    def test_del_at_edge(self):
-        # TODO
-        pass
+    def test_extend_mask(self):
+        m = np.array([False, False, True, False, False])
+        have = filters.extend_mask(m, 1)  # n = 1 has no effect
+        want = np.array([False, False, True, False, False])
+        self.assertTrue((have == want).all())
+
+        have = filters.extend_mask(m, 2)  # one 'True' inserted to the right
+        want = np.array([False, False, True, True, False])
+        self.assertTrue((have == want).all())
+
+        have = filters.extend_mask(m, 3)  # another 'True' inserted to the left
+        want = np.array([False, True, True, True, False])
+        self.assertTrue((have == want).all())
+
+        m = np.array(
+            [
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                False,
+                False,
+            ]
+        )
+        have = filters.extend_mask(m, 6)
+        want = np.array(
+            [
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                False,
+                True,
+                True,
+                True,
+                True,
+                True,
+                True,
+                False,
+                True,
+                True,
+                True,
+                True,
+                True,
+            ]
+        )
+        self.assertTrue((have == want).all())
 
 
 if __name__ == "__main__":
