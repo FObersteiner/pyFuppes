@@ -272,7 +272,7 @@ def extend_mask(m: np.ndarray, n: int) -> np.ndarray:
     m : np.ndarray
         boolean mask.
     n : int
-        number of 'True' elements to insert minus one (n=1 has no effect).
+        number of 'True' elements to insert.
         'True' is inserted right and left of existing 'True' elements in alternating fashion.
 
     Returns
@@ -281,7 +281,7 @@ def extend_mask(m: np.ndarray, n: int) -> np.ndarray:
         updated mask.
 
     """
-    return np.convolve(m, np.ones((n,)) / n, mode="same").astype(np.bool_)
+    return np.convolve(m, np.ones((n + 1,)), mode="same").astype(np.bool_)
 
 
 ###############################################################################

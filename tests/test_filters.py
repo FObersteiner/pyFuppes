@@ -91,16 +91,30 @@ class TestFilters(unittest.TestCase):
 
     def test_extend_mask(self):
         m = np.array([False, False, True, False, False])
-        have = filters.extend_mask(m, 1)  # n = 1 has no effect
+        have = filters.extend_mask(m, 0)  # n = 0 has no effect
         want = np.array([False, False, True, False, False])
         self.assertTrue((have == want).all())
 
-        have = filters.extend_mask(m, 2)  # one 'True' inserted to the right
+        have = filters.extend_mask(m, 1)  # one 'True' inserted to the right
         want = np.array([False, False, True, True, False])
         self.assertTrue((have == want).all())
 
-        have = filters.extend_mask(m, 3)  # another 'True' inserted to the left
+        have = filters.extend_mask(m, 2)  # another 'True' inserted to the left
         want = np.array([False, True, True, True, False])
+        self.assertTrue((have == want).all())
+
+        # edge
+        m = np.array([False, False, False, False, True])
+        have = filters.extend_mask(m, 1)  # n = 1 has no effect here, no element to the right
+        want = np.array([False, False, False, False, True])
+        self.assertTrue((have == want).all())
+
+        have = filters.extend_mask(m, 2)  # n = 2 gives one 'True' to the left
+        want = np.array([False, False, False, True, True])
+        self.assertTrue((have == want).all())
+
+        have = filters.extend_mask(m, 3)  # n = 3 gives same result as n = 2
+        want = np.array([False, False, False, True, True])
         self.assertTrue((have == want).all())
 
         m = np.array(
@@ -126,7 +140,7 @@ class TestFilters(unittest.TestCase):
                 False,
             ]
         )
-        have = filters.extend_mask(m, 6)
+        have = filters.extend_mask(m, 5)
         want = np.array(
             [
                 False,
