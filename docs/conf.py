@@ -36,9 +36,9 @@ autoapi_options = [
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
 exclude_patterns = [
-    "**/*utils*",
-    "**/*utils*/*nasa_ames_1001_rw*",
-    "**/*utils*/*nasa_ames_1001_tools*",
+    "**/*na1001_backend*",
+    "**/*na1001_backend*/*nasa_ames_1001_rw*",
+    "**/*na1001_backend*/*nasa_ames_1001_tools*",
     "_build",
     "Thumbs.db",
     ".DS_Store",
