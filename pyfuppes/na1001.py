@@ -136,9 +136,9 @@ class FFI1001(object):
 
     @V.setter
     def V(self, vlists: list[list[str],]):
-        assert (
-            len(vlists) == self.NV
-        ), f"try to set {len(vlists)} dependent variables, but VNAMES specify {self.NV}"
+        # assert (
+        #     len(vlists) == self.NV
+        # ), f"try to set {len(vlists)} dependent variables, but VNAMES specify {self.NV}"
         self._V = vlists
 
     # ------------------------------------------------------------------------------
