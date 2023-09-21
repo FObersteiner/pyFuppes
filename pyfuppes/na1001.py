@@ -57,8 +57,8 @@ class FFI1001(object):
         self.MNAME = "mission name"
         self.IVOL = 1
         self.NVOL = 1
-        self.DATE = [1970, 1, 1]
-        self.RDATE = [1970, 1, 1]
+        self.DATE = (1970, 1, 1)
+        self.RDATE = (1970, 1, 1)
         self.DX = 0
         self.XNAME = "x name"
         self.NV = 1
