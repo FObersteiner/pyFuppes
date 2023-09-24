@@ -9,7 +9,6 @@ import numpy as np
 import polars
 import scipy as sc
 from matplotlib import pyplot as plt
-from scipy import signal
 
 ###############################################################################
 
@@ -128,7 +127,7 @@ def xcorr_timelag(
     ynames: tuple[str, str] = ("f", "g"),
     corrmode: str = "positive",
     boundaries: Optional[tuple[float, float]] = None,
-    xcorr_func: Callable = signal.correlate,
+    xcorr_func: Callable = sc.signal.correlate,
 ) -> float:
     """
     Analyze time lag between two time series f and g by cross-correlation.
@@ -238,9 +237,13 @@ def xcorr_timelag(
     # need to know used correl function to make delay array...
     # check first if functools.partial was used.
     usedfunc = xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func
-    if usedfunc.__code__ == np.correlate.__code__:
+    # if usedfunc.__code__ == np.correlate.__code__:
+    #     delay_arr = np.linspace(-0.5 * n / upscale, 0.5 * n / upscale, int(n))[::-1]
+    # elif usedfunc.__code__ == sc.signal.correlate.__code__:
+    #     delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
+    if usedfunc == np.correlate:
         delay_arr = np.linspace(-0.5 * n / upscale, 0.5 * n / upscale, int(n))[::-1]
-    elif usedfunc.__code__ == sc.signal.correlate.__code__:
+    elif usedfunc == sc.signal.correlate:
         delay_arr = np.arange(1 - xnorm.size, xnorm.size) * (end - start) / xnorm.size * -1
     else:
         raise ValueError(f"unknown correl func: {repr(usedfunc)}")
