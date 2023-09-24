@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.4 (2023-09-24)
+
+- adapt code to numpy 1.26 changes (xcorr-timelag function)
+- na1001 / FFI1001: use today's date as default RDATE
+
 ## v0.3.3 (2023-08-28)
 
 - function 'del_at_edge' is now 'extend_mask' and can be used to extend the 'True'
