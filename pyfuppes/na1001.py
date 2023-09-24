@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """NASA Ames FFI 1001 text file format reader / writer."""
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union
 
@@ -50,6 +51,7 @@ class FFI1001(object):
     """
 
     def __init__(self, file=None, **kwargs):
+        today = datetime.now(timezone.utc).date()
         self.NLHEAD = 14  # minimum number of header lines is 14
         self.ONAME = "data origin"
         self.ORG = "organization"
@@ -58,7 +60,7 @@ class FFI1001(object):
         self.IVOL = 1
         self.NVOL = 1
         self.DATE = (1970, 1, 1)
-        self.RDATE = (1970, 1, 1)
+        self.RDATE = (today.year, today.month, today.day)
         self.DX = 0
         self.XNAME = "x name"
         self.NV = 1
