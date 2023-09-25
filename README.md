@@ -4,17 +4,30 @@ A collection of tools in Python.
 
 ## Installation
 
-from wheel file:
+- from wheel file:
 
-- check `/dist` directory for a `*.whl` file that can be installed e.g. via `pip`
+  - check `/dist` directory of the repo for a `*.whl` file that can be installed e.g. via `pip`
 
-via [poetry](https://python-poetry.org/):
+- editable via `pip`:
 
-- (fork and) clone the repo, then run `poetry install` in the repo's directory
+  - (fork and) clone the repo, then run `pip install -e .` in the repo's directory
 
-editable via `pip`:
+- from github, via pip:
 
-- (fork and) clone the repo, then run `pip install -e .` in the repo's directory
+  - master branch, latest commit:
+
+    ```sh
+    pip install git+https://github.com/FObersteiner/pyFuppes.git@master # alternatively @latest
+    ```
+
+  - specific tag:
+    ```sh
+    pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.3.4
+    ```
+
+- via [poetry](https://python-poetry.org/):
+
+  - (fork and) clone the repo, then run `poetry install` in the repo's directory
 
 ## Requirements
 
