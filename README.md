@@ -31,7 +31,7 @@ A collection of tools in Python.
 
 ## Requirements
 
-- Python 3.9, 3.10 or 3.11
+- Python 3.9, 3.10 or 3.11. 3.12 not supported yet due to the dependency on numba.
 - see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
 
 ## Content / Docs
