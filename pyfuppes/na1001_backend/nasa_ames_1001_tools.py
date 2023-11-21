@@ -24,9 +24,9 @@ def naDict_2_npndarr(
     vmiss=np.NaN,
 ):
     """
-    Convert variables from na1001 class instance to dictionary holding numpy arrays.
+    Convert variables from na1001 class instance to dictionary mapping names to numpy arrays.
 
-    See class method for detailled docstring.
+    See class method for detailed doc-string.
     """
     npDict = {naDict["XNAME"].split(splitVname)[0]: np.array(naDict["_X"], dtype=xdtype)}
 
@@ -59,7 +59,7 @@ def naDict_2_pddf(naDict, sep_colhdr="\t", idx_colhdr=-1, dtype=float, add_datet
     """
     Convert variables from na1001 class instance to pandas dataframe.
 
-    See class method for detailled docstring.
+    See class method for detailed doc-string.
     """
     # column names for the DataFrame:
     keys = naDict["_NCOM"][idx_colhdr].split(sep_colhdr)
@@ -106,9 +106,9 @@ def naDict_2_poldf(
     _dtype=float,
 ):
     """
-    Convert variables from na1001 class instance to pandas dataframe.
+    Convert variables from na1001 class instance to polars dataframe.
 
-    See class method for detailled docstring.
+    See class method for detailed doc-string.
     """
     # column names for the DataFrame:
     keys = naDict["_NCOM"][idx_colhdr].split(sep_colhdr)
