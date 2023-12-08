@@ -6,7 +6,7 @@ from copy import deepcopy
 from typing import Callable, Optional
 
 import numpy as np
-import polars
+import polars as pl
 import scipy as sc
 from matplotlib import pyplot as plt
 
@@ -58,11 +58,9 @@ def time_correction(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str
 ###############################################################################
 
 
-def filter_dt_forward(
-    df: polars.DataFrame, datetime_key: str = "datetime"
-) -> tuple[int, polars.DataFrame]:
+def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple[int, pl.DataFrame]:
     """
-    Given a time series dataframe, ensure that the index is increasing strictly.
+    Given a time series as polars.DataFrame, ensure that the index is increasing strictly.
 
     Filters forwards, i.e. if one element is less than the previous, then this
     element is removed (not the previous).
@@ -91,8 +89,8 @@ def filter_dt_forward(
 
 
 def filter_dt_backward(
-    df: polars.DataFrame, datetime_key: str = "datetime"
-) -> tuple[int, polars.DataFrame]:
+    df: pl.DataFrame, datetime_key: str = "datetime"
+) -> tuple[int, pl.DataFrame]:
     """
     As filter_dt_forward, but backwards filtering.
 
@@ -198,17 +196,6 @@ def xcorr_timelag(
         y1 /= np.nanmax(y1)
         y2 /= np.nanmax(y2)
 
-    if show_plots:
-        _, ax = plt.subplots(2, 1, figsize=(14, 10))
-        plt.subplots_adjust(top=0.94, bottom=0.06, left=0.06, right=0.94)
-        p0 = ax[0].plot(x1, y1, "r", label=f"{ynames[0]}")
-        ax[0].set_xlabel("x", weight="bold")
-        ax[0].set_ylabel(f"{ynames[0]} normalized")
-        ax[0].set_title("input")
-        ax1 = ax[0].twinx()
-        p1 = ax1.plot(x2, y2, "b", label=f"{ynames[1]}")
-        ax1.set_ylabel(f"{ynames[1]} normalized")
-
     # normalize x:
     start, end = np.floor(x1[0]), np.ceil(x1[-1])
     n = (end - start) * upscale
@@ -223,13 +210,6 @@ def xcorr_timelag(
         x2, y2, kind="linear", bounds_error=False, fill_value="extrapolate"
     )
     g = f_ip(xnorm)
-
-    if show_plots:
-        p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")  # type: ignore
-        p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")  # type: ignore
-        plots = p0 + p1 + p2 + p3  # type: ignore
-        lbls = [p.get_label() for p in plots]
-        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")  # type: ignore
 
     # cross-correlate f vs. g (i.e. y1 vs. y2):
     corr = xcorr_func(f, g)
@@ -265,6 +245,20 @@ def xcorr_timelag(
     delay = delay_arr[select(corr)]
 
     if show_plots:
+        _, ax = plt.subplots(2, 1, figsize=(14, 10))
+        plt.subplots_adjust(top=0.94, bottom=0.06, left=0.06, right=0.94)
+        p0 = ax[0].plot(x1, y1, "r", label=f"{ynames[0]}")
+        ax[0].set_xlabel("x", weight="bold")
+        ax[0].set_ylabel(f"{ynames[0]} normalized")
+        ax[0].set_title("input")
+        ax1 = ax[0].twinx()
+        p1 = ax1.plot(x2, y2, "b", label=f"{ynames[1]}")
+        ax1.set_ylabel(f"{ynames[1]} normalized")
+        p2 = ax[0].plot(xnorm, f, "firebrick", label=f"{ynames[0]} resampled")  # type: ignore
+        p3 = ax1.plot(xnorm, g, "deepskyblue", label=f"{ynames[1]} resampled")  # type: ignore
+        plots = p0 + p1 + p2 + p3  # type: ignore
+        lbls = [p.get_label() for p in plots]
+        ax[0].legend(plots, lbls, loc=0, framealpha=1, facecolor="white")  # type: ignore
         ax[1].plot(delay_arr, corr, "k", label="xcorr")  # type: ignore
         ax[1].axvline(x=delay, color="r", linewidth=2)  # type: ignore
         ax[1].set_xlabel("lag")  # type: ignore

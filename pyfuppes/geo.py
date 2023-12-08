@@ -11,12 +11,13 @@ from pysolar.solar import get_altitude
 
 ###############################################################################
 
+EARTH_RADIUS = 6372.8  # approximate radius of earth in km
+
 
 @njit
 def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
     """Calculate Haversine distance along lat/lon coordinates in km. Code gets numba-JIT compiled."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
-    R = 6372.8  # approximate radius of earth in km
     dist = 0
 
     lat1, lon1 = lat[0], lon[0]
@@ -32,7 +33,7 @@ def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
         a = sin(dLat / 2) ** 2 + cos(lat0) * cos(lat1) * sin(dLon / 2) ** 2
         c = 2 * asin(sqrt(a))
 
-        dist += R * c
+        dist += EARTH_RADIUS * c
 
     return dist
 
@@ -110,7 +111,7 @@ def sza(
 
     hour_angle = 15.0 * (720.0 - true_solar_time) / 60.0
 
-    # sun declination (using DIN 5034-2)
+    # sun declination, using DIN 5034-2
     declination = (
         0.3948 - 23.2559 * cos2(J + 9.1) - 0.3915 * cos2(2 * J + 5.4) - 0.1764 * cos2(3 * J + 26.0)
     )
@@ -147,7 +148,7 @@ def get_LSTdayFrac(
 
     input:
         longitude: -180 to +180 degrees west to east, float
-        tz_offset: time zone offset to UTC in hours, float
+        tz_offset: time zone offset from UTC in hours, float
         EoT: equation of time for selected date, float
         days_delta: days since reference date, float
         time_delta: current time as days since reference date, float
