@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.5 (2023-12-27)
+
+- readme and workflow tweaks
+
 ## v0.3.4 (2023-09-24)
 
 - adapt code to numpy 1.26 changes (xcorr-timelag function)
