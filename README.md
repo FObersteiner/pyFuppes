@@ -1,3 +1,6 @@
+[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/FObersteiner/gosyncit/blob/master/LICENSE)
+[![Build Status](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml/badge.svg)](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml)
+
 # pyfuppes
 
 A collection of tools in Python.
