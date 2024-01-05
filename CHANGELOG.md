@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.6 2024-01-05
+
+- expose individual modules via `__all__`
+
 ## v0.3.5 (2023-12-27)
 
 - readme and workflow tweaks
@@ -24,9 +28,9 @@
 
 ## v0.3.1 (2023-08-16)
 
-- na1001 refactor
-  - better pyright integration: define FFI1001 keys in ` __init__` with defaults, to describe the types
-  - removed ` __KEYS` and \_show; now part of ` __str__` and ` __repr__` where needed
+- na1001 refactor:
+  - better pyright integration: define FFI1001 keys in `__init__` with defaults, to describe the types
+  - removed `__KEYS` and \_show; now part of `__str__` and `__repr__` where needed
   - keys `HEADER` and `SRC` are now prefixed with and underscore to indicate private attrs
   - add a setter for `V`, as dependent variables are internally stored in attr `_V`
 
