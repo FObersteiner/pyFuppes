@@ -10,7 +10,6 @@ import numpy as np
 
 
 class NumStr(object):
-
     """Analyse the format of a string representing a number."""
 
     def __init__(self, input_string, dec_sep="."):
