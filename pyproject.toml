@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.3.7"
+version = "0.3.8"
 description = "A collection of tools in Python"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">= 3.9, < 3.12"
+python = ">= 3.9, < 3.13"
 geopy = ">= 2.0"
 matplotlib = ">= 3.0"
 pandas = ">= 1.0"
@@ -18,7 +18,7 @@ scipy = ">= 1.1"
 netcdf4 = ">= 1.6"
 xarray = ">= 2022, >= 2023, >= 2024"
 tomli = ">= 2.0.1"
-numba = ">= 0.56.4"
+numba = ">= 0.59.0"                  # needed for Python 3.12
 numpy = ">= 1.18"
 
 [tool.poetry.dev-dependencies]
@@ -36,7 +36,7 @@ pre-commit = ">= 3.3.3"
 
 [tool.black]
 line-length = 100
-target-version = ["py39", "py310", "py311"]
+target-version = ["py39", "py310", "py311", "py312"]
 
 [tool.ruff] # https://github.com/charliermarsh/ruff
 lint.ignore = ["E501"]             # use defaults otherwise
