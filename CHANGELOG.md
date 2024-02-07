@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.8 (2024-02-07)
+
+- enable support for Python 3.12
+
 ## v0.3.7 (2024-02-07)
 
 - v25 cleaner: add removal of ragged lines
