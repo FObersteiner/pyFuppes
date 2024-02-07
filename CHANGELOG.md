@@ -1,6 +1,10 @@
 # Changelog
 
-## v0.3.6 2024-01-05
+## v0.3.7 (2024-02-07)
+
+- v25 cleaner: add removal of ragged lines
+
+## v0.3.6 (2024-01-05)
 
 - expose individual modules via `__all__`
 

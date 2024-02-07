@@ -21,6 +21,7 @@ assert wd.is_dir(), "faild to obtain working directory"
 CLEANUP_DONE = "V25Logs_cleanup.done"
 PATH_V25_DATA_CFG = wd / "v25_config/v25_data_cfg.toml"
 V25_DATA_SEP = "\t"
+V25_DATA_MIN_NLINES = 2
 
 
 # --- INTERNALS ---------------------------------------------------------------
@@ -225,8 +226,7 @@ def logs_cleanup(
         with open(file, "r", encoding="utf-8") as file_obj:
             data = file_obj.readlines()
 
-        # minimum lines is always 2
-        if len(data) <= 2:
+        if len(data) <= V25_DATA_MIN_NLINES:
             verboseprint(f"*v25_logcleaner* deleted {file.name} which has insufficient lines")
             file.unlink()
             continue
@@ -252,8 +252,23 @@ def logs_cleanup(
             file.unlink()
             continue
 
-        # analyse the last element in the last line; compare to last element in previous line
-        # TODO ?
+        # check for ragged lines
+        for idx, line in enumerate(data):
+            if idx < cfg[t]["min_n_lines"] - 1:  # skip header
+                continue
+            parts = line.strip(V25_DATA_SEP).split(V25_DATA_SEP)
+            if len(parts) != n_cols:
+                verboseprint(
+                    f"*v25_logcleaner* detected invalid number of fields in {file.name}, line {idx+1}"
+                    f" - want {n_cols}, have {len(parts)} (truncated)"
+                )
+                write = True
+                new_line = V25_DATA_SEP.join(parts[:n_cols]) + "\n"
+                if line.startswith(V25_DATA_SEP):
+                    new_line = V25_DATA_SEP + new_line
+                data[idx] = new_line
+
+        # TODO : analyse the last element in the last line; compare to last element in previous line
 
         # OSC files must get a timestamp column
         if add_osc_datetime and file.suffix.strip(".").upper() == "OSC":

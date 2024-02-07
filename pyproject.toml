@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.3.6"
+version = "0.3.7"
 description = "A collection of tools in Python"
 authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
 license = "MIT"
@@ -16,7 +16,7 @@ pyarrow = ">= 10.0"
 pysolar = ">= 0.10"
 scipy = ">= 1.1"
 netcdf4 = ">= 1.6"
-xarray = ">= 2022, >=2023"
+xarray = ">= 2022, >= 2023, >= 2024"
 tomli = ">= 2.0.1"
 numba = ">= 0.56.4"
 numpy = ">= 1.18"
@@ -39,8 +39,8 @@ line-length = 100
 target-version = ["py39", "py310", "py311"]
 
 [tool.ruff] # https://github.com/charliermarsh/ruff
-ignore = ["E501"]             # use defaults otherwise
-extend-select = ["C4", "SIM"]
+lint.ignore = ["E501"]             # use defaults otherwise
+lint.extend-select = ["C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
 # "SIM" : code simplifications
