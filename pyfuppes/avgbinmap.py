@@ -299,7 +299,7 @@ def bin_by_pdresample(
     t: np.ndarray,
     v: np.ndarray,
     rule: str = "10S",
-    offset: pd.Timedelta = pd.Timedelta(seconds=5),
+    offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),
     force_t_range: bool = True,
     drop_empty: bool = True,
 ) -> pd.DataFrame:
