@@ -216,7 +216,7 @@ def xcorr_timelag(
 
     # need to know used correl function to make delay array...
     # check first if functools.partial was used.
-    usedfunc = xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func
+    usedfunc = xcorr_func.func if xcorr_func.__class__ == functools.partial else xcorr_func  # type: ignore
     # if usedfunc.__code__ == np.correlate.__code__:
     #     delay_arr = np.linspace(-0.5 * n / upscale, 0.5 * n / upscale, int(n))[::-1]
     # elif usedfunc.__code__ == sc.signal.correlate.__code__:
@@ -264,6 +264,7 @@ def xcorr_timelag(
         ax[1].set_xlabel("lag")  # type: ignore
         ax[1].set_ylabel("correlation coefficient")  # type: ignore
         ax[1].set_title(f"{ynames[1]} vs. {ynames[0]} lag: {delay:+.3f}")  # type: ignore
+        plt.show()
 
     return delay
 
