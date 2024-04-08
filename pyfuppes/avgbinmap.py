@@ -91,6 +91,7 @@ def mean_angle_sc(deg: np.ndarray) -> float:
 
     if result > 180:  # map to +-180 for consistency with other functions
         result -= 360
+
     return float(result)
 
 
@@ -299,7 +300,7 @@ def bin_by_pdresample(
     t: np.ndarray,
     v: np.ndarray,
     rule: str = "10S",
-    offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),
+    offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),  # type: ignore
     force_t_range: bool = True,
     drop_empty: bool = True,
 ) -> pd.DataFrame:
@@ -402,11 +403,13 @@ def moving_avg(v: Union[list, np.ndarray], N: int) -> list:
     """
     # TODO: test missing !
     s, m_avg = [0], []
+
     for i, x in enumerate(v, 1):
         s.append(s[i - 1] + x)
         if i >= N:
             avg = (s[i] - s[i - N]) / N
             m_avg.append(avg)
+
     return m_avg
 
 
@@ -452,11 +455,11 @@ def np_mvg_avg(
             v[np.isfinite(v)],
             kind="linear",
             bounds_error=False,
-            fill_value="extrapolate",
+            fill_value="extrapolate",  # type: ignore
         )
         v = fip(x)
 
-    m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)
+    m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)  # type: ignore
 
     if edges == "expand":
         m_avg[: N - 1], m_avg[-N - 1 :] = m_avg[N], m_avg[-N]
@@ -501,9 +504,9 @@ def pd_mvg_avg(
     df["rollmean"] = df["v"].rolling(int(N), center=True, min_periods=min_periods).mean()
     if ip_ovr_nan:
         df["ip"] = df["rollmean"].interpolate()
-        return df["ip"].values
+        return df["ip"].values  # type: ignore
 
-    return df["rollmean"].values
+    return df["rollmean"].values  # type: ignore
 
 
 ###############################################################################
@@ -536,6 +539,7 @@ def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     avg = np.empty(v.shape)
     avg[~m] = np.nan
     avg[m] = uniform_filter1d(v[m], size=N, mode=edges)
+
     return avg
 
 
@@ -624,6 +628,7 @@ def calc_shift(
         if offset < lower_bound or offset >= upper_bound:
             offset = 0
         shift[i + 1] = offset
+
     return shift
 
 
