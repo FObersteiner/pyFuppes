@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.0 (2024-04-12)
+
+- change license to GPLv3
+
+---
+
 ## v0.3.8 (2024-02-07)
 
 - enable support for Python 3.12
@@ -46,6 +52,8 @@
 
 - Python 3.11 compatible versions of numba JIT-compiled functions
 - drop Python 3.8 support
+
+---
 
 ## v0.2.14 (2023-04-17)
 

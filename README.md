@@ -1,9 +1,13 @@
-[![MIT license](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/FObersteiner/gosyncit/blob/master/LICENSE)
+[![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/FObersteiner/gosyncit/blob/master/LICENSE)
 [![Build Status](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml/badge.svg)](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml)
 
 # pyfuppes
 
 A collection of tools in Python.
+
+## License
+
+GPLv3 - Free as in "free speech", not as in "beer". See LICENSE file in the root directory of the repository.
 
 ## Installation
 
@@ -24,6 +28,7 @@ A collection of tools in Python.
     ```
 
   - specific tag:
+
     ```sh
     pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.3.4
     ```
@@ -39,4 +44,4 @@ A collection of tools in Python.
 
 ## Content / Docs
 
-See https://pyfuppes.readthedocs.io/en/latest/ or directly go to [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html).
+See <https://pyfuppes.readthedocs.io/en/latest/> or go to the [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html) directly.
