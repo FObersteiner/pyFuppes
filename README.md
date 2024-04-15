@@ -1,4 +1,4 @@
-[![GPLv3 license](https://img.shields.io/badge/license-GPLv3-blue.svg)](https://github.com/FObersteiner/gosyncit/blob/master/LICENSE)
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)](https://www.gnu.org/licenses/lgpl-3.0)
 [![Build Status](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml/badge.svg)](https://github.com/FObersteiner/pyFuppes/actions/workflows/pyfuppes-tests.yml)
 
 # pyfuppes
@@ -7,7 +7,7 @@ A collection of tools in Python.
 
 ## License
 
-GPLv3 - Free as in "free speech", not as in "beer". See LICENSE file in the root directory of the repository.
+LGPLv3 - see LICENSE file in the root directory of the repository.
 
 ## Installation
 

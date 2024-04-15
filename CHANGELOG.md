@@ -1,8 +1,8 @@
 # Changelog
 
-## v0.4.0 (2024-04-12)
+## v0.4.0 (2024-04-15)
 
-- change license to GPLv3
+- change license to LGPLv3
 
 ---
 
