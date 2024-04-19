@@ -76,6 +76,7 @@ def _txt_2_dict(
     col_hdr = content[colhdr_ix].strip().rsplit(sep)
     if ignore_repeated_sep:
         col_hdr = [s for s in col_hdr if s != ""]
+
     if ignore_colhdr:
         for i, _ in enumerate(col_hdr):
             col_hdr[i] = f"col_{(i+1):03d}"
@@ -93,10 +94,10 @@ def _txt_2_dict(
     content = content[1 + colhdr_ix :]
     for ix, line in enumerate(content):
         # preserve_empty: only remove linefeed (if first field is empty)
-        # else: remove surrounding whitespaces
-        line = line[:-1] if "\n" in line else line if preserve_empty else line.strip()
+        # else: remove any surrounding whitespaces
+        line = line.strip("\n") if preserve_empty else line.strip()
 
-        if skip_empty_lines and line == "":  # skip empty lines
+        if line == "" and skip_empty_lines:
             continue
 
         line = line.rsplit(sep)
@@ -105,7 +106,8 @@ def _txt_2_dict(
             line = [s for s in line if s != ""]
 
         if len(line) != len(col_hdr):
-            err_msg = f"n elem in line {ix} != n elem in col header ({file})"
+            err_msg = f"{len(line)} elem in line {ix + 1 + colhdr_ix} != {len(col_hdr)} elem in col header ({file})"
+            print(line)
             raise ValueError(err_msg)
         else:  # now the actual import to the dict...
             for i, hdr_tag in enumerate(col_hdr):
@@ -117,11 +119,13 @@ def _txt_2_dict(
 # -----------------------------------------------------------------------------
 
 
-def _to_list_of_Path(folders: list[str]) -> list[pathlib.Path]:
+def _to_list_of_Path(
+    folders: Union[str, list[str], pathlib.Path, list[pathlib.Path]]
+) -> list[pathlib.Path]:
     """Turn input string or list of strings into a list of pathlib Path objects."""
     if not isinstance(folders, list):
-        folders = [folders]
-    return [pathlib.Path(f) for f in folders]
+        folders = [folders]  # type: ignore
+    return [pathlib.Path(f) for f in folders]  # type: ignore
 
 
 # -----------------------------------------------------------------------------
@@ -189,8 +193,8 @@ def logs_cleanup(
     ----------
     directories : list
         where to clean.
-    file_extensions : list
-        list with file extensions specifying the file types to clean.
+    cfg_path : pathlib.Path, optional
+        path to config file that specifies V25 log file types
     drop_info : bool, optional
         drop a file saying "this directories was cleaned". The default is True.
     check_info : bool, optional
@@ -227,6 +231,7 @@ def logs_cleanup(
         with open(file, "r", encoding="utf-8") as file_obj:
             data = file_obj.readlines()
 
+        # all files must have at least 2 lines: column header and one line of data
         if len(data) <= V25_DATA_MIN_NLINES:
             verboseprint(f"*v25_logcleaner* deleted {file.name} which has insufficient lines")
             file.unlink()
@@ -238,6 +243,7 @@ def logs_cleanup(
             n_cols = cfg[t]["n_cols"]
         else:
             n_cols = len([elem for elem in data[0].strip(" \n").split(V25_DATA_SEP) if elem])
+
         while len([elem for elem in data[-1].strip(" \n").split(V25_DATA_SEP) if elem]) < n_cols:
             write = True
             data = data[:-1]
@@ -283,7 +289,6 @@ def logs_cleanup(
                 data[4] = V25_DATA_SEP + "DateTime" + data[4]
                 data[5:] = [V25_DATA_SEP + dtstr + line for line in data[5:]]
 
-        # only overwrite the file if changes must be made
         if write:
             with open(file, "w", encoding="utf-8") as fp:
                 fp.writelines(data)
@@ -300,7 +305,7 @@ def logs_cleanup(
 
 
 def collect_V25Logs(
-    folder: Union[str, list[str]],
+    folder: Union[str, list[str], pathlib.Path, list[pathlib.Path]],
     ext: Union[str, list[str]],
     delimiter: str = V25_DATA_SEP,
     colhdr_ix: int = 0,
@@ -334,7 +339,10 @@ def collect_V25Logs(
     verboseprint = print if verbose else lambda *a, **k: None
     folder = _to_list_of_Path(folder)
 
-    sel_files = sorted(_get_sel_files(folder, [ext]))
+    if not isinstance(ext, list):
+        ext = [ext]
+
+    sel_files = sorted(_get_sel_files(folder, ext))
 
     if not sel_files:
         return None
@@ -350,7 +358,7 @@ def collect_V25Logs(
         preserve_empty=False,
     )["data"]
 
-    keys = list(data.keys())
+    keys = list(data.keys())  # type: ignore
 
     if len(sel_files) > 1:
         for i in range(1, len(sel_files)):
@@ -366,15 +374,15 @@ def collect_V25Logs(
             if tmp is None:
                 continue  # skip loop iteration if tmp dict is None
 
-            keys_tmp = list(tmp.keys())
+            keys_tmp = list(tmp.keys())  # type: ignore
 
             if keys_tmp == keys:  # check matching dict keys
                 for k in keys:  # add data key-wise
-                    data[k].extend(tmp[k])
+                    data[k].extend(tmp[k])  # type: ignore
             del tmp
 
     if write_mergefile:  # optionally write merged data to file
-        n_el = len(data[keys[0]])
+        n_el = len(data[keys[0]])  # type: ignore
         outfile = pathlib.Path(
             os.path.dirname(folder[0])
             + "/"
@@ -383,7 +391,7 @@ def collect_V25Logs(
             + "/"
             + os.path.basename(folder[0])
             + "_merged_."
-            + ext.lower()
+            + ext[0].lower()
         )
         try:  # check if directory exists
             os.stat(os.path.dirname(outfile))
@@ -394,18 +402,18 @@ def collect_V25Logs(
             with open(outfile, "w", encoding="UTF-8") as fobj:
                 fobj.write(delimiter.join(keys) + "\n")
                 for i in range(n_el):
-                    fobj.write(delimiter.join([data[k][i] for k in keys]) + "\n")
+                    fobj.write(delimiter.join([data[k][i] for k in keys]) + "\n")  # type: ignore
 
     verboseprint("V25 logfiles import done.")
 
-    return data
+    return data  # type: ignore
 
 
 ###############################################################################
 
 
 def collect_OSC_Logs(
-    folder: Union[str, list[str]],
+    folder: Union[str, list[str], pathlib.Path, list[pathlib.Path]],
     _ext: str = "OSC",
     delimiter: str = V25_DATA_SEP,
     header_delimiter: str = " ",
@@ -452,6 +460,7 @@ def collect_OSC_Logs(
     verboseprint = print if verbose else lambda *a, **k: None
     folder = _to_list_of_Path(folder)
     sel_files = sorted(_get_sel_files(folder, [_ext]))
+    keys_data = None
 
     if not sel_files:
         return None
@@ -460,7 +469,7 @@ def collect_OSC_Logs(
 
     # read header
     with open(sel_files[0], "r") as file_obj:
-        head = [next(file_obj) for x in range(min_len)]
+        head = [next(file_obj) for _ in range(min_len)]
 
     if len(head) == min_len:
         t_start = datetime.strptime((head[ix_t_start]).strip(), ts_fmt)
@@ -481,19 +490,19 @@ def collect_OSC_Logs(
         )["data"]
 
         if add_NOsc_HVSet:
-            osc_dat["Set_HV"] = [Set_HV]
-            osc_dat["N_Oscar"] = [N_Oscar]
+            osc_dat["Set_HV"] = [Set_HV]  # type: ignore
+            osc_dat["N_Oscar"] = [N_Oscar]  # type: ignore
 
-        osc_dat["POSIX"] = [t_start + float(t) for t in osc_dat["TIME"]]
+        osc_dat["POSIX"] = [t_start + float(t) for t in osc_dat["TIME"]]  # type: ignore
 
-        keys_data = list(osc_dat.keys())
+        keys_data = list(osc_dat.keys())  # type: ignore
 
     if len(sel_files) > 1:
         for file in sel_files[1:]:
             verboseprint(f"loading {file.name}")
 
             with open(file, "r") as file_obj:
-                head = [next(file_obj) for x in range(min_len)]
+                head = [next(file_obj) for _ in range(min_len)]
 
             if len(head) == min_len:
                 t_start = datetime.strptime((head[ix_t_start]).strip(), ts_fmt)
@@ -513,19 +522,19 @@ def collect_OSC_Logs(
                 )["data"]
 
                 if add_NOsc_HVSet:
-                    tmp["Set_HV"] = [Set_HV]
-                    tmp["N_Oscar"] = [N_Oscar]
+                    tmp["Set_HV"] = [Set_HV]  # type: ignore
+                    tmp["N_Oscar"] = [N_Oscar]  # type: ignore
 
-                tmp["POSIX"] = [t_start + float(t) for t in tmp["TIME"]]
+                tmp["POSIX"] = [t_start + float(t) for t in tmp["TIME"]]  # type: ignore
 
-                keys_tmp = list(tmp.keys())
+                keys_tmp = list(tmp.keys())  # type: ignore
 
-                if keys_tmp == keys_data:  # check matching dict keys
+                if keys_tmp == keys_data and keys_data is not None:  # check matching dict keys
                     for key in keys_data:  # add data key-wise
-                        osc_dat[key].extend(tmp[key])
+                        osc_dat[key].extend(tmp[key])  # type: ignore
 
     if write_mergefile:  # optionally write merged data to file
-        keys_data = list(osc_dat.keys())
+        keys_data = list(osc_dat.keys())  # type: ignore
         if "Set_HV" in keys_data:
             keys_data.pop(keys_data.index("Set_HV"))
         if "N_Oscar" in keys_data:
@@ -549,9 +558,9 @@ def collect_OSC_Logs(
         if not outfile.exists():
             with open(outfile, "w", encoding="UTF-8") as fobj:  # write the merge file
                 fobj.write(delimiter.join(keys_data) + "\n")
-                for i, _ in enumerate(osc_dat["POSIX"]):
-                    fobj.write(delimiter.join(map(str, [osc_dat[k][i] for k in keys_data])) + "\n")
+                for i, _ in enumerate(osc_dat["POSIX"]):  # type: ignore
+                    fobj.write(delimiter.join(map(str, [osc_dat[k][i] for k in keys_data])) + "\n")  # type: ignore
 
     verboseprint("OSC logfiles import done.")
 
-    return osc_dat
+    return osc_dat  # type: ignore
