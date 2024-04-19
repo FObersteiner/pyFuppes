@@ -184,14 +184,13 @@ class FFI1001(object):
 
         Parameters
         ----------
-        selVnames : list of string, optional
+        sel_vnames : list of string, optional
             VNAMEs to be converted. The default is None.
-        return_pddf : bool, optional
-            Set to True to make the function return a Pandas dataframe.
-            The default is False.
-        splitVname : string, optional
+        clean_vnames : boolean, optional
+            remove whitespaces from variable names. The default is False.
+        vname_delimiter : string, optional
             Where to split entries in VNAME. The default is ';'.
-        splitIdx : int, optional
+        split_idx : int, optional
             Which part of split result to use, see splitVname. The default is 0.
         xdtype : data type, optional
             Data type for independent variable X. The default is np.float.
@@ -220,6 +219,8 @@ class FFI1001(object):
             separator used in column header (last line of NCOM). Default is tab.
         idx_colhdr : int, optional
             look for column header in NCOM at index idx_colhdr. Default is -1.
+        clean_colnames : boolean, optional
+            remove whitespaces from variable names. The default is False.
         dtype : numpy array data type, optional
             data type to use for conversion to DataFrame. Default is float.
         add_datetime_index: boolean, optional
@@ -244,6 +245,8 @@ class FFI1001(object):
             separator used in column header (last line of NCOM). Default is tab.
         idx_colhdr : int, optional
             look for column header in NCOM at index idx_colhdr. Default is -1.
+        clean_colnames : boolean, optional
+            remove whitespaces from variable names. The default is False.
         add_datetime: boolean, optional
             add a DateTime column to the df. The default is False.
         nan_to_none: boolean, optional
