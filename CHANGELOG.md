@@ -1,5 +1,11 @@
 # Changelog
 
+## v0.4.1 (2024-04-19)
+
+- na1001: revise parameter names of df output functions (to Python standard)
+- na1001: df output functions add option to clean column names
+- v25: revise line cleaning in file-collector function
+
 ## v0.4.0 (2024-04-15)
 
 - change license to LGPLv3

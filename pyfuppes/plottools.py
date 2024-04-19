@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """Helpers to format plots."""
+
 from typing import Optional, Union
 
 import numpy as np

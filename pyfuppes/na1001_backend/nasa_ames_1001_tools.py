@@ -16,9 +16,10 @@ MICROSECONDS_PER_SECOND = 1_000_000
 
 def naDict_2_npndarr(
     naDict,
-    selVnames=None,
-    splitVname=";",
-    splitIdx=0,
+    sel_vnames=None,
+    clean_vnames=False,
+    vname_delimiter=";",
+    split_idx=0,
     xdtype=float,
     vdtype=float,
     vmiss=np.NaN,
@@ -28,15 +29,18 @@ def naDict_2_npndarr(
 
     See class method for detailed doc-string.
     """
-    npDict = {naDict["XNAME"].split(splitVname)[0]: np.array(naDict["_X"], dtype=xdtype)}
+    npDict = {naDict["XNAME"].split(vname_delimiter)[0]: np.array(naDict["_X"], dtype=xdtype)}
 
-    if not selVnames:
-        selVnames = [n.split(splitVname)[0] for n in naDict["_VNAME"]]
+    if not sel_vnames:
+        sel_vnames = [n.split(vname_delimiter)[0] for n in naDict["_VNAME"]]
+
+    if clean_vnames:
+        sel_vnames = [k.replace(" ", "") for k in sel_vnames]
 
     # for each parameter, find its index in naDict['V']
-    for parm in selVnames:
-        if splitVname:
-            ix = [name.split(splitVname)[splitIdx] for name in naDict["_VNAME"]].index(parm)
+    for parm in sel_vnames:
+        if vname_delimiter:
+            ix = [name.split(vname_delimiter)[split_idx] for name in naDict["_VNAME"]].index(parm)
         else:
             ix = naDict["_VNAME"].index(parm)
         npDict[parm] = np.array(naDict["_V"][ix], dtype=vdtype)
@@ -55,14 +59,24 @@ def naDict_2_npndarr(
 ###############################################################################
 
 
-def naDict_2_pddf(naDict, sep_colhdr="\t", idx_colhdr=-1, dtype=float, add_datetime_index=False):
+def naDict_2_pddf(
+    naDict,
+    sep_colhdr="\t",
+    idx_colhdr=-1,
+    clean_colnames=False,
+    dtype=float,
+    add_datetime_index=False,
+):
     """
     Convert variables from na1001 class instance to pandas dataframe.
 
     See class method for detailed doc-string.
     """
-    # column names for the DataFrame:
+    # column names for the DataFrame. NA reader does not give us column names,
+    # so we need to handle them here.
     keys = naDict["_NCOM"][idx_colhdr].split(sep_colhdr)
+    if clean_colnames:
+        keys = [k.replace(" ", "") for k in keys]
 
     # begin extraction with independent variable:
     values = [np.array(naDict["_X"], dtype=dtype)]
@@ -101,6 +115,7 @@ def naDict_2_poldf(
     naDict,
     sep_colhdr="\t",
     idx_colhdr=-1,
+    clean_colnames=False,
     add_datetime=False,
     nan_to_none=False,
     _dtype=float,
@@ -110,8 +125,11 @@ def naDict_2_poldf(
 
     See class method for detailed doc-string.
     """
-    # column names for the DataFrame:
+    # column names for the DataFrame. NA reader does not give us column names,
+    # so we need to handle them here.
     keys = naDict["_NCOM"][idx_colhdr].split(sep_colhdr)
+    if clean_colnames:
+        keys = [k.replace(" ", "") for k in keys]
 
     # # begin extraction with independent variable:
     values = [np.array(naDict["_X"], dtype=_dtype)]
@@ -141,4 +159,5 @@ def naDict_2_poldf(
 
     if nan_to_none:
         return df.fill_nan(None)
+
     return df

@@ -11,6 +11,7 @@ Input arguments:
     thresh: threshold to detect a step.
     look_around[n,m]: values to average for comparison.
 """
+
 import numpy as np
 from matplotlib import pyplot as plt
 
