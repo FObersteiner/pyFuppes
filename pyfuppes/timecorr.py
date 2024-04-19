@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Corrections for time in time series."""
+"""Corrections for time in timeseries data."""
 
 import functools
 from copy import deepcopy

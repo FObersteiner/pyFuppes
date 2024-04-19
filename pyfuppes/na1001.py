@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """NASA Ames FFI 1001 text file format reader / writer."""
+
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Union
