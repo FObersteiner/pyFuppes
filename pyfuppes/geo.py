@@ -9,6 +9,20 @@ from geopy import distance
 from numba import njit
 from pysolar.solar import get_altitude
 
+
+# trigonometry with degrees:
+def _cos2(x):
+    return cos(radians(x))
+
+
+def _sin2(x):
+    return sin(radians(x))
+
+
+def _acos2(x):
+    return degrees(acos(x))
+
+
 ###############################################################################
 
 EARTH_RADIUS = 6372.8  # approximate radius of earth in km
@@ -83,17 +97,6 @@ def sza(
     (2018-10-17 8:10 UTC)
     """
 
-    # define trigonometry with degrees
-    def cos2(x):
-        return cos(radians(x))
-
-    def sin2(x):
-        return sin(radians(x))
-
-    def acos2(x):
-        return degrees(acos(x))
-
-    # parameter
     day_of_year = UTC.timetuple().tm_yday
     leap_year_factor = (-0.375, 0.375, -0.125, 0.125)[UTC.year % 4]
     UTC_min = UTC.hour * 60.0 + UTC.minute + UTC.second / 60.0
@@ -104,21 +107,24 @@ def sza(
     true_solar_time = (
         average_localtime
         + 0.0066
-        + 7.3525 * cos2(J + 85.9)
-        + 9.9359 * cos2(2 * J + 108.9)
-        + 0.3387 * cos2(3 * J + 105.2)
+        + 7.3525 * _cos2(J + 85.9)
+        + 9.9359 * _cos2(2 * J + 108.9)
+        + 0.3387 * _cos2(3 * J + 105.2)
     )
-
     hour_angle = 15.0 * (720.0 - true_solar_time) / 60.0
 
     # sun declination, using DIN 5034-2
     declination = (
-        0.3948 - 23.2559 * cos2(J + 9.1) - 0.3915 * cos2(2 * J + 5.4) - 0.1764 * cos2(3 * J + 26.0)
+        0.3948
+        - 23.2559 * _cos2(J + 9.1)
+        - 0.3915 * _cos2(2 * J + 5.4)
+        - 0.1764 * _cos2(3 * J + 26.0)
     )
 
     # solar zenith angle
-    return acos2(
-        sin2(latitude) * sin2(declination) + cos2(hour_angle) * cos2(latitude) * cos2(declination)
+    return _acos2(
+        _sin2(latitude) * _sin2(declination)
+        + _cos2(hour_angle) * _cos2(latitude) * _cos2(declination)
     )
 
 
@@ -127,11 +133,11 @@ def sza(
 
 def get_EoT(date_ts: datetime) -> float:
     """
-    Calculate equation of time.
+    Calculate equation of time, for calculation of local solar time.
 
-    input: date_ts, datetime object
-    returns: equation of time (float)
-    use for: calculation of local solar time
+    input: date_ts - datetime object
+
+    returns: equation of time result - float
     """
     B = (360 / 365) * (date_ts.timetuple().tm_yday - 81)
     return 9.87 * sin(2 * B) - 7.53 * cos(B) - 1.5 * sin(B)
@@ -159,5 +165,5 @@ def get_LSTdayFrac(
     t_corr = (4 * (longitude - LSTM) + EoT) / 60 / 24  # [d]
     LST_frac = (time_delta + tz_offset / 24 - days_delta) + t_corr
     if LST_frac > 1:
-        LST_frac -= floor(LST_frac)
+        return LST_frac - floor(LST_frac)
     return LST_frac

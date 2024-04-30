@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.2 (2024-xx-xx)
+
+- time corr, pl filters: replace comparison/fill with integers with vanilla Python timedelta
+
 ## v0.4.1 (2024-04-19)
 
 - na1001: revise parameter names of df output functions (to Python standard)

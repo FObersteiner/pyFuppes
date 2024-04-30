@@ -3,6 +3,7 @@
 
 import functools
 from copy import deepcopy
+from datetime import timedelta
 from typing import Callable, Optional
 
 import numpy as np
@@ -77,14 +78,17 @@ def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple
     (n, df) : (int, polars DataFrame)
         The number of removed columns and the filtered dataframe.
     """
+    fill_value = timedelta(microseconds=1)
+    ref_value = timedelta(0)
     n_removed = 0
-    m = df[datetime_key].diff().fill_null(1) > 0
+
+    m = df[datetime_key].diff().fill_null(fill_value) > ref_value
     while not m.all():
         if df.height == 1:
             return (int(n_removed), df)
         df = df.filter(m)
         n_removed += (~m).sum()
-        m = df[datetime_key].diff().fill_null(1) > 0
+        m = df[datetime_key].diff().fill_null(fill_value) > ref_value
     return (int(n_removed), df)
 
 
@@ -96,14 +100,17 @@ def filter_dt_backward(
 
     If one element is less than the previous, then the previous element is removed.
     """
+    fill_value = timedelta(microseconds=1)
+    ref_value = timedelta(0)
     n_removed = 0
-    m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
+
+    m = (df[datetime_key].diff().fill_null(fill_value) > ref_value).shift(-1).fill_null(True)
     while not m.all():
         if df.height == 1:
             return (int(n_removed), df)
         df = df.filter(m)
         n_removed += (~m).sum()
-        m = (df[datetime_key].diff().fill_null(1) > 0).shift(-1).fill_null(True)
+        m = (df[datetime_key].diff().fill_null(fill_value) > ref_value).shift(-1).fill_null(True)
     return (int(n_removed), df)
 
 
