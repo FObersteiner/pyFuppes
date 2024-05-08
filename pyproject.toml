@@ -2,8 +2,8 @@
 name = "pyfuppes"
 version = "0.4.1"
 description = "A collection of tools in Python"
-authors = ["Florian Obersteiner <f.obersteiner@kit.edu>"]
-license = "MIT"
+authors = ["Florian Obersteiner <f.obersteiner@posteo.de>"]
+license = "LGPL3"
 readme = "README.md"
 
 [tool.poetry.dependencies]
