@@ -43,7 +43,7 @@ def na1001_cls_read(
     rmv_repeated_seps=False,
     vscale_vmiss_vertical=False,
     vmiss_to_None=False,
-    ensure_ascii=True,
+    ensure_ascii=False,
     allow_emtpy_data=False,
 ):
     """
@@ -75,7 +75,7 @@ def na1001_cls_read(
             pass
         else:
             if enc != "ascii":
-                print(f"warning: non-ascii encoding '{enc}' used in file {na_1001['SRC']}")
+                print(f"warning: non-ascii encoding '{enc}' used in file {na_1001['_SRC']}")
             break  # found a working encoding
     if not decoded:
         raise ValueError(f"could not decode input (ASCII-only: {ensure_ascii})")
@@ -225,6 +225,7 @@ def na1001_cls_write(
     sep=" ",
     sep_data="\t",
     overwrite=0,
+    encoding="utf-8",
     verbose=False,
 ):
     """
@@ -276,7 +277,7 @@ def na1001_cls_write(
         na_1001["NLHEAD"] = nlhead_is
 
     # begin the actual writing process
-    with open(file_path, "w", encoding="ascii") as file_obj:
+    with open(file_path, "w", encoding=encoding) as file_obj:
         block = str(na_1001["NLHEAD"]) + sep + "1001\n"
         file_obj.write(block)
 

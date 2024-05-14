@@ -7,4 +7,3 @@
 `OM_20200304_591_CPT_MUC_V01_invalid6.txt` - invalid number of VMISS elements
 `OM_20200304_591_CPT_MUC_V01_invalid7.txt` - invalid number of VNAME elements
 `OM_20200304_591_CPT_MUC_V01_invalid8.txt` - invalid number of nlhead
-`OM_20200304_591_CPT_MUC_V01_invalid9.txt` - non-ascii character

@@ -1,8 +1,10 @@
 # Changelog
 
-## v0.4.2 (2024-xx-xx)
+## v0.4.2 (2024-05-14)
 
 - time corr, pl filters: replace comparison/fill with integers with vanilla Python timedelta
+- NASA Ames 1001, reader: set ensure_ascii to False by default
+- NASA Ames 1001, writer: set encoding to utf-8 by default
 
 ## v0.4.1 (2024-04-19)
 

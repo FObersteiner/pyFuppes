@@ -42,7 +42,7 @@ class FFI1001(object):
     vmiss_to_None : bool, optional
         Set True if missing values should be replaced with None. The default is False.
     ensure_ascii : bool, optional
-        Enforce ASCII-decoding of the input. The default is True.
+        Enforce ASCII-decoding of the input. The default is False.
     allow_emtpy_data : bool, optional
         Allow header-only input. The default is False.
 
@@ -155,6 +155,7 @@ class FFI1001(object):
     def to_file(self, file: Union[str, Path], **kwargs):
         """
         Write NASA Ames 1001 file from populated ffi_1001 class.
+        Output text is UTF-8 encoded, to allow for a more contemporary set of characters.
 
         Parameters
         ----------

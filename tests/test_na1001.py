@@ -49,6 +49,9 @@ class TestNa1001(unittest.TestCase):
         file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid0.txt"
         na = na1001(file, sep_data="\t")
         self.assertEqual(len(na._HEADER), na.NLHEAD)
+        file = src / "validate_na/OM_20200304_591_CPT_MUC_V01_valid1.txt"
+        na = na1001(file, sep_data="\t")
+        self.assertEqual(len(na._HEADER), na.NLHEAD)
 
     def test_invalid_read_config(self):
         file = src / "validate_na/valid_1001a.na"
