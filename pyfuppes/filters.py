@@ -6,6 +6,7 @@ from typing import Union
 import numpy as np
 from numba import njit
 from scipy.interpolate import interp1d
+from sklearn.neighbors import LocalOutlierFactor
 
 ###############################################################################
 
@@ -88,7 +89,7 @@ def mask_jumps(
     threshold : [float, int]
         Maximum allowed difference between subsequent elements.
     look_ahead : int
-        How many elements to look ahead if a difference exceedes threshold.
+        How many elements to look ahead if a difference exceeds threshold.
     abs_delta : bool, optional
         Consider the absolute difference. The default is False.
 
@@ -155,7 +156,7 @@ def filter_jumps(
             np.arange(0, result.shape[0])[mask],
             result[mask],
             kind=interpol_kind,
-            fill_value="extrapolate",
+            fill_value="extrapolate",  # type: ignore
         )
         result = f_ip(np.arange(0, result.shape[0]))
         return (result, mask)
@@ -251,7 +252,7 @@ def filter_jumps_np(
     if interpol_jumps:
         tmp_x = (np.arange(0, v.shape[0]))[ix_rem]
         tmp_y = v[ix_rem]
-        f_ip = interp1d(tmp_x, tmp_y, kind=interpol_kind, fill_value="extrapolate")
+        f_ip = interp1d(tmp_x, tmp_y, kind=interpol_kind, fill_value="extrapolate")  # type: ignore
         filtered = f_ip(np.arange(0, v.shape[0]))
     else:
         w_valid = np.where(v != no_val)
@@ -282,6 +283,62 @@ def extend_mask(m: np.ndarray, n: int) -> np.ndarray:
 
     """
     return np.convolve(m, np.ones((n + 1,)), mode="same").astype(np.bool_)
+
+
+###############################################################################
+
+
+def simple_1d_lof(var: np.ndarray, k: int, thresh: float, mode="both") -> np.ndarray:
+    """
+    simple_1d_lof runs an outlier detection based on the local outlier factor algorithm,
+      https://en.wikipedia.org/wiki/Local_outlier_factor
+    The application to a time series is derived from the 'UniLOF' flagging scheme from SaQC,
+      https://rdm-software.pages.ufz.de/saqc/
+
+    Parameters
+    ----------
+    var : np.array
+        dependent variable of the time series, to be analyzed with lof.
+    k : int
+        number of neighbors to use for the distance calculation.
+    thresh : float
+        the threshold value to determine if a value is tagged as an outlier.
+        a typical value is 1.5
+    mode : str, optional
+        mark only 'positive', 'negative' outliers or 'both' (default)
+
+    Returns
+    -------
+    np.ndarray
+        boolean mask that will be True where an outlier is detected.
+
+    """
+    assert len(var.shape) == 1, "can only work with 1D data"
+    assert np.isfinite(var).all(), "can only use all-finite values in 'var'"
+
+    v_diff = np.diff(var, prepend=var[0])
+
+    density = np.median(np.abs(v_diff))
+    if density == 0:
+        m = v_diff != 0
+        density = 1 if not m.any() else np.median(np.abs(v_diff[m]))
+
+    d_var = np.arange(var.shape[0]) * density
+
+    # prepend / append k elements to var to detect outliers on the edges
+    extd_var = np.pad(var, k, mode="reflect")
+    extd_dens = np.pad(d_var, k, mode="reflect", reflect_type="odd")
+
+    clf = LocalOutlierFactor(n_neighbors=k)
+    _ = clf.fit_predict(np.array([extd_var, extd_dens]).T)
+    resids = clf.negative_outlier_factor_[k:-k]  # truncate what was pre-/appended
+
+    m = np.absolute(resids) > thresh
+    if mode == "positive":
+        return m & (v_diff > 0)
+    if mode == "negative":
+        return m & (v_diff < 0)
+    return m
 
 
 ###############################################################################

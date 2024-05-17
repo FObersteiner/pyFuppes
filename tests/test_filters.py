@@ -166,6 +166,48 @@ class TestFilters(unittest.TestCase):
         )
         self.assertTrue((have == want).all())
 
+    def test_filter_lof(self):
+        with self.assertRaises(Exception) as context:
+            _ = filters.simple_1d_lof(np.array([np.nan]), 15, 1.5)
+        self.assertTrue("can only use all-finite values in 'var'" in str(context.exception))
+
+        with self.assertRaises(Exception) as context:
+            _ = filters.simple_1d_lof(np.array([[1, 1], [2, 2]]), 15, 1.5)
+        self.assertTrue("can only work with 1D data" in str(context.exception))
+
+        rng = np.random.default_rng()
+        data = rng.standard_normal(10000)
+        n_outliers = 20
+
+        m = np.sort(rng.choice(data.shape[0], size=n_outliers, replace=False))
+        pos_neg = np.random.choice([True, False], size=n_outliers)
+
+        out = np.absolute(np.min(data) - np.max(data)) * 3
+        data[m[pos_neg]] = out
+        data[m[~pos_neg]] = out * -1
+
+        mask = filters.simple_1d_lof(data, 15, 1.5)
+        self.assertEqual(
+            m.shape[0], np.nonzero(mask)[0].shape[0], "lof must find prescribed outliers"
+        )
+        self.assertTrue((m == np.nonzero(mask)[0]).all(), "lof must find prescribed outliers")
+
+        mask = filters.simple_1d_lof(data, 15, 1.5, mode="positive")
+        self.assertEqual(
+            m[pos_neg].shape[0], np.nonzero(mask)[0].shape[0], "lof must find prescribed outliers"
+        )
+        self.assertTrue(
+            (m[pos_neg] == np.nonzero(mask)[0]).all(), "lof must find prescribed outliers"
+        )
+
+        mask = filters.simple_1d_lof(data, 15, 1.5, mode="negative")
+        self.assertEqual(
+            m[~pos_neg].shape[0], np.nonzero(mask)[0].shape[0], "lof must find prescribed outliers"
+        )
+        self.assertTrue(
+            (m[~pos_neg] == np.nonzero(mask)[0]).all(), "lof must find prescribed outliers"
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

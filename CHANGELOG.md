@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.3 (2024-05-17)
+
+- add LOF filter
+
 ## v0.4.2 (2024-05-14)
 
 - time corr, pl filters: replace comparison/fill with integers with vanilla Python timedelta
