@@ -7,6 +7,21 @@ from typing import Any, Callable, Optional, Union
 
 import numpy as np
 
+
+###############################################################################
+
+
+def clean_path(p: Union[Path, str], resolve: bool = True) -> Path:
+    """Clean a path from stuff like ~ or $HOME."""
+    path_str = Path(p).as_posix()
+    if path_str.startswith("$HOME") or path_str.startswith("~"):
+        path_str = path_str.replace("$HOME", Path().home().as_posix(), 1)
+        path_str = path_str.replace("~", Path().home().as_posix(), 1)
+    if not resolve:
+        return Path(path_str)
+    return Path(path_str).resolve()
+
+
 ###############################################################################
 
 

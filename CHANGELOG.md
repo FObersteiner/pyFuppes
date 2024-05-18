@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.4 (2024-xx-xx)
+
+- misc tools add path cleaner
+
 ## v0.4.3 (2024-05-17)
 
 - add LOF filter
