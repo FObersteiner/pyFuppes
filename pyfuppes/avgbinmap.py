@@ -22,10 +22,11 @@ def mean_angle(deg: Union[list, np.ndarray, np.ma.masked_array]) -> float:
 
     input:
         deg - (list or array) values to average
+
     notes:
-    - if input parameter deg contains NaN or is a numpy masked array, missing
-      values will be removed before the calculation.
-    - result is degrees between -180 and +180
+        - if input parameter deg contains NaN or is a numpy masked array, missing
+          values will be removed before the calculation.
+        - result is degrees between -180 and +180.
 
     Returns
     -------

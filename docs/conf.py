@@ -7,7 +7,7 @@
 # -- Project information -----------------------------------------------------
 
 project = "pyFuppes"
-copyright = "2022, Florian Obersteiner"
+copyright = "2024, Florian Obersteiner"
 author = "Florian Obersteiner"
 
 # -- General configuration ---------------------------------------------------
