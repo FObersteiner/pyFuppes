@@ -35,7 +35,6 @@ sphinx:
 #     - requirements: docs/requirements.txt
 # Configuration
 python:
-  version: 3.12
   install:
     - requirements: docs/requirements.txt
     - method: pip
