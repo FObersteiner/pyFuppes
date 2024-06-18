@@ -199,7 +199,7 @@ class FFI1001(object):
         vdtype : data type, optional
             Data type for dependent variable(s). The default is np.float.
         vmiss : missing value identifier, optional
-            The default is np.NaN.
+            The default is np.nan.
 
         Returns
         -------

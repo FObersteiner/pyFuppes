@@ -65,7 +65,7 @@ def pd_Series_ip(
         src_df[dvar_src_name].values,
         kind="linear",
         bounds_error=False,
-        fill_value=np.NaN,
+        fill_value=np.nan,
     )
     dst_df[dvar_dst_name] = f(dst_df[ivar_dst_name])
     return dst_df

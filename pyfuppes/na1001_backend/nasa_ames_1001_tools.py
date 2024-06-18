@@ -22,7 +22,7 @@ def naDict_2_npndarr(
     split_idx=0,
     xdtype=float,
     vdtype=float,
-    vmiss=np.NaN,
+    vmiss=np.nan,
 ):
     """
     Convert variables from na1001 class instance to dictionary mapping names to numpy arrays.
