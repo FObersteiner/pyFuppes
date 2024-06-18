@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.4.4 (2024-xx-xx)
+## v0.4.4 (2024-06-18)
 
+- satisfy numpy 2.0 deprecations
 - misc tools add path cleaner
 
 ## v0.4.3 (2024-05-17)

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.4.3"
+version = "0.4.4"
 description = "A collection of tools in Python"
 authors = ["Florian Obersteiner <f.obersteiner@posteo.de>"]
 license = "LGPL3"
