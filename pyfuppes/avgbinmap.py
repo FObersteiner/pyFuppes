@@ -226,7 +226,7 @@ def bin_y_of_t(
         v - np.ndarray to be binned
         bin_info - config dict returned by bin_time() or bin_time_10s()
     keywords:
-        vmiss (numeric) - missing value identifier, defaults to np.NaN
+        vmiss (numeric) - missing value identifier, defaults to np.nan
         return_type (str) - how to bin, defaults to 'arit_mean'
         use_numba (bool) - use njit'ed binning functions or not
 
@@ -569,7 +569,7 @@ def map_dependent(
         vcmp mapped to xref.
     """
     # which element of xref has a corresponding element in xcmp?
-    m = np.in1d(xref, xcmp)
+    m = np.isin(xref, xcmp)
 
     # prepare output
     vmap = np.empty(xref.shape, dtype=vcmp.dtype)
@@ -577,7 +577,7 @@ def map_dependent(
     vmap[~m] = vmiss
 
     # where corresponding elements exist, insert those from vcmp
-    vmap[m] = np.take(vcmp, np.nonzero(np.in1d(xcmp, xref)))[0]
+    vmap[m] = np.take(vcmp, np.nonzero(np.isin(xcmp, xref)))[0]
 
     return vmap
 
