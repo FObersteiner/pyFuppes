@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.5 (2024-06-18)
+
+- fix readthedocs generation
+
 ## v0.4.4 (2024-06-18)
 
 - satisfy numpy 2.0 deprecations
