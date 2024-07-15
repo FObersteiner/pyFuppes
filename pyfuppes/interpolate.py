@@ -39,13 +39,14 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
 ###############################################################################
 
 
-def pd_Series_ip(
+def pd_Series_ip1d(
     src_df: pd.DataFrame,
     dst_df: pd.DataFrame,
     ivar_src_name: str,
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
+    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
 ) -> pd.DataFrame:
     """
     Interpolate dependent variable from source dataframe to destination df's independent variable.
@@ -59,13 +60,10 @@ def pd_Series_ip(
     df_dst : pd.DataFrame
         modified input dst_df.
     """
-    # TODO: test missing !
     f = interp1d(
         src_df[ivar_src_name].values,
         src_df[dvar_src_name].values,
-        kind="linear",
-        bounds_error=False,
-        fill_value=np.nan,
+        **kwargs,
     )
     dst_df[dvar_dst_name] = f(dst_df[ivar_dst_name])
     return dst_df

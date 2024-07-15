@@ -2,6 +2,8 @@
 import unittest
 
 import numpy as np
+import pandas as pd
+from pandas import testing as pdtest
 import polars as pl
 from polars.testing import assert_series_equal
 
@@ -25,6 +27,104 @@ class TestInterpolate(unittest.TestCase):
     def tearDown(self):
         # to run after each test
         pass
+
+    def test_pd_Series_interp1d(self):
+        # low to high freq:
+        df_dst = pd.DataFrame(
+            {
+                "dt": [
+                    "2022-12-14T14:00:01.000",
+                    "2022-12-14T14:00:02.000",
+                    "2022-12-14T14:00:03.000",
+                    "2022-12-14T14:00:04.000",
+                    "2022-12-14T14:00:05.000",
+                    "2022-12-14T14:00:06.000",
+                ]
+            }
+        )
+        df_dst["dt"] = pd.to_datetime(df_dst["dt"]).astype("int64")
+        df_src = pd.DataFrame(
+            {
+                "dt": [
+                    "2022-12-14T14:00:01.500",
+                    "2022-12-14T14:00:03.500",
+                    "2022-12-14T14:00:05.500",
+                ],
+                "v1": [1.5, 3.5, 5.5],
+            }
+        )
+        df_src["dt"] = pd.to_datetime(df_src["dt"]).astype("int64")
+        _ = interpolate.pd_Series_ip1d(
+            df_src,
+            df_dst,
+            ivar_src_name="dt",
+            dvar_src_name="v1",
+            ivar_dst_name="dt",
+            dvar_dst_name="v1_ip",
+            kind="linear",  # no effect with pl_Series_ip1d_lite
+            bounds_error=False,  # no effect with pl_Series_ip1d_lite
+            fill_value="extrapolate",
+        )
+        self.assertIsNone(
+            pdtest.assert_series_equal(
+                df_dst["v1_ip"], pd.Series([1.0, 2.0, 3.0, 4.0, 5.0, 6.0], name="v1_ip")
+            )
+        )
+        _ = interpolate.pd_Series_ip1d(
+            df_src,
+            df_dst,
+            ivar_src_name="dt",
+            dvar_src_name="v1",
+            ivar_dst_name="dt",
+            dvar_dst_name="v1_ip",
+            kind="linear",  # no effect with pl_Series_ip1d_lite
+            bounds_error=False,  # no effect with pl_Series_ip1d_lite
+            fill_value=np.nan,
+        )
+        self.assertIsNone(
+            pdtest.assert_series_equal(
+                df_dst["v1_ip"],
+                pd.Series([np.nan, 2.0, 3.0, 4.0, 5.0, np.nan], name="v1_ip"),
+            )
+        )
+        # high to low freq:
+        df_src = pd.DataFrame(
+            {
+                "dt": [
+                    "2022-12-14T14:00:01.000",
+                    "2022-12-14T14:00:02.000",
+                    "2022-12-14T14:00:03.000",
+                    "2022-12-14T14:00:04.000",
+                    "2022-12-14T14:00:05.000",
+                    "2022-12-14T14:00:06.000",
+                ],
+                "v1": [1.0, 2.0, 3.0, 4.0, 5.0, 6.0],
+            }
+        )
+        df_src["dt"] = pd.to_datetime(df_src["dt"]).astype("int64")
+        df_dst = pd.DataFrame(
+            {
+                "dt": [
+                    "2022-12-14T14:00:01.500",
+                    "2022-12-14T14:00:03.500",
+                    "2022-12-14T14:00:05.500",
+                ],
+            }
+        )
+        df_dst["dt"] = pd.to_datetime(df_dst["dt"]).astype("int64")
+        _ = interpolate.pd_Series_ip1d(
+            df_src,
+            df_dst,
+            ivar_src_name="dt",
+            ivar_dst_name="dt",
+            dvar_src_name="v1",
+            dvar_dst_name="v1_ip",
+            kind="linear",  # no effect with pl_Series_ip1d_lite
+            bounds_error=True,  # no effect with pl_Series_ip1d_lite
+        )
+        self.assertIsNone(
+            pdtest.assert_series_equal(df_dst["v1_ip"], pd.Series([1.5, 3.5, 5.5], name="v1_ip"))
+        )
 
     def test_pl_Series_interp1d(self):
         for func in interpolate.pl_Series_interp1d, interpolate.pl_Series_ip1d_lite:
