@@ -3,8 +3,8 @@ import unittest
 
 import numpy as np
 import pandas as pd
-from pandas import testing as pdtest
 import polars as pl
+from pandas import testing as pdtest
 from polars.testing import assert_series_equal
 
 from pyfuppes import interpolate
