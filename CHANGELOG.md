@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.4.6 (2024-07-16)
+
+- cleanup and test pd_Series interpolation
+
 ## v0.4.5 (2024-06-18)
 
 - fix readthedocs generation
