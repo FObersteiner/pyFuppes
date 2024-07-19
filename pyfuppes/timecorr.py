@@ -26,6 +26,7 @@ def get_tcorr_parms(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> np.ndarr
 # -----------------------------------------------------------------------------
 
 
+# TODO : rename 'apply_tcorr'; second argument 'tcorr_parms'
 def apply_tcorr_parms(t: np.ndarray, parms: np.ndarray) -> np.ndarray:
     """Subtract fitted time correction from t."""
     return t - np.polyval(parms, t)
@@ -59,6 +60,7 @@ def time_correction(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str
 ###############################################################################
 
 
+# TODO : ensure input is not modified (pure function)
 def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple[int, pl.DataFrame]:
     """
     Given a time series as polars.DataFrame, ensure that the index is increasing strictly.
@@ -92,6 +94,7 @@ def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple
     return (int(n_removed), df)
 
 
+# TODO : ensure input is not modified (pure function)
 def filter_dt_backward(
     df: pl.DataFrame, datetime_key: str = "datetime"
 ) -> tuple[int, pl.DataFrame]:

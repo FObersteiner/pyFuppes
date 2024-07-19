@@ -46,7 +46,6 @@ class SteppedData:
         extend_edges=True,
         plot=True,
     ):
-        """You guessed it: a function to detect steps in the signal."""
         if extend_edges:
             self.values = np.insert(self.values, 0, np.repeat(self.values[0], look_around[0]))
             self.values = np.append(self.values, np.repeat(self.values[-1], look_around[1]))

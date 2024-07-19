@@ -17,7 +17,7 @@ n_cols = 4
 
 [OMC] # Omcal UV photometer
 min_n_lines = 2
-n_cols = 18
+n_cols = 18     # older data might have only 16 columns (no median reported)
 
 [OSC] # Oscar CL detector
 min_n_lines = 6

@@ -81,12 +81,12 @@ def print_progressbar(
 
 def find_youngest_file(path: Path, pattern: str, n: int = 1) -> Optional[list[Path]]:
     """
-    Find the file that matches a pattern and has the highest modification timestamp if there are multiple files that match the pattern.
+    Find the file that matches a pattern and has the youngest modification timestamp if there are multiple files that match the pattern.
 
     input:
         path, string or pathlib.Path, where to look for the file(s)
         pattern, string, pattern to look for in files (see pathlib.Path.glob)
-        n, integer, how many to return. defaults to 1
+        n, integer, how many to return. defaults to 1.
 
     Returns
     -------
@@ -97,7 +97,7 @@ def find_youngest_file(path: Path, pattern: str, n: int = 1) -> Optional[list[Pa
 
     path = Path(path)
     files = [Path(f) for f in path.glob(pattern) if os.path.isfile(f)]
-    sortfiles = sorted(files, key=lambda x: os.path.getmtime(x), reverse=True)
+    sortfiles = sorted(files, key=lambda x: x.stat().st_mtime, reverse=True)
 
     if sortfiles:
         return sortfiles[:n]
@@ -145,6 +145,8 @@ def find_fist_elem(arr: Union[list, np.ndarray], val: Any, condition: Callable) 
 ###############################################################################
 
 
+# TODO : rename 'list_change_elem_index'
+# TODO : do not mutate input; return new list
 def list_chng_elem_index(lst: list, element: Any, new_index: int) -> Optional[list]:
     """
     Change the index of an element in a list.

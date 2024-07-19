@@ -159,7 +159,7 @@ def filter_jumps(
             fill_value="extrapolate",  # type: ignore
         )
         result = f_ip(np.arange(0, result.shape[0]))
-        return (result, mask)
+
     return (result, mask)
 
 

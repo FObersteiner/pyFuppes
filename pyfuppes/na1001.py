@@ -176,8 +176,7 @@ class FFI1001(object):
             0 -> failed, 1 -> successful write, 2 -> successful overwrite.
 
         """
-        io = rw.na1001_cls_write(file, self.__dict__, **kwargs)
-        return io
+        return rw.na1001_cls_write(file, self.__dict__, **kwargs)
 
     # ------------------------------------------------------------------------------
     def to_dict_nparray(self, **kwargs) -> dict[str, np.ndarray]:

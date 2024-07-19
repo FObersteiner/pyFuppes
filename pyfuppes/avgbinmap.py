@@ -140,6 +140,7 @@ def mean_day_frac(
 ###############################################################################
 
 
+# TODO: test missing !
 def bin_t_10s(
     t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True
 ) -> dict[str, Optional[np.ndarray]]:
@@ -158,7 +159,6 @@ def bin_t_10s(
     -------
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
-    # TODO: test missing !
     if not isinstance(t, np.ndarray):
         raise TypeError("Please pass np.ndarray to function.")
 
@@ -213,6 +213,7 @@ def get_npnanmean(v: np.ndarray):
     return np.nanmean(v)
 
 
+# TODO: test missing !
 def bin_y_of_t(
     v: np.ndarray,
     bin_info: dict,
@@ -235,7 +236,6 @@ def bin_y_of_t(
     -------
         v binned according to parameters in bin_info
     """
-    # TODO: test missing !
     if not isinstance(v, np.ndarray):
         raise TypeError("Please pass np.ndarray to function.")
 

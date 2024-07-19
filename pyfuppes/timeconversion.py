@@ -59,6 +59,7 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
 ###############################################################################
 
 
+# TODO : remove list operation
 def dtstr_2_mdns(
     timestring: Union[str, list],
     tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
@@ -116,6 +117,7 @@ def dtstr_2_mdns(
 ###############################################################################
 
 
+# TODO : remove list operation
 def dtobj_2_mdns(
     dt_obj: Union[datetime, list[datetime]],
     ref_date: Optional[tuple[int, ...]] = None,
@@ -163,6 +165,8 @@ def dtobj_2_mdns(
 ###############################################################################
 
 
+# TODO : remove list operation
+# TODO : rename; 'unixtime_2_mdns'
 def posix_2_mdns(
     posixts: Union[float, list[float]], ymd: Optional[tuple[int, ...]] = None
 ) -> Union[float, list[float]]:
@@ -202,6 +206,7 @@ def posix_2_mdns(
 ###############################################################################
 
 
+# TODO : remove list operation
 def mdns_2_dtobj(
     mdns: Union[float, list[float]],
     ref_date: tuple[int],
@@ -268,6 +273,7 @@ def mdns_2_dtobj(
 ###############################################################################
 
 
+# TODO : remove list operation
 def daysSince_2_dtobj(
     day0: datetime, days_since: Union[int, float]
 ) -> Union[datetime, list[datetime]]:
@@ -295,6 +301,7 @@ def daysSince_2_dtobj(
 ###############################################################################
 
 
+# TODO : rename 'dtstr_2_unixtime'
 def dtstr_2_posix(
     timestring: str, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz: timezone = timezone.utc
 ) -> float:

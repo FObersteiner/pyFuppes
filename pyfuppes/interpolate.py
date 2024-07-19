@@ -39,6 +39,7 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
 ###############################################################################
 
 
+# TODO : do not modify the input, return a new series
 def pd_Series_ip1d(
     src_df: pd.DataFrame,
     dst_df: pd.DataFrame,
@@ -72,6 +73,7 @@ def pd_Series_ip1d(
 ###############################################################################
 
 
+# TODO : do not modify the input, return a new series
 def pl_Series_interp1d(
     src_df: pl.DataFrame,
     dst_df: pl.DataFrame,

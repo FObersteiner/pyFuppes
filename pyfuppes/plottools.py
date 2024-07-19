@@ -26,13 +26,13 @@ def get_plot_range(
     add_percent : numeric type scalar value, optional
         percent of the range of v that should be added to result. The default is 5.
     v_min_lim : numeric type scalar value, optional
-        minimum value for lower yrange limit. The default is False.
+        minimum value for lower yrange limit. The default is None.
     v_max_lim : numeric type scalar value, optional
-        maximum value for upper yrange limit. The default is False.
+        maximum value for upper yrange limit. The default is None.
     xrange : list, optional
-        [lower_limit, upper_limit] of independent variable. The default is False.
+        [lower_limit, upper_limit] of independent variable. The default is None.
     x : list or numpy 1d array, optional
-        independent variable. The default is False.
+        independent variable. The default is None.
 
     Returns
     -------
@@ -79,7 +79,7 @@ def get_plot_range(
 
 def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -> list[float]:
     """
-    Update a plot yrange so that it fits nicely into a certain number of ticks.
+    Update a plot yrange so that it fits nicely with a certain number of ticks.
 
     Parameters
     ----------

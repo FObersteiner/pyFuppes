@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Geospatial helpers, such as Haversine distance or solar zenith angle."""
 
-from datetime import datetime, timezone
+from datetime import datetime
 from math import acos, asin, cos, degrees, floor, radians, sin, sqrt
 
 import numpy as np
@@ -30,7 +30,7 @@ EARTH_RADIUS = 6372.8  # approximate radius of earth in km
 
 @njit
 def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
-    """Calculate Haversine distance along lat/lon coordinates in km. Code gets numba-JIT compiled."""
+    """Calculate Haversine distance in km along lat/lon coordinates. Code gets numba-JIT compiled."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     dist = 0
 
@@ -56,7 +56,7 @@ def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
 
 
 def geodesic_dist(lat: np.ndarray, lon: np.ndarray) -> float:
-    """Calculate geodesic distance along lat/lon coordinates using geopy module."""
+    """Calculate geodesic distance in km along lat/lon coordinates using geopy module."""
     assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
     dist = 0.0
     for j in range(lat.shape[0] - 1):
@@ -68,9 +68,9 @@ def geodesic_dist(lat: np.ndarray, lon: np.ndarray) -> float:
 
 
 def sza_pysolar(
-    UTC: datetime = datetime.now(timezone.utc),
-    latitude: float = 52.37,
-    longitude: float = 9.72,
+    UTC: datetime,
+    latitude: float,
+    longitude: float,
 ) -> float:
     """Compute solar zenith angle with get_altitude function from pysolar package."""
     return 90 - get_altitude(latitude, longitude, UTC)
@@ -80,9 +80,9 @@ def sza_pysolar(
 
 
 def sza(
-    UTC: datetime = datetime.now(timezone.utc),
-    latitude: float = 52.37,
-    longitude: float = 9.72,
+    UTC: datetime,
+    latitude: float,
+    longitude: float,
 ) -> float:
     """
     Calculate the solar zenith angle (in degree).
