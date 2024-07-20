@@ -140,7 +140,6 @@ def mean_day_frac(
 ###############################################################################
 
 
-# TODO: test missing !
 def bin_t_10s(
     t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True
 ) -> dict[str, Optional[np.ndarray]]:
@@ -213,7 +212,6 @@ def get_npnanmean(v: np.ndarray):
     return np.nanmean(v)
 
 
-# TODO: test missing !
 def bin_y_of_t(
     v: np.ndarray,
     bin_info: dict,
@@ -300,7 +298,7 @@ def bin_y_of_t(
 def bin_by_pdresample(
     t: np.ndarray,
     v: np.ndarray,
-    rule: str = "10S",
+    rule: str = "10s",
     offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),  # type: ignore
     force_t_range: bool = True,
     drop_empty: bool = True,
@@ -331,7 +329,6 @@ def bin_by_pdresample(
     pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
     """
-    # TODO: test missing !
     d = {f"v_{i}": y for i, y in enumerate(v)} if isinstance(v, list) else {"v_0": v}
 
     df = pd.DataFrame(d, index=pd.to_datetime(t, unit="s"))
@@ -366,10 +363,6 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.
     if ignore_nan is set to False, the whole bin will be NaN if 1 or more NaNs
         fall within the bin.
     """
-    # TODO: test missing !
-    if not isinstance(v, np.ndarray):
-        v = np.array(v)
-
     bins = np.linspace(0, v.size, nbins + 1, True).astype(int)
 
     if ignore_nan:
@@ -417,6 +410,7 @@ def moving_avg(v: Union[list, np.ndarray], N: int) -> list:
 ###############################################################################
 
 
+# TODO: test missing !
 def np_mvg_avg(
     v: np.ndarray,
     N: int,
@@ -448,7 +442,6 @@ def np_mvg_avg(
     m_avg : 1d array
         averaged data.
     """
-    # TODO: test missing !
     if ip_ovr_nan:
         x = np.linspace(0, len(v) - 1, num=len(v))
         fip = interp1d(
@@ -471,6 +464,7 @@ def np_mvg_avg(
 ###############################################################################
 
 
+# TODO: test missing !
 def pd_mvg_avg(
     v: Union[list, np.ndarray], N: int, ip_ovr_nan: bool = False, min_periods: int = 1
 ) -> np.ndarray:
@@ -496,7 +490,6 @@ def pd_mvg_avg(
     1d array
         averaged data.
     """
-    # TODO: test missing !
     N, min_periods = int(N), int(min_periods)
 
     min_periods = 1 if min_periods < 1 else min_periods
@@ -513,6 +506,7 @@ def pd_mvg_avg(
 ###############################################################################
 
 
+# TODO: test missing !
 def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     """
     Use scipy's uniform_filter1d to calculate a moving average.
@@ -535,7 +529,6 @@ def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     avg : np.ndarray
         averaged data.
     """
-    # TODO: test missing !
     m = np.isfinite(v)
     avg = np.empty(v.shape)
     avg[~m] = np.nan

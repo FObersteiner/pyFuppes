@@ -1,5 +1,12 @@
 # Changelog
 
+## v0.5.0 (2024-xx-xx)
+
+- add tests:
+  - 10s binning,
+  - bin y of t
+  - pd resample, np reduceat
+
 ## v0.4.6 (2024-07-16)
 
 - cleanup and test pd_Series interpolation
