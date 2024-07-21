@@ -12,10 +12,14 @@
     - jumps
   - geo:
     - sza (comparison pysolar with own impl.)
-- removed: avgbinmap.moving_avg (unused, buggy)
-- removed some 'isinstance' checks since this should be covered by type annotations
+  - interpolation:
+    - pd dataframe interpolation
+- remove:
+  - avgbinmap.moving_avg (unused, buggy)
+  - some 'isinstance' checks which should be covered by type annotations
 - clarify type annotations for jump filter funcs
 - lof filter: fix random seed
+- interpolation, pd and pl Series: do not modify the input: make pure functions!
 
 ## v0.4.6 (2024-07-16)
 
