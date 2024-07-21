@@ -7,6 +7,7 @@ import polars as pl
 from scipy.interpolate import interp1d
 
 
+# TODO: test missing !
 def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
     """
     Generate a new DataFrame with all numeric columns interpolated to the new_index.
@@ -25,7 +26,6 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
     df_out : pd.DataFrame
         a new dataframe interpolated to the new index.
     """
-    # TODO: test missing !
     df_out = pd.DataFrame(index=new_index)
     df_out.index.name = df.index.name
 

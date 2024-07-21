@@ -158,9 +158,6 @@ def bin_t_10s(
     -------
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
-    if not isinstance(t, np.ndarray):
-        raise TypeError("Please pass np.ndarray to function.")
-
     if t.ndim != 1:
         raise TypeError("Please pass 1D array to function.")
 
@@ -234,9 +231,6 @@ def bin_y_of_t(
     -------
         v binned according to parameters in bin_info
     """
-    if not isinstance(v, np.ndarray):
-        raise TypeError("Please pass np.ndarray to function.")
-
     if not any(
         v.dtype == np.dtype(t) for t in ("int16", "int32", "int64", "float16", "float32", "float64")
     ):
@@ -298,6 +292,7 @@ def bin_y_of_t(
 def bin_by_pdresample(
     t: np.ndarray,
     v: np.ndarray,
+    t_unit: str = "s",
     rule: str = "10s",
     offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),  # type: ignore
     force_t_range: bool = True,
@@ -311,7 +306,7 @@ def bin_by_pdresample(
     Parameters
     ----------
     t : 1d array of float or int
-        time axis / independent variable in seconds.
+        time axis / independent variable. unit: see keyword 't_unit'.
     v : 1d or 2d array corresponding to t
         dependent variable(s).
     rule : string, optional
@@ -331,7 +326,7 @@ def bin_by_pdresample(
     """
     d = {f"v_{i}": y for i, y in enumerate(v)} if isinstance(v, list) else {"v_0": v}
 
-    df = pd.DataFrame(d, index=pd.to_datetime(t, unit="s"))
+    df = pd.DataFrame(d, index=pd.to_datetime(t, unit=t_unit))
     df = df.resample(rule).mean()
     if offset:
         df.index = df.index + pd.tseries.frequencies.to_offset(offset)
@@ -379,44 +374,12 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.
 ###############################################################################
 
 
-def moving_avg(v: Union[list, np.ndarray], N: int) -> list:
-    """
-    Calculate a simple moving average.
-
-    Parameters
-    ----------
-    v : list
-        data ta to average
-    N : integer
-        number of samples per average.
-
-    Returns
-    -------
-    m_avg : list
-        averaged data.
-    """
-    # TODO: test missing !
-    s, m_avg = [0], []
-
-    for i, x in enumerate(v, 1):
-        s.append(s[i - 1] + x)
-        if i >= N:
-            avg = (s[i] - s[i - N]) / N
-            m_avg.append(avg)
-
-    return m_avg
-
-
-###############################################################################
-
-
-# TODO: test missing !
 def np_mvg_avg(
     v: np.ndarray,
     N: int,
     ip_ovr_nan: bool = False,
     mode: str = "same",
-    edges: str = "expand",
+    expand_edges: bool = True,
 ) -> np.ndarray:
     """
     Calculate moving average based on numpy convolution function.
@@ -431,11 +394,10 @@ def np_mvg_avg(
         interpolate linearly using finite elements of v. The default is False.
     mode : string, optional
         config for np.convolve. The default is 'same'.
-    edges : string, optional
-        config for output. The default is 'expand'.
-            in case of mode='same', convolution gives false results
-            ("running-in effect") at edges. account for this by
-            simply expanding the Nth value to the edges.
+    expand_edges : bool, optional
+        in case of mode='same', convolution gives incorrect results
+        ("running-in effect") at edges. account for this by
+        simply expanding the Nth value to the edges.
 
     Returns
     -------
@@ -455,8 +417,8 @@ def np_mvg_avg(
 
     m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)  # type: ignore
 
-    if edges == "expand":
-        m_avg[: N - 1], m_avg[-N - 1 :] = m_avg[N], m_avg[-N]
+    if expand_edges:
+        m_avg[: N - 1], m_avg[-N:] = m_avg[N - 1], m_avg[-N]
 
     return m_avg
 
@@ -464,7 +426,6 @@ def np_mvg_avg(
 ###############################################################################
 
 
-# TODO: test missing !
 def pd_mvg_avg(
     v: Union[list, np.ndarray], N: int, ip_ovr_nan: bool = False, min_periods: int = 1
 ) -> np.ndarray:
@@ -506,7 +467,6 @@ def pd_mvg_avg(
 ###############################################################################
 
 
-# TODO: test missing !
 def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     """
     Use scipy's uniform_filter1d to calculate a moving average.
@@ -522,7 +482,8 @@ def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     N : int
         number of samples per average.
     edges : str, optional
-        mode of uniform_filter1d (see docs). The default is 'nearest'.
+        mode of uniform_filter1d (see docs at link above). The default is 'nearest'.
+        {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’}
 
     Returns
     -------

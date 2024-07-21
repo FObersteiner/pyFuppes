@@ -11,7 +11,7 @@ class TestAvgbinmap(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
-        print("\ntesting pyfuppes.avgbin...")
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -83,17 +83,16 @@ class TestAvgbinmap(unittest.TestCase):
         want = np.array([np.average(v[:5]), np.average(v[5:])])
         self.assertTrue((want == have).all())
 
-    def test_moving_avg(self):
-        # TODO : ?!
-        pass
-
-    def test_np_mvg_avg(self):
-        # TODO : ?!
-        pass
-
-    def test_sp_mvg_avg(self):
-        # TODO : ?!
-        pass
+    def test_mvg_avg(self):
+        v = np.random.rand(100)
+        v[40:] += 2
+        v[70:] -= 1
+        N = 5
+        avg_np = avgbinmap.np_mvg_avg(v, N)
+        avg_pd = avgbinmap.pd_mvg_avg(v, N)
+        avg_sp = avgbinmap.sp_mvg_avg(v, N)
+        self.assertTrue(np.isclose(avg_np[N - 1 : -N + 1], avg_sp[N - 1 : -N + 1]).all())
+        self.assertTrue(np.isclose(avg_np[N - 1 : -N + 1], avg_pd[N - 1 : -N + 1]).all())
 
     def test_map_dependent(self):
         # first missing
@@ -144,4 +143,22 @@ class TestAvgbinmap(unittest.TestCase):
 
 
 if __name__ == "__main__":
+    # import matplotlib.pyplot as plt
+    #
+    # v = np.random.rand(100)
+    # v[40:] += 2
+    # v[70:] -= 1
+    # N = 5
+    # avg_np = avgbinmap.np_mvg_avg(v, N)
+    # avg_pd = avgbinmap.pd_mvg_avg(v, N)
+    # avg_sp = avgbinmap.sp_mvg_avg(v, N)
+    #
+    # plt.plot(v, label="input")
+    # plt.plot(avg_pd, label="np")
+    # plt.plot(avg_pd, label="pd")
+    # plt.plot(avg_sp, label="sp")
+    # plt.legend()
+    # plt.grid()
+    # plt.show()
+    #
     unittest.main()

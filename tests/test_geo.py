@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import unittest
+from datetime import datetime, timezone
 
 import numpy as np
 
@@ -11,7 +12,7 @@ class TestGeo(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
-        print("\ntesting pyfuppes.avgbin...")
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -25,6 +26,15 @@ class TestGeo(unittest.TestCase):
     def tearDown(self):
         # to run after each test
         pass
+
+    def test_sza(self):
+        a = geo.sza(datetime(1970, 1, 1, tzinfo=timezone.utc), 42, 55)
+        b = geo.sza_pysolar(datetime(1970, 1, 1, tzinfo=timezone.utc), 42, 55)
+        self.assertAlmostEqual(a, b, delta=0.05)
+
+        a = geo.sza(datetime(2013, 9, 2, 10, 47, tzinfo=timezone.utc), 10, 33)
+        b = geo.sza_pysolar(datetime(2013, 9, 2, 10, 47, tzinfo=timezone.utc), 10, 33)
+        self.assertAlmostEqual(a, b, delta=0.05)
 
     def test_haversine_dist(self):
         dist = 2887
