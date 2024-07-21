@@ -3,9 +3,19 @@
 ## v0.5.0 (2024-xx-xx)
 
 - add tests:
-  - 10s binning,
-  - bin y of t
-  - pd resample, np reduceat
+  - avgbinmap:
+    - 10s binning,
+    - bin y of t
+    - pd resample, np reduceat
+    - moving averagers
+  - filters:
+    - jumps
+  - geo:
+    - sza (comparison pysolar with own impl.)
+- removed: avgbinmap.moving_avg (unused, buggy)
+- removed some 'isinstance' checks since this should be covered by type annotations
+- clarify type annotations for jump filter funcs
+- lof filter: fix random seed
 
 ## v0.4.6 (2024-07-16)
 
