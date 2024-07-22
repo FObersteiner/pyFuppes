@@ -14,12 +14,23 @@
     - sza (comparison pysolar with own impl.)
   - interpolation:
     - pd dataframe interpolation
+  - misc:
+    - list change element index
+    - find first elem
 - remove:
   - avgbinmap.moving_avg (unused, buggy)
   - some 'isinstance' checks which should be covered by type annotations
+  - misc.checkbytes_lt128 since this can be done with str.isascii() method
 - clarify type annotations for jump filter funcs
 - lof filter: fix random seed
-- interpolation, pd and pl Series: do not modify the input: make pure functions!
+- make pure functions, do not modify input:
+  - interpolation, pd and pl Series
+  - `list_change_elem_index`
+- rename:
+  - `list_chng_elem_index` to `list_change_elem_index`
+  - `posix_2_mdns` to `unixtime_2_mdns`
+  - `dtstr_2_posix` to `dtstr_2_unixtime`
+- simplify dtstr_2_mdns; now wraps dtobj_2_mdns
 
 ## v0.4.6 (2024-07-16)
 
