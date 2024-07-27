@@ -21,6 +21,22 @@ def clean_path(p: Union[Path, str], resolve: bool = True) -> Path:
     return Path(path_str).resolve()
 
 
+def to_list_of_Path(folders: Union[str, list[str], Path, list[Path]]) -> list[Path]:
+    """Turn input string or list of strings into a list of pathlib.Path objects."""
+    if not isinstance(folders, list):
+        folders = [folders]  # type: ignore
+    return [Path(f) for f in folders]  # type: ignore
+
+
+def insensitive_pattern(pattern: str) -> str:
+    """Return a case-insensitive pattern to use in glob.glob or path.glob."""
+
+    def either(c):
+        return f"[{c.lower()}{c.upper()}]" if c.isalpha() else c
+
+    return "".join(map(either, pattern))
+
+
 ###############################################################################
 
 

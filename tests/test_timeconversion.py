@@ -2,7 +2,6 @@
 
 import unittest
 from datetime import datetime, timezone
-from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
