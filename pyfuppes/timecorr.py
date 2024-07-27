@@ -14,28 +14,7 @@ from matplotlib import pyplot as plt
 ###############################################################################
 
 
-def get_tcorr_parms(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> np.ndarray:
-    """Calculate fit parameters for time correction."""
-    try:
-        parms = np.polyfit(t, t - t_ref, fitorder)
-    except np.linalg.LinAlgError:  # sometimes happens at first try...
-        parms = np.polyfit(t, t - t_ref, fitorder)
-    return parms
-
-
-# -----------------------------------------------------------------------------
-
-
-# TODO : rename 'apply_tcorr'; second argument 'tcorr_parms'
-def apply_tcorr_parms(t: np.ndarray, parms: np.ndarray) -> np.ndarray:
-    """Subtract fitted time correction from t."""
-    return t - np.polyval(parms, t)
-
-
-# -----------------------------------------------------------------------------
-
-
-def time_correction(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str, np.ndarray]:
+def correct_time(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str, np.ndarray]:
     """
     Fit a polynomial to the delta between a time vector and a reference time vector.
 
@@ -52,15 +31,17 @@ def time_correction(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str
             'fitparms': parameters of the fit, ndarray
             't_corr': corrected input time vector t
     """
-    parms = get_tcorr_parms(t, t_ref, fitorder)
-    t_corr = apply_tcorr_parms(t, parms)
+    try:
+        parms = np.polyfit(t, t - t_ref, fitorder)
+    except np.linalg.LinAlgError:  # sometimes happens at first try...
+        parms = np.polyfit(t, t - t_ref, fitorder)
+    t_corr = t - np.polyval(parms, t)
     return {"fitparms": parms, "t_corr": t_corr}
 
 
 ###############################################################################
 
 
-# TODO : ensure input is not modified (pure function)
 def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple[int, pl.DataFrame]:
     """
     Given a time series as polars.DataFrame, ensure that the index is increasing strictly.
@@ -94,7 +75,9 @@ def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple
     return (int(n_removed), df)
 
 
-# TODO : ensure input is not modified (pure function)
+# -----------------------------------------------------------------------------
+
+
 def filter_dt_backward(
     df: pl.DataFrame, datetime_key: str = "datetime"
 ) -> tuple[int, pl.DataFrame]:
