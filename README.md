@@ -31,7 +31,7 @@ A collection of tools (useful functions) in Python. Most of it implemented as pu
 
 ## Requirements
 
-- currently (v0.5.0+) developed with Python 3.12. Python 3.9 to 3.11 should work, too.
+- currently (v0.5.0+) developed with Python 3.12. Python 3.10 and 3.11 should work (covered by github CI).
 - see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
 
 ## Content / Docs

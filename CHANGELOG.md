@@ -1,7 +1,8 @@
 # Changelog
 
-## v0.5.0 (2024-07-xx)
+## v0.5.0 (2024-07-29)
 
+- drop Python 3.9 support
 - add tests:
   - avgbinmap:
     - 10s binning,
