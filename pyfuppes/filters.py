@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 """Filtering and Masking."""
 
-from typing import Union
+from typing import NamedTuple, Union
 
 import numpy as np
+import numpy.typing as npt
 from numba import njit
 from scipy.interpolate import interp1d
 from sklearn.neighbors import LocalOutlierFactor
@@ -33,6 +34,7 @@ def mask_repeated(a: np.ndarray, N: int, atol: float = 1e-6) -> np.ndarray:
     """
     mask = np.ones(a.shape[0], np.bool_)
     mask[N:] = ~np.isclose(a[N:], a[:-N], atol=atol, equal_nan=True)
+
     return mask
 
 
@@ -66,6 +68,7 @@ def mask_repeated_nb(arr: np.ndarray, n: int, atol: float = 1e-6) -> np.ndarray:
             current = item
             count = 1
         mask[idx] = count <= n
+
     return mask
 
 
@@ -77,7 +80,7 @@ def mask_jumps(
     arr: np.ndarray,
     threshold: Union[float, int],
     look_ahead: int,
-    abs_delta: bool = False,
+    use_abs_delta: bool = False,
 ) -> np.ndarray:
     """
     Check elements of array "arr" if difference between subsequent elements exceeds threshold.
@@ -90,7 +93,7 @@ def mask_jumps(
         Maximum allowed difference between subsequent elements.
     look_ahead : int
         How many elements to look ahead if a difference exceeds threshold.
-    abs_delta : bool, optional
+    use_abs_delta : bool, optional
         Consider the absolute difference. The default is False.
 
     Returns
@@ -103,44 +106,49 @@ def mask_jumps(
     i = 0
     while i < n_el - 1:
         cur, nxt = arr[i], arr[i + 1]
-        delta_0 = np.absolute(nxt - cur) if abs_delta else nxt - cur
+        delta_0 = np.absolute(nxt - cur) if use_abs_delta else nxt - cur
         if delta_0 > threshold:
             for value in arr[i + 1 : i + look_ahead + 1]:
-                delta_1 = np.absolute(value - cur) if abs_delta else value - cur
+                delta_1 = np.absolute(value - cur) if use_abs_delta else value - cur
                 if delta_1 > threshold:
                     mask[i + 1] = False
                     i += 1
                 else:
                     break
         i += 1
+
     return mask
 
 
 ###############################################################################
 
+JumpfilterResult = NamedTuple(
+    "jf_result",
+    [
+        ("filtered", np.ndarray),
+        ("mask", np.ndarray),
+    ],
+)
+
 
 def filter_jumps(
-    arr: np.ndarray,
+    arr: npt.NDArray[np.float64],
     threshold: float,
     look_ahead: int,
-    abs_delta: bool = False,
+    use_abs_delta: bool = False,
     vmiss: float = np.nan,
     remove_repeated: bool = False,
     interpol_jumps: bool = False,
     interpol_kind: str = "linear",
-) -> tuple[np.ndarray, np.ndarray]:
+) -> JumpfilterResult:
     """
-    Wrap mask_jumps().
+    Wrap mask_jumps(). Only works for floating point number arrays.
 
     (!) interpolation assumes equidistant spacing of the independent variable on
       which arr depends.
     """
-    if not isinstance(arr, np.ndarray):
-        raise ValueError("input array must be of class numpy ndarray.")
     if arr.ndim > 1:
         raise ValueError("input array must be numpy 1d array.")
-    if not isinstance(look_ahead, int):
-        raise ValueError("parameter look_ahead must be an integer.")
     if look_ahead >= arr.shape[0] or look_ahead < 1:
         raise ValueError(f"parameter look_ahead must be >=1 and <{arr.shape[0]}.")
 
@@ -149,7 +157,7 @@ def filter_jumps(
         result[vmiss] = np.nan
     if remove_repeated:
         result[~mask_repeated(result, 2)] = np.nan
-    mask = mask_jumps(result, threshold, look_ahead, abs_delta=abs_delta)
+    mask = mask_jumps(result, threshold, look_ahead, use_abs_delta=use_abs_delta)
     result[~mask] = np.nan
     if interpol_jumps:
         f_ip = interp1d(
@@ -160,14 +168,23 @@ def filter_jumps(
         )
         result = f_ip(np.arange(0, result.shape[0]))
 
-    return (result, mask)
+    return JumpfilterResult(result, mask)
 
 
 ###############################################################################
 
+JumpfilterResult2 = NamedTuple(
+    "jf_result2",
+    [
+        ("filtered", np.ndarray),
+        ("deleted_idx", np.ndarray),
+        ("remaining_idx", np.ndarray),
+    ],
+)
+
 
 def filter_jumps_np(
-    v: np.ndarray,
+    v: npt.NDArray[np.float64],
     max_delta: float,
     no_val: float = np.nan,
     use_abs_delta: bool = True,
@@ -175,7 +192,7 @@ def filter_jumps_np(
     remove_doubles: bool = False,
     interpol_jumps: bool = False,
     interpol_kind: str = "linear",
-) -> dict[str, np.ndarray]:
+) -> JumpfilterResult2:
     """
     Mask jumps using numpy functions.
 
@@ -204,9 +221,9 @@ def filter_jumps_np(
 
     Returns
     -------
-    dict. 'filtered': filtered data
-            'ix_del': indices of deleted elements
-            'ix_rem': indices of remaining elements
+    NamedTuple, .filtered: filtered data
+                .deleted_idx: indices of deleted elements
+                .remaining_idx: indices of remaining elements
 
     """
     ix_del = np.full(v.shape[0], -1, dtype=int)  # deletion index
@@ -255,10 +272,9 @@ def filter_jumps_np(
         f_ip = interp1d(tmp_x, tmp_y, kind=interpol_kind, fill_value="extrapolate")  # type: ignore
         filtered = f_ip(np.arange(0, v.shape[0]))
     else:
-        w_valid = np.where(v != no_val)
-        filtered = v[w_valid]
+        filtered = v[ix_rem]
 
-    return {"filtered": filtered, "ix_del": ix_del, "ix_rem": ix_rem}
+    return JumpfilterResult2(filtered, ix_del, ix_rem)
 
 
 ###############################################################################
@@ -334,6 +350,7 @@ def simple_1d_lof(var: np.ndarray, k: int, thresh: float, mode="both") -> np.nda
     resids = clf.negative_outlier_factor_[k:-k]  # truncate what was pre-/appended
 
     m = np.absolute(resids) > thresh
+
     if mode == "positive":
         return m & (v_diff > 0)
     if mode == "negative":

@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "pyfuppes"
-version = "0.4.6"
+version = "0.5.0"
 description = "A collection of tools in Python"
 authors = ["Florian Obersteiner <f.obersteiner@posteo.de>"]
 license = "LGPL3"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = ">= 3.9, < 3.13"
+python = ">= 3.10, < 3.13"
 geopy = ">= 2.0"
 matplotlib = ">= 3.0"
 netcdf4 = ">= 1.6"

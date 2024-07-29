@@ -10,6 +10,9 @@ from typing import Iterator, Optional, Union
 
 import tomli as toml_r
 
+from pyfuppes.misc import insensitive_pattern, to_list_of_Path
+from pyfuppes.txt2dict import txt_2_dict
+
 try:
     wd = pathlib.Path(__file__).parent
 except NameError:
@@ -28,121 +31,6 @@ V25_DATA_MIN_NLINES = 2
 # --- INTERNALS ---------------------------------------------------------------
 
 
-def _txt_2_dict(
-    file: Union[str, pathlib.Path],
-    sep: str = ";",
-    colhdr_ix: int = 0,
-    encoding: str = "utf-8",
-    ignore_repeated_sep: bool = False,
-    ignore_colhdr: bool = False,
-    keys_upper: bool = False,
-    preserve_empty: bool = True,
-    skip_empty_lines: bool = False,
-) -> dict[str, Union[list[str], dict[str, list[str]]]]:
-    """
-    Convert content of a csv file to a Python dictionary.
-
-    requires input: txt file with column header and values separated by a
-        specific separator (delimiter).
-
-        file - full path to txt file. str or pathlib.Path
-        sep - value separator (delimiter), e.g. ";" in a csv file.
-        colhdr_ix - row index of the column header.
-        encoding - encoding of the text file to read. default is UTF-8.
-                   set to None to use the operating system default.
-        ignore_repeated_sep - if set to True, repeated occurrences of "sep" are
-                              ignored during extraction of elements from the
-                              file lines.
-                              Warning: empty fields must then be filled with a
-                              "no-value indicator" (e.g. string NULL)!
-        keys_upper - convert key name (from column header) to upper-case
-        preserve_empty - do not remove empty fields
-        skip_empty_lines - ignore empty lines, just skip them.
-
-    returns: dict
-        {'file_hdr': list, 'data': dict with key for each col header tag,
-         'src': path to source file}
-    """
-    with open(file, "r", encoding=encoding) as file_obj:
-        content = file_obj.readlines()
-
-    if not content:
-        raise ValueError(f"no content in {file}")
-
-    result = {"file_hdr": [], "data": {}, "src": str(file)}
-    if colhdr_ix > 0:
-        result["file_hdr"] = [line.strip() for line in content[:colhdr_ix]]
-
-    col_hdr = content[colhdr_ix].strip().rsplit(sep)
-    if ignore_repeated_sep:
-        col_hdr = [s for s in col_hdr if s != ""]
-
-    if ignore_colhdr:
-        for i, _ in enumerate(col_hdr):
-            col_hdr[i] = f"col_{(i+1):03d}"
-
-    if keys_upper:
-        col_hdr = [s.upper() for s in col_hdr]
-
-    for element in col_hdr:
-        result["data"][element] = []
-
-    # cut col header...
-    if ignore_colhdr:
-        colhdr_ix -= 1
-
-    content = content[1 + colhdr_ix :]
-    for ix, line in enumerate(content):
-        # preserve_empty: only remove linefeed (if first field is empty)
-        # else: remove any surrounding whitespaces
-        line = line.strip("\n") if preserve_empty else line.strip()
-
-        if line == "" and skip_empty_lines:
-            continue
-
-        line = line.rsplit(sep)
-
-        if ignore_repeated_sep:
-            line = [s for s in line if s != ""]
-
-        if len(line) != len(col_hdr):
-            err_msg = f"{len(line)} elem in line {ix + 1 + colhdr_ix} != {len(col_hdr)} elem in col header ({file})"
-            print(line)
-            raise ValueError(err_msg)
-        else:  # now the actual import to the dict...
-            for i, hdr_tag in enumerate(col_hdr):
-                result["data"][hdr_tag].append(line[i].strip())
-
-    return result
-
-
-# -----------------------------------------------------------------------------
-
-
-def _to_list_of_Path(
-    folders: Union[str, list[str], pathlib.Path, list[pathlib.Path]]
-) -> list[pathlib.Path]:
-    """Turn input string or list of strings into a list of pathlib Path objects."""
-    if not isinstance(folders, list):
-        folders = [folders]  # type: ignore
-    return [pathlib.Path(f) for f in folders]  # type: ignore
-
-
-# -----------------------------------------------------------------------------
-
-
-def _insensitive_pattern(pattern: str) -> str:
-    """Return a case-insensitive pattern to use in glob.glob or path.glob."""
-
-    def either(c):
-        return f"[{c.lower()}{c.upper()}]" if c.isalpha() else c
-
-    return "".join(map(either, pattern))
-
-
-# -----------------------------------------------------------------------------
-
-
 def _get_sel_files(
     folders: list[pathlib.Path], file_extensions: list[str], insensitive: bool = True
 ) -> Iterator[pathlib.Path]:
@@ -156,7 +44,7 @@ def _get_sel_files(
     ), "all inputs must be of type list."
 
     if insensitive and platform.system().lower() != "windows":
-        file_extensions = [_insensitive_pattern(e) for e in file_extensions]
+        file_extensions = [insensitive_pattern(e) for e in file_extensions]
 
     sel_files = chain()
     for f in folders:
@@ -164,9 +52,6 @@ def _get_sel_files(
             sel_files = chain(sel_files, f.glob(f"*{e}"))
 
     return sel_files
-
-
-# -----------------------------------------------------------------------------
 
 
 def _V25logs_cleaned_dump(path: pathlib.Path):
@@ -210,7 +95,7 @@ def logs_cleanup(
     """
     verboseprint = print if verbose else lambda *a, **k: None
 
-    directories = _to_list_of_Path(directories)
+    directories = to_list_of_Path(directories)
 
     if check_info:
         directories = [f for f in directories if CLEANUP_DONE not in os.listdir(f)]
@@ -275,8 +160,6 @@ def logs_cleanup(
                     new_line = V25_DATA_SEP + new_line
                 data[idx] = new_line
 
-        # TODO : analyse the last element in the last line; compare to last element in previous line
-
         # OSC files must get a timestamp column
         if add_osc_datetime and file.suffix.strip(".").upper() == "OSC":
             verboseprint(f"*v25_logcleaner* update OSC file {file.name}")
@@ -337,7 +220,7 @@ def collect_V25Logs(
         collected data.
     """
     verboseprint = print if verbose else lambda *a, **k: None
-    folder = _to_list_of_Path(folder)
+    folder = to_list_of_Path(folder)
 
     if not isinstance(ext, list):
         ext = [ext]
@@ -349,28 +232,28 @@ def collect_V25Logs(
 
     verboseprint(f"loading {sel_files[0].name}")
 
-    data = _txt_2_dict(
+    data = txt_2_dict(
         sel_files[0],
-        sep=delimiter,
+        delimiter=delimiter,
         colhdr_ix=colhdr_ix,
         ignore_repeated_sep=False,
         ignore_colhdr=False,
         preserve_empty=False,
-    )["data"]
+    ).data
 
     keys = list(data.keys())  # type: ignore
 
     if len(sel_files) > 1:
         for i in range(1, len(sel_files)):
             verboseprint(f"loading {sel_files[i].name}")
-            tmp = _txt_2_dict(
+            tmp = txt_2_dict(
                 sel_files[i],
-                sep=delimiter,
+                delimiter=delimiter,
                 colhdr_ix=0,
                 ignore_repeated_sep=False,
                 ignore_colhdr=False,
                 preserve_empty=False,
-            )["data"]
+            ).data
             if tmp is None:
                 continue  # skip loop iteration if tmp dict is None
 
@@ -458,7 +341,7 @@ def collect_OSC_Logs(
         collected Oscar data.
     """
     verboseprint = print if verbose else lambda *a, **k: None
-    folder = _to_list_of_Path(folder)
+    folder = to_list_of_Path(folder)
     sel_files = sorted(_get_sel_files(folder, [_ext]))
     keys_data = None
 
@@ -479,15 +362,15 @@ def collect_OSC_Logs(
         N_Oscar = head[ix_n_osc].strip().split(header_delimiter)[-1]
 
         # read rest of file
-        osc_dat = _txt_2_dict(
+        osc_dat = txt_2_dict(
             sel_files[0],
-            sep=delimiter,
+            delimiter=delimiter,
             colhdr_ix=ix_col_hdr,
             keys_upper=True,
             ignore_repeated_sep=False,
             ignore_colhdr=False,
             preserve_empty=False,
-        )["data"]
+        ).data
 
         if add_NOsc_HVSet:
             osc_dat["Set_HV"] = [Set_HV]  # type: ignore
@@ -511,15 +394,15 @@ def collect_OSC_Logs(
                 Set_HV = head[ix_n_osc - 1].strip().split(header_delimiter)[-1]
                 N_Oscar = head[ix_n_osc].strip().split(header_delimiter)[-1]
 
-                tmp = _txt_2_dict(
+                tmp = txt_2_dict(
                     file,
-                    sep=delimiter,
+                    delimiter=delimiter,
                     colhdr_ix=ix_col_hdr,
                     keys_upper=True,
                     ignore_repeated_sep=False,
                     ignore_colhdr=False,
                     preserve_empty=False,
-                )["data"]
+                ).data
 
                 if add_NOsc_HVSet:
                     tmp["Set_HV"] = [Set_HV]  # type: ignore

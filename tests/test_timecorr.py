@@ -4,6 +4,7 @@ import unittest
 
 import numpy as np
 import polars as pl
+from polars.testing import assert_frame_not_equal
 
 from pyfuppes import timecorr
 
@@ -19,7 +20,7 @@ class TestTimecorr(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
-        print("\ntesting pyfuppes.timecorr...")
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -34,39 +35,39 @@ class TestTimecorr(unittest.TestCase):
         # to run after each test
         pass
 
-    def test_time_correction(self):
+    def test_correct_time(self):
         # offset only
         order = 1
         t = np.array([1, 2, 3, 4, 5, 6], dtype=np.float32)
         r = np.array([2, 3, 4, 5, 6, 7], dtype=np.float32)
-        result = timecorr.time_correction(t, r, order)
-        self.assertTrue(np.isclose(result["t_corr"], r).all())
+        result = timecorr.correct_time(t, r, order)
+        self.assertTrue(np.isclose(result.t_corr, r).all())
 
         t = np.array([-2, -1, 0, 1, 2, 3], dtype=np.float32)
         r = np.array([1, 2, 3, 4, 5, 6], dtype=np.float32)
-        result = timecorr.time_correction(t, r, order)
-        self.assertTrue(np.isclose(result["t_corr"], r).all())
+        result = timecorr.correct_time(t, r, order)
+        self.assertTrue(np.isclose(result.t_corr, r).all())
 
         # changed order
         order = 3
         t = np.array([1, 2, 3, 4, 5, 6], dtype=np.float32)
         r = np.array([2, 3, 4, 5, 6, 7], dtype=np.float32)
-        result = timecorr.time_correction(t, r, order)
-        self.assertTrue(np.isclose(result["t_corr"], r).all())
+        result = timecorr.correct_time(t, r, order)
+        self.assertTrue(np.isclose(result.t_corr, r).all())
 
         # inclination only
         order = 1
         t = np.array([1, 2, 3, 4, 5, 6], dtype=np.float32)
         r = np.array([1, 3, 5, 7, 9, 11], dtype=np.float32)
-        result = timecorr.time_correction(t, r, order)
-        self.assertTrue(np.isclose(result["t_corr"], r).all())
+        result = timecorr.correct_time(t, r, order)
+        self.assertTrue(np.isclose(result.t_corr, r).all())
 
         # inclination + offset
         order = 1
         t = np.array([1, 2, 3, 4, 5, 6], dtype=np.float32)
         r = np.array([2.0, 3.5, 5.0, 6.5, 8.0, 9.5], dtype=np.float32)
-        result = timecorr.time_correction(t, r, order)
-        self.assertTrue(np.isclose(result["t_corr"], r).all())
+        result = timecorr.correct_time(t, r, order)
+        self.assertTrue(np.isclose(result.t_corr, r).all())
 
     def test_pldt_filter(self):
         # edge case: first invalid
@@ -75,14 +76,16 @@ class TestTimecorr(unittest.TestCase):
         # want_backward = ["2022-10-28", "2022-10-29"]
 
         df = _make_df(have)
-        n, df = timecorr.filter_dt_forward(df)
+        n, df_out = timecorr.filter_dt_forward(df)
         self.assertEqual(n, 2)
-        self.assertTrue((df["values"] == pl.Series([0])).all())
+        self.assertTrue((df_out["values"] == pl.Series([0])).all())
+        assert_frame_not_equal(df, df_out)
 
         df = _make_df(have)
-        n, df = timecorr.filter_dt_backward(df)
+        n, df_out = timecorr.filter_dt_backward(df)
         self.assertEqual(n, 1)
-        self.assertTrue((df["values"] == pl.Series([1, 2])).all())
+        self.assertTrue((df_out["values"] == pl.Series([1, 2])).all())
+        assert_frame_not_equal(df, df_out)
 
         # edge case: last invalid
         have = ["2022-10-29", "2022-10-30", "2022-10-29"]
@@ -132,9 +135,10 @@ class TestTimecorr(unittest.TestCase):
         self.assertTrue((df["values"] == pl.Series([0, 1])).all())
 
         df = _make_df(have)
-        n, df = timecorr.filter_dt_backward(df)
+        n, df_out = timecorr.filter_dt_backward(df)
         self.assertEqual(n, 2)
-        self.assertTrue((df["values"] == pl.Series([2, 3])).all())
+        self.assertTrue((df_out["values"] == pl.Series([2, 3])).all())
+        assert_frame_not_equal(df, df_out)
 
     def test_xcorr_timelag(self):
         # signal with peak
@@ -176,7 +180,7 @@ class TestTimecorr(unittest.TestCase):
         x1 = 1 * x0 + shift
         f = sum([np.sin(2 * np.pi * i * x0 / 10) for i in range(1, 5)])
         g = sum([np.sin(2 * np.pi * i * x1 / 10) for i in range(1, 5)])
-        lag = timecorr.xcorr_timelag(x0, f, x0, g, xrange=(x0.min(), x1.max()), show_plots=False)
+        lag = timecorr.xcorr_timelag(x0, f, x0, g, xrange=(x0.min(), x1.max()), show_plots=False)  # type: ignore
         # print(l, shift*-1)
         # shift is 90... expect within 2%
         self.assertTrue(abs(lag - 3) < (3 * 0.02))

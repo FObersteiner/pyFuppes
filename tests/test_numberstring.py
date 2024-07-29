@@ -73,32 +73,32 @@ class TestNumberstring(unittest.TestCase):
             self.assertEqual(s.strip(), f"{value:{fmt}}")
 
     def test_dec2str_stripped(self):
-        NUMBERS = [0.010701]
+        numbers = [0.010701]
         self.assertEqual(
             "0.011",
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="right")[0],
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="right")[0],
         )
         self.assertEqual(
             ".011",
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="left")[0],
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="left")[0],
         )
         self.assertEqual(
             ".011",
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="both")[0],
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="both")[0],
         )
 
-        NUMBERS = [1.0, 3.44532, 0.12011]
+        numbers = [1.0, 3.44532, 0.12011]
         self.assertEqual(
             ["1.", "3.445", "0.12"],
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="right"),
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="right"),
         )
         self.assertEqual(
             ["1.000", "3.445", ".120"],
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="left"),
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="left"),
         )
         self.assertEqual(
             ["1.", "3.445", ".12"],
-            numberstring.dec2str_stripped(NUMBERS, dec_places=3, strip="both"),
+            numberstring.dec2str_stripped(numbers, dec_places=3, strip="both"),
         )
 
 

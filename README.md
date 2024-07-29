@@ -3,17 +3,9 @@
 
 # pyfuppes
 
-A collection of tools in Python.
-
-## License
-
-LGPLv3 - see LICENSE file in the root directory of the repository.
+A collection of tools (useful functions) in Python. Most of it implemented as pure functions (no side-effects).
 
 ## Installation
-
-- from wheel file:
-
-  - check `/dist` directory of the repo for a `*.whl` file that can be installed e.g. via `pip`
 
 - editable via `pip`:
 
@@ -30,7 +22,7 @@ LGPLv3 - see LICENSE file in the root directory of the repository.
   - specific tag:
 
     ```sh
-    pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.3.4
+    pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.4.6
     ```
 
 - via [poetry](https://python-poetry.org/):
@@ -39,9 +31,13 @@ LGPLv3 - see LICENSE file in the root directory of the repository.
 
 ## Requirements
 
-- Python 3.9, 3.10 or 3.11. 3.12 not supported yet due to the dependency on numba.
+- currently (v0.5.0+) developed with Python 3.12. Python 3.10 and 3.11 should work (covered by github CI).
 - see [pyproject.toml](https://github.com/FObersteiner/pyFuppes/blob/master/pyproject.toml)
 
 ## Content / Docs
 
 See <https://pyfuppes.readthedocs.io/en/latest/> or go to the [API reference](https://pyfuppes.readthedocs.io/en/latest/autoapi/index.html) directly.
+
+## License
+
+`LGPLv3` - see LICENSE file in the root directory of the repository.

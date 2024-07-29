@@ -11,7 +11,7 @@ class TestFilters(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
-        print("\ntesting pyfuppes.filters...")
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -43,51 +43,76 @@ class TestFilters(unittest.TestCase):
     def test_mask_jumps(self):
         arr = np.array([1, 2, 3, 7, 3, 4, 5, 5])
         #                        |-> nok
-        have = filters.mask_jumps(arr, 3, 1, abs_delta=False)
+        have = filters.mask_jumps(arr, 3, 1, use_abs_delta=False)
         want = np.array([True, True, True, False, True, True, True, True])
         self.assertTrue((have == want).all())
         # changing lookahead must not change result here:
-        have = filters.mask_jumps(arr, 3, 2, abs_delta=False)
+        have = filters.mask_jumps(arr, 3, 2, use_abs_delta=False)
         want = np.array([True, True, True, False, True, True, True, True])
         self.assertTrue((have == want).all())
 
         arr = np.array([1, 2, 3, -7, 3, 4, 5, 5])
         #                            |-> nok
-        have = filters.mask_jumps(arr, 3, 1, abs_delta=False)
+        have = filters.mask_jumps(arr, 3, 1, use_abs_delta=False)
         want = np.array([True, True, True, True, False, True, True, True])
         self.assertTrue((have == want).all())
 
         arr = np.array([1, 2, 3, -7, 3, 4, 5, 5])
         #                         |-> nok
-        have = filters.mask_jumps(arr, 3, 1, abs_delta=True)
+        have = filters.mask_jumps(arr, 3, 1, use_abs_delta=True)
         want = np.array([True, True, True, False, True, True, True, True])
         self.assertTrue((have == want).all())
 
         arr = np.array([1, 2, 3, 8, 7, 4, 5, 5])
         #                        |--|-> nok
-        have = filters.mask_jumps(arr, 3, 2, abs_delta=False)
+        have = filters.mask_jumps(arr, 3, 2, use_abs_delta=False)
         want = np.array([True, True, True, False, False, True, True, True])
         self.assertTrue((have == want).all())
 
         arr = np.array([1, 2, 3, -8, 7, 4, 5, 5])
         #                        |--|-> nok
-        have = filters.mask_jumps(arr, 3, 2, abs_delta=True)
+        have = filters.mask_jumps(arr, 3, 2, use_abs_delta=True)
         want = np.array([True, True, True, False, False, True, True, True])
         self.assertTrue((have == want).all())
 
         arr = np.array([1, 2, 3, 8, -7, 4, 5, 5])
         #                        |--|-> nok
-        have = filters.mask_jumps(arr, 3, 2, abs_delta=True)
+        have = filters.mask_jumps(arr, 3, 2, use_abs_delta=True)
         want = np.array([True, True, True, False, False, True, True, True])
         self.assertTrue((have == want).all())
 
     def test_filter_jumps(self):
-        # TODO
-        pass
+        arr = np.array([1, 2, 3, 7, 3, 4, 5, 5], dtype=float)
+        #                        |-> nok
+        have0 = filters.filter_jumps(arr, 3, 1, use_abs_delta=False)
+        have1 = filters.filter_jumps_np(arr, 3, 1, use_abs_delta=False)
+        want = arr[np.array([True, True, True, False, True, True, True, True])]
+        self.assertTrue((have0[0][have0[1]] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
-    def test_filter_jumps_np(self):
-        # TODO
-        pass
+        arr = np.array([1, 2, 3, 8, 7, 4, 5, 5], dtype=float)
+        #                        |--|-> nok
+        have0 = filters.filter_jumps(arr, 3, 2, use_abs_delta=False)
+        have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=False)
+        want = arr[np.array([True, True, True, False, False, True, True, True])]
+        self.assertTrue((have0[0][have0[1]] == want).all())
+        self.assertTrue((have1.filtered == want).all())
+
+        arr = np.array([1, 2, 3, -8, 7, 4, 5, 5], dtype=float)
+        #                        |--|-> nok
+        have0 = filters.filter_jumps(arr, 3, 2, use_abs_delta=True)
+        have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=True)
+        want = arr[np.array([True, True, True, False, False, True, True, True])]
+        self.assertTrue((have0[0][have0[1]] == want).all())
+        self.assertTrue((have1.filtered == want).all())
+
+        arr = np.array([1, 2, 3, 8, -7, 4, 5, 5], dtype=float)
+        #                        |--|-> nok
+        have0 = filters.filter_jumps(arr, 3, 2, use_abs_delta=True)
+        have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=True)
+        want = arr[np.array([True, True, True, False, False, True, True, True])]
+        self.assertTrue((have0[0][have0[1]] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
     def test_extend_mask(self):
         m = np.array([False, False, True, False, False])
@@ -175,6 +200,7 @@ class TestFilters(unittest.TestCase):
             _ = filters.simple_1d_lof(np.array([[1, 1], [2, 2]]), 15, 1.5)
         self.assertTrue("can only work with 1D data" in str(context.exception))
 
+        np.random.seed(0)
         rng = np.random.default_rng()
         data = rng.standard_normal(10000)
         n_outliers = 20

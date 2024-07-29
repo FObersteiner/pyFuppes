@@ -16,9 +16,27 @@ def clean_path(p: Union[Path, str], resolve: bool = True) -> Path:
     if path_str.startswith("$HOME") or path_str.startswith("~"):
         path_str = path_str.replace("$HOME", Path().home().as_posix(), 1)
         path_str = path_str.replace("~", Path().home().as_posix(), 1)
+
     if not resolve:
         return Path(path_str)
     return Path(path_str).resolve()
+
+
+def to_list_of_Path(folders: Union[str, list[str], Path, list[Path]]) -> list[Path]:
+    """Turn input string or list of strings into a list of pathlib.Path objects."""
+    if not isinstance(folders, list):
+        folders = [folders]  # type: ignore
+
+    return [Path(f) for f in folders]  # type: ignore
+
+
+def insensitive_pattern(pattern: str) -> str:
+    """Return a case-insensitive pattern to use in glob.glob or path.glob."""
+
+    def either(c):
+        return f"[{c.lower()}{c.upper()}]" if c.isalpha() else c
+
+    return "".join(map(either, pattern))
 
 
 ###############################################################################
@@ -107,22 +125,6 @@ def find_youngest_file(path: Path, pattern: str, n: int = 1) -> Optional[list[Pa
 ###############################################################################
 
 
-def checkbytes_lt128(file: Union[str, Path]) -> bool:
-    """
-    Check if all bytes of a file are less than decimal 128.
-
-    Returns
-    -------
-        True for an ASCII encoded text file else False.
-    """
-    with open(file, "rb") as f:
-        content = f.read()
-    return all(b < 128 for b in content)
-
-
-###############################################################################
-
-
 def find_fist_elem(arr: Union[list, np.ndarray], val: Any, condition: Callable) -> Optional[Any]:
     """
     Find the first element in arr that gives (arr[ix] condition val) == True.
@@ -138,27 +140,30 @@ def find_fist_elem(arr: Union[list, np.ndarray], val: Any, condition: Callable) 
     """
     if isinstance(arr, list):
         return next((ix for ix, v in enumerate(arr) if condition(v, val)), None)
+
     result = np.argmax(condition(arr, val))
+
     return result if condition(arr[result], val) else None
 
 
 ###############################################################################
 
 
-# TODO : rename 'list_change_elem_index'
-# TODO : do not mutate input; return new list
-def list_chng_elem_index(lst: list, element: Any, new_index: int) -> Optional[list]:
+def list_change_elem_index(lst: list, element: Any, new_index: int) -> list:
     """
     Change the index of an element in a list.
 
-    ! modifies the list in-place !
-    see https://stackoverflow.com/a/3173159/10197418
+    see <https://stackoverflow.com/a/3173159/10197418>
     """
     if new_index >= len(lst) or new_index < 0:
         raise IndexError("new index is out of range")
 
+    _lst = lst.copy()
+
     if element in lst:
-        lst.insert(new_index, lst.pop(lst.index(element)))
+        _lst.insert(new_index, _lst.pop(lst.index(element)))
+
+    return _lst
 
 
 ###############################################################################
@@ -170,15 +175,14 @@ def set_compare(a: set, b: set) -> tuple[set, set, set]:
 
     Parameters
     ----------
-    a : iterable
-    b : iterable
+    a : set
+    b : set
 
     Returns
     -------
     tuple with 3 elements:
-        (what is only in a (not in b),
-         what is only in b (not in a),
+        (what is only in a but not in b,
+         what is only in b but not in a,
          what is common in a and b)
     """
-    a, b = set(a), set(b)
     return (a - b, b - a, a.intersection(b))

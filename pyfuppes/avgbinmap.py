@@ -4,7 +4,7 @@
 from cmath import phase, rect
 from copy import deepcopy
 from math import atan2, cos, degrees, pi, radians, sin
-from typing import Optional, Union
+from typing import NamedTuple, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -139,11 +139,18 @@ def mean_day_frac(
 
 ###############################################################################
 
+TimeBins = NamedTuple(
+    "bin_data",
+    [
+        ("t_binned", np.ndarray),
+        ("bins", np.ndarray),
+        ("masked_bins", np.ndarray),
+        ("masked_vals", np.ndarray),
+    ],
+)
 
-# TODO: test missing !
-def bin_t_10s(
-    t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True
-) -> dict[str, Optional[np.ndarray]]:
+
+def bin_t_10s(t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True) -> TimeBins:
     """
     Bin a time axis to 10 s intervals around 5.
 
@@ -159,9 +166,6 @@ def bin_t_10s(
     -------
         dict with binned time axis and bins, as returned by np.searchsorted()
     """
-    if not isinstance(t, np.ndarray):
-        raise TypeError("Please pass np.ndarray to function.")
-
     if t.ndim != 1:
         raise TypeError("Please pass 1D array to function.")
 
@@ -174,7 +178,7 @@ def bin_t_10s(
     t_binned = np.arange((tmin - tmin % 10) + 5, (tmax - tmax % 10) + 6, 10)
 
     # if all values of t should fall WITHIN the range of t_binned:
-    vmask = None
+    vmask = np.array([], dtype=bool)
     if force_t_range:
         if t_binned[0] < t[0]:
             t_binned = t_binned[1:]
@@ -189,19 +193,19 @@ def bin_t_10s(
 
     # if empty bins should be created, mask all bins that would have no
     # corresponding value in the dependent variable's data
-    bmask = None
+    bmask = np.array([], dtype=bool)
     if drop_empty:
         t_binned = t_binned[np.bincount(bins - 1).astype(np.bool_)]
     else:
         bmask = np.ones(t_binned.shape).astype(np.bool_)
         bmask[bins - 1] = False
 
-    return {
-        "t_binned": t_binned,
-        "bins": bins,
-        "masked_bins": bmask,
-        "masked_vals": vmask,
-    }
+    return TimeBins(
+        t_binned,
+        bins,
+        bmask,
+        vmask,
+    )
 
 
 ###############################################################################
@@ -213,10 +217,9 @@ def get_npnanmean(v: np.ndarray):
     return np.nanmean(v)
 
 
-# TODO: test missing !
 def bin_y_of_t(
     v: np.ndarray,
-    bin_info: dict,
+    bin_info: TimeBins,
     vmiss: float = np.nan,
     return_type: str = "arit_mean",
     use_numba: bool = True,
@@ -236,9 +239,6 @@ def bin_y_of_t(
     -------
         v binned according to parameters in bin_info
     """
-    if not isinstance(v, np.ndarray):
-        raise TypeError("Please pass np.ndarray to function.")
-
     if not any(
         v.dtype == np.dtype(t) for t in ("int16", "int32", "int64", "float16", "float32", "float64")
     ):
@@ -254,10 +254,10 @@ def bin_y_of_t(
     _v[_v == vmiss] = np.nan
 
     # remove values that were masked (out of bin range)
-    _v = _v[~bin_info["masked_vals"]]
+    _v = _v[~bin_info.masked_vals]
 
     v_binned = []
-    vd_bins = bin_info["bins"]
+    vd_bins = bin_info.bins
 
     if return_type == "arit_mean":
         if use_numba:
@@ -281,10 +281,10 @@ def bin_y_of_t(
     result = np.array(v_binned)
 
     # check if there are masked bins, i.e. empty bins. add them to the output if so.
-    if bin_info["masked_bins"] is not None:
-        tmp = np.ones(bin_info["masked_bins"].shape)
-        tmp[bin_info["masked_bins"]] = vmiss
-        tmp[~bin_info["masked_bins"]] = result
+    if bin_info.masked_bins.shape[0] > 0:
+        tmp = np.ones(bin_info.masked_bins.shape)
+        tmp[bin_info.masked_bins] = vmiss
+        tmp[~bin_info.masked_bins] = result
         result = tmp
 
     # round to integers if input type was integer
@@ -300,7 +300,8 @@ def bin_y_of_t(
 def bin_by_pdresample(
     t: np.ndarray,
     v: np.ndarray,
-    rule: str = "10S",
+    t_unit: str = "s",
+    rule: str = "10s",
     offset: Optional[pd.Timedelta] = pd.Timedelta(seconds=5),  # type: ignore
     force_t_range: bool = True,
     drop_empty: bool = True,
@@ -313,7 +314,7 @@ def bin_by_pdresample(
     Parameters
     ----------
     t : 1d array of float or int
-        time axis / independent variable in seconds.
+        time axis / independent variable. unit: see keyword 't_unit'.
     v : 1d or 2d array corresponding to t
         dependent variable(s).
     rule : string, optional
@@ -331,10 +332,9 @@ def bin_by_pdresample(
     pandas DataFrame
         data binned (arithmetic mean) to resampled time axis.
     """
-    # TODO: test missing !
     d = {f"v_{i}": y for i, y in enumerate(v)} if isinstance(v, list) else {"v_0": v}
 
-    df = pd.DataFrame(d, index=pd.to_datetime(t, unit="s"))
+    df = pd.DataFrame(d, index=pd.to_datetime(t, unit=t_unit))
     df = df.resample(rule).mean()
     if offset:
         df.index = df.index + pd.tseries.frequencies.to_offset(offset)
@@ -366,10 +366,6 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.
     if ignore_nan is set to False, the whole bin will be NaN if 1 or more NaNs
         fall within the bin.
     """
-    # TODO: test missing !
-    if not isinstance(v, np.ndarray):
-        v = np.array(v)
-
     bins = np.linspace(0, v.size, nbins + 1, True).astype(int)
 
     if ignore_nan:
@@ -386,43 +382,12 @@ def bin_by_npreduceat(v: np.ndarray, nbins: int, ignore_nan: bool = True) -> np.
 ###############################################################################
 
 
-def moving_avg(v: Union[list, np.ndarray], N: int) -> list:
-    """
-    Calculate a simple moving average.
-
-    Parameters
-    ----------
-    v : list
-        data ta to average
-    N : integer
-        number of samples per average.
-
-    Returns
-    -------
-    m_avg : list
-        averaged data.
-    """
-    # TODO: test missing !
-    s, m_avg = [0], []
-
-    for i, x in enumerate(v, 1):
-        s.append(s[i - 1] + x)
-        if i >= N:
-            avg = (s[i] - s[i - N]) / N
-            m_avg.append(avg)
-
-    return m_avg
-
-
-###############################################################################
-
-
 def np_mvg_avg(
     v: np.ndarray,
     N: int,
     ip_ovr_nan: bool = False,
     mode: str = "same",
-    edges: str = "expand",
+    expand_edges: bool = True,
 ) -> np.ndarray:
     """
     Calculate moving average based on numpy convolution function.
@@ -437,18 +402,16 @@ def np_mvg_avg(
         interpolate linearly using finite elements of v. The default is False.
     mode : string, optional
         config for np.convolve. The default is 'same'.
-    edges : string, optional
-        config for output. The default is 'expand'.
-            in case of mode='same', convolution gives false results
-            ("running-in effect") at edges. account for this by
-            simply expanding the Nth value to the edges.
+    expand_edges : bool, optional
+        in case of mode='same', convolution gives incorrect results
+        ("running-in effect") at edges. account for this by
+        simply expanding the Nth value to the edges.
 
     Returns
     -------
     m_avg : 1d array
         averaged data.
     """
-    # TODO: test missing !
     if ip_ovr_nan:
         x = np.linspace(0, len(v) - 1, num=len(v))
         fip = interp1d(
@@ -462,8 +425,8 @@ def np_mvg_avg(
 
     m_avg = np.convolve(v, np.ones((N,)) / N, mode=mode)  # type: ignore
 
-    if edges == "expand":
-        m_avg[: N - 1], m_avg[-N - 1 :] = m_avg[N], m_avg[-N]
+    if expand_edges:
+        m_avg[: N - 1], m_avg[-N:] = m_avg[N - 1], m_avg[-N]
 
     return m_avg
 
@@ -496,7 +459,6 @@ def pd_mvg_avg(
     1d array
         averaged data.
     """
-    # TODO: test missing !
     N, min_periods = int(N), int(min_periods)
 
     min_periods = 1 if min_periods < 1 else min_periods
@@ -528,14 +490,14 @@ def sp_mvg_avg(v: np.ndarray, N: int, edges: str = "nearest") -> np.ndarray:
     N : int
         number of samples per average.
     edges : str, optional
-        mode of uniform_filter1d (see docs). The default is 'nearest'.
+        mode of uniform_filter1d (see docs at link above). The default is 'nearest'.
+        {‘reflect’, ‘constant’, ‘nearest’, ‘mirror’, ‘wrap’}
 
     Returns
     -------
     avg : np.ndarray
         averaged data.
     """
-    # TODO: test missing !
     m = np.isfinite(v)
     avg = np.empty(v.shape)
     avg[~m] = np.nan

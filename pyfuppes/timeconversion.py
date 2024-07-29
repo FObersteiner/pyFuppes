@@ -7,6 +7,7 @@ from operator import attrgetter
 from typing import Any, Optional, Union
 
 import numpy as np
+import numpy.typing as npt
 import xarray as xr
 
 ### HELPERS ###################################################################
@@ -28,13 +29,14 @@ def _to_list(
         except TypeError:  # will e.g. raised if parm is a float
             parm = [parm]
         is_scalar = True
+
     return parm, is_scalar
 
 
 ### MAIN FUNCTIONS ############################################################
 
 
-def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
+def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> npt.NDArray[np.float64]:
     """
     Convert the time vector of an xarray.DataArray to an array representing seconds after midnight.
 
@@ -53,13 +55,13 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
     f = attrgetter(dim_name)
     t = f(xrda)
+
     return (t - t[0].dt.floor("d")).values.astype(int) / 1_000_000_000
 
 
 ###############################################################################
 
 
-# TODO : remove list operation
 def dtstr_2_mdns(
     timestring: Union[str, list],
     tsfmt: str = "%Y-%m-%d %H:%M:%S.%f",
@@ -68,7 +70,8 @@ def dtstr_2_mdns(
     """
     Convert datetime string to seconds since midnight (float).
 
-    since a relative difference is calculated, the function is timezone-safe.
+    Since a relative difference is calculated, the function is 'timezone-safe'.
+    Variable UTC offsets are not allowed.
 
     Parameters
     ----------
@@ -88,36 +91,16 @@ def dtstr_2_mdns(
     timestring, ret_scalar = _to_list(timestring)
 
     if tsfmt == "iso":
-        dt = [datetime.fromisoformat(s) for s in timestring]
+        dts = [datetime.fromisoformat(s) for s in timestring]
     else:
-        dt = [datetime.strptime(s, tsfmt) for s in timestring]
+        dts = [datetime.strptime(s, tsfmt) for s in timestring]
 
-    tzs = [d.tzinfo for d in dt]
-    assert len(set(tzs)) == 1, "all time zones (tzinfo) must be equal."
-
-    if ymd:  # ymd tuple/list supplied, take that as starting point
-        t0 = datetime(
-            year=ymd[0],
-            month=ymd[1],
-            day=ymd[2],
-            hour=0,
-            minute=0,
-            second=0,
-            microsecond=0,
-            tzinfo=dt[0].tzinfo,
-        )
-    else:  # use date from first element as starting point
-        t0 = dt[0].replace(hour=0, minute=0, second=0, microsecond=0)
-
-    mdns = [(s - t0).total_seconds() for s in dt]
-
-    return mdns[0] if ret_scalar else mdns
+    return dtobj_2_mdns(dts[0] if ret_scalar else dts, ref_date=ymd, ref_is_first=True)
 
 
 ###############################################################################
 
 
-# TODO : remove list operation
 def dtobj_2_mdns(
     dt_obj: Union[datetime, list[datetime]],
     ref_date: Optional[tuple[int, ...]] = None,
@@ -125,6 +108,8 @@ def dtobj_2_mdns(
 ) -> Union[float, list[float]]:
     """
     Convert a Python datetime object (or list/array of ...) to seconds after midnight.
+
+    Only a single timezone or no timezone (naive datetime) is allowed.
 
     Parameters
     ----------
@@ -165,13 +150,11 @@ def dtobj_2_mdns(
 ###############################################################################
 
 
-# TODO : remove list operation
-# TODO : rename; 'unixtime_2_mdns'
-def posix_2_mdns(
-    posixts: Union[float, list[float]], ymd: Optional[tuple[int, ...]] = None
+def unixtime_2_mdns(
+    timestamp: Union[float, list[float]], ymd: Optional[tuple[int, ...]] = None
 ) -> Union[float, list[float]]:
     """
-    Convert a POSIX timestamp / UNIX time (or list/array of ...) to seconds after midnight.
+    Convert UNIX time (or list/array of ...) to seconds after midnight.
 
     Parameters
     ----------
@@ -187,7 +170,7 @@ def posix_2_mdns(
     float; scalar or list of float
         seconds after midnight for the given POSIX timestamp(s).
     """
-    posixts, ret_scalar = _to_list(posixts)
+    timestamps, ret_scalar = _to_list(timestamp)
 
     # to floor a Unix time to the date, use  t - t % 86400
     # here, we need to account for the fact that the reference date might be different.
@@ -195,10 +178,10 @@ def posix_2_mdns(
     if ymd:  # (yyyy, m, d) given, take that as starting point t0:
         t0 = datetime(year=ymd[0], month=ymd[1], day=ymd[2], tzinfo=timezone.utc).timestamp()
     else:  # take date of first entry as starting point
-        t0 = datetime.fromtimestamp(posixts[0], tz=timezone.utc)
+        t0 = datetime.fromtimestamp(timestamps[0], tz=timezone.utc)
         t0 = t0.replace(hour=0, minute=0, second=0, microsecond=0).timestamp()
 
-    ts = [t - t0 for t in posixts]
+    ts = [t - t0 for t in timestamps]
 
     return ts[0] if ret_scalar else ts
 
@@ -206,7 +189,6 @@ def posix_2_mdns(
 ###############################################################################
 
 
-# TODO : remove list operation
 def mdns_2_dtobj(
     mdns: Union[float, list[float]],
     ref_date: tuple[int],
@@ -273,7 +255,6 @@ def mdns_2_dtobj(
 ###############################################################################
 
 
-# TODO : remove list operation
 def daysSince_2_dtobj(
     day0: datetime, days_since: Union[int, float]
 ) -> Union[datetime, list[datetime]]:
@@ -301,8 +282,7 @@ def daysSince_2_dtobj(
 ###############################################################################
 
 
-# TODO : rename 'dtstr_2_unixtime'
-def dtstr_2_posix(
+def dtstr_2_unixtime(
     timestring: str, tsfmt: str = "%Y-%m-%d %H:%M:%S.%f", tz: timezone = timezone.utc
 ) -> float:
     """

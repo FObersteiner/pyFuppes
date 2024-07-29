@@ -1,5 +1,50 @@
 # Changelog
 
+## v0.5.0 (2024-07-29)
+
+- drop Python 3.9 support
+- add tests:
+  - avgbinmap:
+    - 10s binning,
+    - bin y of t
+    - pd resample, np reduceat
+    - moving averagers
+  - filters:
+    - jumps
+  - geo:
+    - sza (comparison pysolar with own impl.)
+  - interpolation:
+    - pd dataframe interpolation
+  - misc:
+    - list change element index
+    - find first elem
+- remove:
+  - avgbinmap.moving_avg (unused, buggy)
+  - some 'isinstance' checks which should be covered by type annotations
+  - misc.checkbytes_lt128 since this can be done with str.isascii() method
+  - timecorr.get_tcorr_parms and .apply_tcorr_parms
+- avgbinmap, binning: use namedtuple to hold time vector binning results
+- filter, jumps: use namedtuple to hold filter results
+- timecorr: more namedtuples
+- clarify type annotations for jump filter funcs
+- lof filter: fix random seed
+- make pure functions, do not modify input:
+  - interpolation, pd and pl Series
+  - `list_change_elem_index`
+- rename:
+  - `list_chng_elem_index` to `list_change_elem_index`
+  - `posix_2_mdns` to `unixtime_2_mdns`
+  - `dtstr_2_posix` to `dtstr_2_unixtime`
+  - `timecorr.time_correction` to `timecorr.correct_time`
+  - `txt2dict.txt_2_dict_simple` to `txt2dict.txt_2_dict`
+- simplify `dtstr_2_mdns`; now wraps `dtobj_2_mdns`
+- `txt2dict.txt_2_dict`:
+  - now returns a namedtuple with filepath, file header and data
+  - removed option to parse elements to float. this should be done in post-processing (list(map(T, col)))
+- v25:
+  - use `txt_2_dict`
+  - move "internal" stuff to misc
+
 ## v0.4.6 (2024-07-16)
 
 - cleanup and test pd_Series interpolation

@@ -14,7 +14,7 @@ class TestTimeconv(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         # to run before all tests
-        print("testing pyfuppes.timeconversion...")
+        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -52,6 +52,11 @@ class TestTimeconv(unittest.TestCase):
         f = "%Y-%m-%dT%H:%M:%S%z"
         result = list(map(int, timeconversion.dtstr_2_mdns(t, f)))
         self.assertEqual(result, [3600, 7200])
+        # varying UTC offset
+        t = ["2012-01-01T01:00:00+02:00", "2012-01-01T02:00:00+01:00"]
+        f = "%Y-%m-%dT%H:%M:%S%z"
+        with self.assertRaises(AssertionError):
+            _ = list(map(int, timeconversion.dtstr_2_mdns(t, f)))
         # zero case
         t = "2012-01-01T00:00:00+02:00"
         result = timeconversion.dtstr_2_mdns(t, f)
@@ -68,9 +73,9 @@ class TestTimeconv(unittest.TestCase):
         result = list(map(int, timeconversion.dtobj_2_mdns(t)))
         self.assertEqual(result, [3600, 7200])
 
-    def test_posix_2_mdns(self):
+    def test_unixtime_2_mdns(self):
         t = [3600, 7200, 10800]
-        result = list(map(int, timeconversion.posix_2_mdns(t)))
+        result = list(map(int, timeconversion.unixtime_2_mdns(t)))
         self.assertEqual(result, t)
 
     def test_mdns_2_dtobj(self):
@@ -85,8 +90,8 @@ class TestTimeconv(unittest.TestCase):
         self.assertEqual(result.hour, 12)
         self.assertEqual(result.day, 20)
 
-    def test_dtstr_2_posix(self):
-        result = timeconversion.dtstr_2_posix("2020-05-15", "%Y-%m-%d")
+    def test_dtstr_2_unix(self):
+        result = timeconversion.dtstr_2_unixtime("2020-05-15", "%Y-%m-%d")
         self.assertAlmostEqual(result, datetime(2020, 5, 15, tzinfo=timezone.utc).timestamp())
 
 

@@ -11,7 +11,12 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
     """
     Generate a new DataFrame with all numeric columns interpolated to the new_index.
 
-    Uses numpy's interp function.
+    Uses numpy's interp function, see
+    <https://numpy.org/doc/stable/reference/generated/numpy.interp.html>
+
+    (!) limitations:
+      - indices must be monotonically increasing
+      - cannot extrapolate; edge values are simply repeated
 
     Parameters
     ----------
@@ -25,13 +30,12 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
     df_out : pd.DataFrame
         a new dataframe interpolated to the new index.
     """
-    # TODO: test missing !
     df_out = pd.DataFrame(index=new_index)
     df_out.index.name = df.index.name
 
-    for colname, col in df.iteritems():
+    for colname, col in df.items():
         if pd.api.types.is_numeric_dtype(col):
-            df_out[colname] = np.interp(new_index, df.index, col)
+            df_out[colname + "_ip"] = np.interp(new_index, df.index, col)  # type: ignore
 
     return df_out
 
@@ -39,7 +43,6 @@ def pd_DataFrame_ip(df: pd.DataFrame, new_index: pd.Series) -> pd.DataFrame:
 ###############################################################################
 
 
-# TODO : do not modify the input, return a new series
 def pd_Series_ip1d(
     src_df: pd.DataFrame,
     dst_df: pd.DataFrame,
@@ -47,7 +50,8 @@ def pd_Series_ip1d(
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
-    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    # see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>:
+    **kwargs,
 ) -> pd.DataFrame:
     """
     Interpolate dependent variable from source dataframe to destination df's independent variable.
@@ -61,19 +65,20 @@ def pd_Series_ip1d(
     df_dst : pd.DataFrame
         modified input dst_df.
     """
+    _df_dst = dst_df.copy()
     f = interp1d(
         src_df[ivar_src_name].values,
         src_df[dvar_src_name].values,
         **kwargs,
     )
-    dst_df[dvar_dst_name] = f(dst_df[ivar_dst_name])
-    return dst_df
+    _df_dst[dvar_dst_name] = f(dst_df[ivar_dst_name])
+
+    return _df_dst
 
 
 ###############################################################################
 
 
-# TODO : do not modify the input, return a new series
 def pl_Series_interp1d(
     src_df: pl.DataFrame,
     dst_df: pl.DataFrame,
@@ -81,7 +86,8 @@ def pl_Series_interp1d(
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
-    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    # see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>:
+    **kwargs,
 ) -> pl.DataFrame:
     """
     Interpolate dependent variable from source dataframe to destination df's independent variable.
@@ -100,10 +106,10 @@ def pl_Series_interp1d(
         src_df[dvar_src_name],
         **kwargs,
     )
-    dst_df = dst_df.with_columns(
+
+    return dst_df.with_columns(
         pl.Series(f(dst_df[ivar_dst_name].dt.timestamp())).alias(dvar_dst_name)
     )
-    return dst_df
 
 
 ###############################################################################
@@ -116,7 +122,8 @@ def pl_Series_ip1d_lite(
     dvar_src_name: str,
     ivar_dst_name: str,
     dvar_dst_name: str,
-    **kwargs,  # see https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html
+    # see <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.interp1d.html>:
+    **kwargs,
 ) -> pl.DataFrame:
     """
     Lite version of pl_Series_interp1d
