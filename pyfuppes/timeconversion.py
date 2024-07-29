@@ -7,6 +7,7 @@ from operator import attrgetter
 from typing import Any, Optional, Union
 
 import numpy as np
+import numpy.typing as npt
 import xarray as xr
 
 ### HELPERS ###################################################################
@@ -28,13 +29,14 @@ def _to_list(
         except TypeError:  # will e.g. raised if parm is a float
             parm = [parm]
         is_scalar = True
+
     return parm, is_scalar
 
 
 ### MAIN FUNCTIONS ############################################################
 
 
-def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
+def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> npt.NDArray[np.float64]:
     """
     Convert the time vector of an xarray.DataArray to an array representing seconds after midnight.
 
@@ -53,6 +55,7 @@ def xrtime_to_mdns(xrda: xr.DataArray, dim_name="Time") -> np.ndarray:
     """
     f = attrgetter(dim_name)
     t = f(xrda)
+
     return (t - t[0].dt.floor("d")).values.astype(int) / 1_000_000_000
 
 

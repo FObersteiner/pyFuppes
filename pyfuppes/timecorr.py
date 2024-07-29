@@ -4,7 +4,7 @@
 import functools
 from copy import deepcopy
 from datetime import timedelta
-from typing import Callable, Optional
+from typing import Callable, NamedTuple, Optional
 
 import numpy as np
 import polars as pl
@@ -13,8 +13,16 @@ from matplotlib import pyplot as plt
 
 ###############################################################################
 
+CorrTime = NamedTuple(
+    "corrected_time",
+    [
+        ("fitparms", np.ndarray),
+        ("t_corr", np.ndarray),
+    ],
+)
 
-def correct_time(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str, np.ndarray]:
+
+def correct_time(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> CorrTime:
     """
     Fit a polynomial to the delta between a time vector and a reference time vector.
 
@@ -36,13 +44,22 @@ def correct_time(t: np.ndarray, t_ref: np.ndarray, fitorder: int) -> dict[str, n
     except np.linalg.LinAlgError:  # sometimes happens at first try...
         parms = np.polyfit(t, t - t_ref, fitorder)
     t_corr = t - np.polyval(parms, t)
-    return {"fitparms": parms, "t_corr": t_corr}
+
+    return CorrTime(parms, t_corr)
 
 
 ###############################################################################
 
+FilteredDt = NamedTuple(
+    "filtered_dt",
+    [
+        ("n", int),
+        ("df", pl.DataFrame),
+    ],
+)
 
-def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple[int, pl.DataFrame]:
+
+def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> FilteredDt:
     """
     Given a time series as polars.DataFrame, ensure that the index is increasing strictly.
 
@@ -72,15 +89,14 @@ def filter_dt_forward(df: pl.DataFrame, datetime_key: str = "datetime") -> tuple
         df = df.filter(m)
         n_removed += (~m).sum()
         m = df[datetime_key].diff().fill_null(fill_value) > ref_value
-    return (int(n_removed), df)
+
+    return FilteredDt(int(n_removed), df)
 
 
 # -----------------------------------------------------------------------------
 
 
-def filter_dt_backward(
-    df: pl.DataFrame, datetime_key: str = "datetime"
-) -> tuple[int, pl.DataFrame]:
+def filter_dt_backward(df: pl.DataFrame, datetime_key: str = "datetime") -> FilteredDt:
     """
     As filter_dt_forward, but backwards filtering.
 
@@ -97,7 +113,8 @@ def filter_dt_backward(
         df = df.filter(m)
         n_removed += (~m).sum()
         m = (df[datetime_key].diff().fill_null(fill_value) > ref_value).shift(-1).fill_null(True)
-    return (int(n_removed), df)
+
+    return FilteredDt(int(n_removed), df)
 
 
 ###############################################################################

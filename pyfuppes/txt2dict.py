@@ -40,7 +40,12 @@ def txt_2_dict_basic(
 ###############################################################################
 
 CsvData = NamedTuple(
-    "csv_data", [("src", str), ("file_hdr", list[str]), ("data", dict[str, list[str]])]
+    "csv_data",
+    [
+        ("src", str),
+        ("file_hdr", list[str]),
+        ("data", dict[str, list[str]]),
+    ],
 )
 
 

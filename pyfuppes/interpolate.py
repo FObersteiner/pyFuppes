@@ -72,6 +72,7 @@ def pd_Series_ip1d(
         **kwargs,
     )
     _df_dst[dvar_dst_name] = f(dst_df[ivar_dst_name])
+
     return _df_dst
 
 
@@ -105,6 +106,7 @@ def pl_Series_interp1d(
         src_df[dvar_src_name],
         **kwargs,
     )
+
     return dst_df.with_columns(
         pl.Series(f(dst_df[ivar_dst_name].dt.timestamp())).alias(dvar_dst_name)
     )

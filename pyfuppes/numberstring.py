@@ -103,7 +103,7 @@ class NumStr(object):
 
 def dec2str_stripped(
     num: Union[float, list, np.ndarray], dec_places: int = 3, strip: str = "right"
-):
+) -> str:
     """
     Convert floating point number to string, with zeros stripped.
 

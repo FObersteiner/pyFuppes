@@ -160,8 +160,6 @@ def logs_cleanup(
                     new_line = V25_DATA_SEP + new_line
                 data[idx] = new_line
 
-        # TODO : analyse the last element in the last line; compare to last element in previous line
-
         # OSC files must get a timestamp column
         if add_osc_datetime and file.suffix.strip(".").upper() == "OSC":
             verboseprint(f"*v25_logcleaner* update OSC file {file.name}")

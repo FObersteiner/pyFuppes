@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Filtering and Masking."""
 
-from typing import Union
+from typing import NamedTuple, Union
 
 import numpy as np
 import numpy.typing as npt
@@ -34,6 +34,7 @@ def mask_repeated(a: np.ndarray, N: int, atol: float = 1e-6) -> np.ndarray:
     """
     mask = np.ones(a.shape[0], np.bool_)
     mask[N:] = ~np.isclose(a[N:], a[:-N], atol=atol, equal_nan=True)
+
     return mask
 
 
@@ -67,6 +68,7 @@ def mask_repeated_nb(arr: np.ndarray, n: int, atol: float = 1e-6) -> np.ndarray:
             current = item
             count = 1
         mask[idx] = count <= n
+
     return mask
 
 
@@ -114,10 +116,19 @@ def mask_jumps(
                 else:
                     break
         i += 1
+
     return mask
 
 
 ###############################################################################
+
+JumpfilterResult = NamedTuple(
+    "jf_result",
+    [
+        ("filtered", np.ndarray),
+        ("mask", np.ndarray),
+    ],
+)
 
 
 def filter_jumps(
@@ -129,7 +140,7 @@ def filter_jumps(
     remove_repeated: bool = False,
     interpol_jumps: bool = False,
     interpol_kind: str = "linear",
-) -> tuple[np.ndarray, np.ndarray]:
+) -> JumpfilterResult:
     """
     Wrap mask_jumps(). Only works for floating point number arrays.
 
@@ -157,10 +168,19 @@ def filter_jumps(
         )
         result = f_ip(np.arange(0, result.shape[0]))
 
-    return (result, mask)
+    return JumpfilterResult(result, mask)
 
 
 ###############################################################################
+
+JumpfilterResult2 = NamedTuple(
+    "jf_result2",
+    [
+        ("filtered", np.ndarray),
+        ("deleted_idx", np.ndarray),
+        ("remaining_idx", np.ndarray),
+    ],
+)
 
 
 def filter_jumps_np(
@@ -172,7 +192,7 @@ def filter_jumps_np(
     remove_doubles: bool = False,
     interpol_jumps: bool = False,
     interpol_kind: str = "linear",
-) -> dict[str, np.ndarray]:
+) -> JumpfilterResult2:
     """
     Mask jumps using numpy functions.
 
@@ -201,9 +221,9 @@ def filter_jumps_np(
 
     Returns
     -------
-    dict. 'filtered': filtered data
-            'ix_del': indices of deleted elements
-            'ix_rem': indices of remaining elements
+    NamedTuple, .filtered: filtered data
+                .deleted_idx: indices of deleted elements
+                .remaining_idx: indices of remaining elements
 
     """
     ix_del = np.full(v.shape[0], -1, dtype=int)  # deletion index
@@ -254,7 +274,7 @@ def filter_jumps_np(
     else:
         filtered = v[ix_rem]
 
-    return {"filtered": filtered, "ix_del": ix_del, "ix_rem": ix_rem}
+    return JumpfilterResult2(filtered, ix_del, ix_rem)
 
 
 ###############################################################################
@@ -330,6 +350,7 @@ def simple_1d_lof(var: np.ndarray, k: int, thresh: float, mode="both") -> np.nda
     resids = clf.negative_outlier_factor_[k:-k]  # truncate what was pre-/appended
 
     m = np.absolute(resids) > thresh
+
     if mode == "positive":
         return m & (v_diff > 0)
     if mode == "negative":

@@ -16,6 +16,7 @@ def clean_path(p: Union[Path, str], resolve: bool = True) -> Path:
     if path_str.startswith("$HOME") or path_str.startswith("~"):
         path_str = path_str.replace("$HOME", Path().home().as_posix(), 1)
         path_str = path_str.replace("~", Path().home().as_posix(), 1)
+
     if not resolve:
         return Path(path_str)
     return Path(path_str).resolve()
@@ -25,6 +26,7 @@ def to_list_of_Path(folders: Union[str, list[str], Path, list[Path]]) -> list[Pa
     """Turn input string or list of strings into a list of pathlib.Path objects."""
     if not isinstance(folders, list):
         folders = [folders]  # type: ignore
+
     return [Path(f) for f in folders]  # type: ignore
 
 

@@ -88,7 +88,7 @@ class TestFilters(unittest.TestCase):
         have1 = filters.filter_jumps_np(arr, 3, 1, use_abs_delta=False)
         want = arr[np.array([True, True, True, False, True, True, True, True])]
         self.assertTrue((have0[0][have0[1]] == want).all())
-        self.assertTrue((have1["filtered"] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
         arr = np.array([1, 2, 3, 8, 7, 4, 5, 5], dtype=float)
         #                        |--|-> nok
@@ -96,7 +96,7 @@ class TestFilters(unittest.TestCase):
         have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=False)
         want = arr[np.array([True, True, True, False, False, True, True, True])]
         self.assertTrue((have0[0][have0[1]] == want).all())
-        self.assertTrue((have1["filtered"] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
         arr = np.array([1, 2, 3, -8, 7, 4, 5, 5], dtype=float)
         #                        |--|-> nok
@@ -104,7 +104,7 @@ class TestFilters(unittest.TestCase):
         have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=True)
         want = arr[np.array([True, True, True, False, False, True, True, True])]
         self.assertTrue((have0[0][have0[1]] == want).all())
-        self.assertTrue((have1["filtered"] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
         arr = np.array([1, 2, 3, 8, -7, 4, 5, 5], dtype=float)
         #                        |--|-> nok
@@ -112,7 +112,7 @@ class TestFilters(unittest.TestCase):
         have1 = filters.filter_jumps_np(arr, 3, 2, use_abs_delta=True)
         want = arr[np.array([True, True, True, False, False, True, True, True])]
         self.assertTrue((have0[0][have0[1]] == want).all())
-        self.assertTrue((have1["filtered"] == want).all())
+        self.assertTrue((have1.filtered == want).all())
 
     def test_extend_mask(self):
         m = np.array([False, False, True, False, False])

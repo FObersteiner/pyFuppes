@@ -61,6 +61,7 @@ def geodesic_dist(lat: np.ndarray, lon: np.ndarray) -> float:
     dist = 0.0
     for j in range(lat.shape[0] - 1):
         dist += distance.geodesic((lat[j], lon[j]), (lat[j + 1], lon[j + 1]), ellipsoid="WGS-84").km
+
     return dist
 
 
@@ -149,6 +150,7 @@ def get_EoT(date_ts: datetime) -> float:
     returns: equation of time result - float
     """
     B = (360 / 365) * (date_ts.timetuple().tm_yday - 81)
+
     return 9.87 * sin(2 * B) - 7.53 * cos(B) - 1.5 * sin(B)
 
 

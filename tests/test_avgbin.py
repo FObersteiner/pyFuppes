@@ -46,13 +46,13 @@ class TestAvgbinmap(unittest.TestCase):
     def test_bin_t_10s(self):
         t = np.arange(10) - 1  # -1 excludes first value
         d = avgbinmap.bin_t_10s(t)
-        self.assertEqual(d["t_binned"], np.array([5.0]))
-        self.assertIsNone(d["masked_bins"])
-        self.assertListEqual(
-            d["masked_vals"].tolist(),  # type: ignore
-            np.array(
-                [True, False, False, False, False, False, False, False, False, False]
-            ).tolist(),
+        self.assertEqual(d.t_binned, np.array([5.0]))
+        self.assertEqual(d.masked_bins.size, 0)
+        self.assertTrue(
+            (
+                d.masked_vals
+                == np.array([True, False, False, False, False, False, False, False, False, False])
+            ).all()
         )
 
     def test_bin_y_of_t(self):

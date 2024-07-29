@@ -4,7 +4,7 @@
 from cmath import phase, rect
 from copy import deepcopy
 from math import atan2, cos, degrees, pi, radians, sin
-from typing import Optional, Union
+from typing import NamedTuple, Optional, Union
 
 import numpy as np
 import pandas as pd
@@ -139,10 +139,18 @@ def mean_day_frac(
 
 ###############################################################################
 
+TimeBins = NamedTuple(
+    "bin_data",
+    [
+        ("t_binned", np.ndarray),
+        ("bins", np.ndarray),
+        ("masked_bins", np.ndarray),
+        ("masked_vals", np.ndarray),
+    ],
+)
 
-def bin_t_10s(
-    t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True
-) -> dict[str, Optional[np.ndarray]]:
+
+def bin_t_10s(t: np.ndarray, force_t_range: bool = True, drop_empty: bool = True) -> TimeBins:
     """
     Bin a time axis to 10 s intervals around 5.
 
@@ -170,7 +178,7 @@ def bin_t_10s(
     t_binned = np.arange((tmin - tmin % 10) + 5, (tmax - tmax % 10) + 6, 10)
 
     # if all values of t should fall WITHIN the range of t_binned:
-    vmask = None
+    vmask = np.array([], dtype=bool)
     if force_t_range:
         if t_binned[0] < t[0]:
             t_binned = t_binned[1:]
@@ -185,19 +193,19 @@ def bin_t_10s(
 
     # if empty bins should be created, mask all bins that would have no
     # corresponding value in the dependent variable's data
-    bmask = None
+    bmask = np.array([], dtype=bool)
     if drop_empty:
         t_binned = t_binned[np.bincount(bins - 1).astype(np.bool_)]
     else:
         bmask = np.ones(t_binned.shape).astype(np.bool_)
         bmask[bins - 1] = False
 
-    return {
-        "t_binned": t_binned,
-        "bins": bins,
-        "masked_bins": bmask,
-        "masked_vals": vmask,
-    }
+    return TimeBins(
+        t_binned,
+        bins,
+        bmask,
+        vmask,
+    )
 
 
 ###############################################################################
@@ -211,7 +219,7 @@ def get_npnanmean(v: np.ndarray):
 
 def bin_y_of_t(
     v: np.ndarray,
-    bin_info: dict,
+    bin_info: TimeBins,
     vmiss: float = np.nan,
     return_type: str = "arit_mean",
     use_numba: bool = True,
@@ -246,10 +254,10 @@ def bin_y_of_t(
     _v[_v == vmiss] = np.nan
 
     # remove values that were masked (out of bin range)
-    _v = _v[~bin_info["masked_vals"]]
+    _v = _v[~bin_info.masked_vals]
 
     v_binned = []
-    vd_bins = bin_info["bins"]
+    vd_bins = bin_info.bins
 
     if return_type == "arit_mean":
         if use_numba:
@@ -273,10 +281,10 @@ def bin_y_of_t(
     result = np.array(v_binned)
 
     # check if there are masked bins, i.e. empty bins. add them to the output if so.
-    if bin_info["masked_bins"] is not None:
-        tmp = np.ones(bin_info["masked_bins"].shape)
-        tmp[bin_info["masked_bins"]] = vmiss
-        tmp[~bin_info["masked_bins"]] = result
+    if bin_info.masked_bins.shape[0] > 0:
+        tmp = np.ones(bin_info.masked_bins.shape)
+        tmp[bin_info.masked_bins] = vmiss
+        tmp[~bin_info.masked_bins] = result
         result = tmp
 
     # round to integers if input type was integer

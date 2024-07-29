@@ -15,7 +15,7 @@ def get_plot_range(
     v_max_lim: Optional[float] = None,
     xrange: Optional[list[float]] = None,
     x: Optional[Union[list, np.ndarray]] = None,
-) -> list[float]:
+) -> tuple[float]:
     """
     Adjust y-axis range of matplotlib pyplot for a given vector v.
 
@@ -36,7 +36,7 @@ def get_plot_range(
 
     Returns
     -------
-    result : list
+    result : tuple, 2 elements
         lower and upper limit.
 
     """
@@ -71,13 +71,13 @@ def get_plot_range(
     if v_max_lim and result[1] > v_max_lim:
         result[1] = v_max_lim
 
-    return result
+    return tuple(result)
 
 
 ###############################################################################
 
 
-def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -> list[float]:
+def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -> tuple[float]:
     """
     Update a plot yrange so that it fits nicely with a certain number of ticks.
 
@@ -92,7 +92,7 @@ def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -
 
     Returns
     -------
-    result : 2-element list
+    result : 2-element tuple
         updated yrange.
 
     """
@@ -107,7 +107,7 @@ def nticks_yrange(yrange: list[float], nticks: int, to_multiples_of: int = 10) -
     add = 1 if r > to_multiples_of else 0
     result[1] = result[0] + (n + add) * size
 
-    return result
+    return tuple(result)
 
 
 ###############################################################################

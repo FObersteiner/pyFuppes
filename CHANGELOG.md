@@ -22,6 +22,9 @@
   - some 'isinstance' checks which should be covered by type annotations
   - misc.checkbytes_lt128 since this can be done with str.isascii() method
   - timecorr.get_tcorr_parms and .apply_tcorr_parms
+- avgbinmap, binning: use namedtuple to hold time vector binning results
+- filter, jumps: use namedtuple to hold filter results
+- timecorr: more namedtuples
 - clarify type annotations for jump filter funcs
 - lof filter: fix random seed
 - make pure functions, do not modify input:
