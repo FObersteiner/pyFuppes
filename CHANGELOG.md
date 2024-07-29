@@ -1,6 +1,6 @@
 # Changelog
 
-## v0.5.0 (2024-xx-xx)
+## v0.5.0 (2024-07-xx)
 
 - add tests:
   - avgbinmap:

@@ -40,4 +40,4 @@ See <https://pyfuppes.readthedocs.io/en/latest/> or go to the [API reference](ht
 
 ## License
 
-LGPLv3 - see LICENSE file in the root directory of the repository.
+`LGPLv3` - see LICENSE file in the root directory of the repository.
