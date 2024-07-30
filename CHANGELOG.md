@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.5.1 (2024-0x-xx)
+
+- geo: distance from geopy wrapper now returns array. Total distance can easily be calculated as its sum.
+
 ## v0.5.0 (2024-07-29)
 
 - drop Python 3.9 support

@@ -45,6 +45,12 @@ class TestGeo(unittest.TestCase):
             tol_decimalplaces,
         )
 
+    def test_geodist(self):
+        lat = np.array([-71.312796, -81.695391])
+        lon = np.array([41.49008, 41.499498])
+        dist = geo.geodesic_dist(lat, lon)
+        self.assertAlmostEqual(dist.sum(), 1159.0067, places=4)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -55,14 +55,22 @@ def haversine_dist(lat: np.ndarray, lon: np.ndarray) -> float:
 ###############################################################################
 
 
-def geodesic_dist(lat: np.ndarray, lon: np.ndarray) -> float:
-    """Calculate geodesic distance in km along lat/lon coordinates using geopy module."""
-    assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
-    dist = 0.0
-    for j in range(lat.shape[0] - 1):
-        dist += distance.geodesic((lat[j], lon[j]), (lat[j + 1], lon[j + 1]), ellipsoid="WGS-84").km
+def geodesic_dist(lat: np.ndarray, lon: np.ndarray, ellipsoid="WGS-84") -> np.ndarray:
+    """
+    Calculate geodesic distance in km along lat/lon coordinates. Wraps geopy.distance.geodesic.
 
-    return dist
+    Returns
+        array of step-wise distance for each pair of lat/lon coordinates
+    """
+    assert lat.shape[0] == lon.shape[0], "lat/lon must be of same length."
+
+    result = np.zeros(lat.shape, dtype=float)
+    for j in range(lat.shape[0] - 1):
+        result[j + 1] = distance.geodesic(
+            (lat[j], lon[j]), (lat[j + 1], lon[j + 1]), ellipsoid=ellipsoid
+        ).km
+
+    return result
 
 
 ###############################################################################
