@@ -45,3 +45,26 @@ n_cols = 3      # newer files have 5 columns
 [SND] # only exists for newer flights
 min_n_lines = 2
 n_cols = 5
+
+# -----------------------------------------------------------------------------
+## CARIBIC-2 H2O data ---v
+#
+# [DAT]
+# min_n_lines = 2
+# n_cols = 19
+#
+# [CR2]
+# min_n_lines = 2
+# n_cols = 14
+#
+# [MAS]
+# min_n_lines = 2
+# n_cols = 4
+#
+# [T_P]
+# min_n_lines = 2
+# n_cols = 22
+#
+# [_PA]
+# min_n_lines = 2
+# n_cols = 33
