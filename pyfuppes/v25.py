@@ -74,6 +74,8 @@ def logs_cleanup(
     """
     Delete empty files and remove incomplete lines from V25 logfiles.
 
+    WARNING: this function has side-effects. It modifies files.
+
     Parameters
     ----------
     directories : list
