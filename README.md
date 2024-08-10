@@ -3,7 +3,7 @@
 
 # pyfuppes
 
-A collection of tools (useful functions) in Python. Most of it implemented as pure functions (no side-effects).
+A collection of tools in Python. Most of it side-effect-free.
 
 ## Installation
 
