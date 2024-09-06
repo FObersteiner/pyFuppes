@@ -1,10 +1,11 @@
 # Changelog
 
-## v0.5.1 (2024-0x-xx)
+## v0.5.1 (2024-09-06)
 
 - geo: distance from geopy wrapper now returns array. Total distance can easily be calculated as its sum.
 - txt_2_dict: fix 'preserve_empty' to actually remove surrounding delimiters
 - v25_config: add H2O config (commented out)
+- misc: simplify clean_path, add PCOLOR class
 
 ## v0.5.0 (2024-07-29)
 
