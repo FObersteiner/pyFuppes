@@ -10,12 +10,24 @@ import numpy as np
 ###############################################################################
 
 
+class PCOLOR:  # for printing in color
+    """Print in color, using ANSI escape codes."""
+
+    blue = "\x1b[34m"
+    green = "\x1b[32m"
+    red = "\x1b[31m"
+    cyan = "\x1b[36m"
+    disable = "\x1b[0m"
+
+
+###############################################################################
+
+
 def clean_path(p: Union[Path, str], resolve: bool = True) -> Path:
     """Clean a path from stuff like ~ or $HOME."""
-    path_str = Path(p).as_posix()
-    if path_str.startswith("$HOME") or path_str.startswith("~"):
+    path_str = Path(p).expanduser().as_posix()  # expanduser() resolves '~' to home path
+    if path_str.startswith("$HOME"):
         path_str = path_str.replace("$HOME", Path().home().as_posix(), 1)
-        path_str = path_str.replace("~", Path().home().as_posix(), 1)
 
     if not resolve:
         return Path(path_str)
