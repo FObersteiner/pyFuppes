@@ -11,6 +11,12 @@ Types of changes
 - 'Fixed' for any bug fixes.
 - 'Security' in case of vulnerabilities.
 
+## Unreleased
+
+### Changed
+
+- avgbinmap.bin_y_of_t, keyword 'return_type' renamed to 'aggregation'
+
 ## v0.5.1 (2024-09-06)
 
 - geo: distance from geopy wrapper now returns array. Total distance can easily be calculated as its sum.

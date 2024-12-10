@@ -3,7 +3,7 @@
 
 # pyfuppes
 
-A collection of tools in Python. Most of it side-effect-free.
+A collection of tools in Python. Most of it is side-effect-free (doesn't modify the input).
 
 ## Installation
 
@@ -11,23 +11,19 @@ A collection of tools in Python. Most of it side-effect-free.
 
   - (fork and) clone the repo, then run `pip install -e .` in the repo's directory
 
-- from github, via pip:
-
-  - master branch, latest commit:
-
-    ```sh
-    pip install git+https://github.com/FObersteiner/pyFuppes.git@master # alternatively @latest
-    ```
+- from github, via pip (requires `git`, which you might have to install explicitly if using a virtual Python environment):
 
   - specific tag:
 
     ```sh
-    pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.4.6
+    pip install git+https://github.com/FObersteiner/pyFuppes.git@v0.5.1
     ```
 
-- via [poetry](https://python-poetry.org/):
+  - master branch, latest commit (not recommended; might include unstable changes):
 
-  - (fork and) clone the repo, then run `poetry install` in the repo's directory
+    ```sh
+    pip install git+https://github.com/FObersteiner/pyFuppes.git@master # alternatively @latest
+    ```
 
 ## Requirements
 
