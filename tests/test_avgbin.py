@@ -60,7 +60,7 @@ class TestAvgbinmap(unittest.TestCase):
         v = np.arange(10)
         d = avgbinmap.bin_t_10s(t)
         want = np.array([np.average(v[1:])])
-        have = avgbinmap.bin_y_of_t(v, d)
+        have = avgbinmap.bin_y_of_t(v, d, aggregation="mean")
         self.assertListEqual(list(want), list(have))
 
     def test_bin_by_pdresample(self):

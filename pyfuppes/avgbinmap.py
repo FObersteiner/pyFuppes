@@ -221,7 +221,7 @@ def bin_y_of_t(
     v: np.ndarray,
     bin_info: TimeBins,
     vmiss: float = np.nan,
-    return_type: str = "arit_mean",
+    aggregation: str = "mean",
     use_numba: bool = True,
 ) -> np.ndarray:
     """
@@ -232,7 +232,10 @@ def bin_y_of_t(
         bin_info - config dict returned by bin_time() or bin_time_10s()
     keywords:
         vmiss (numeric) - missing value identifier, defaults to np.nan
-        return_type (str) - how to bin, defaults to 'arit_mean'
+        return_type (str) - how to bin, defaults to 'mean'. Options:
+            'mean' - arithmetic mean
+            'mean_day_frac' - mean of fractional day
+            'mean_angle' - mean of angle
         use_numba (bool) - use njit'ed binning functions or not
 
     Returns
@@ -259,12 +262,18 @@ def bin_y_of_t(
     v_binned = []
     vd_bins = bin_info.bins
 
-    if return_type == "arit_mean":
+    if aggregation == "mean":
         if use_numba:
             v_binned = [get_npnanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
             v_binned = [np.nanmean(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
-    elif return_type == "mean_day_frac":
+            #
+            # another option from <https://codereview.stackexchange.com/a/294677/206249>:
+            #
+            # _, inverse, counts = np.unique(vd_bins, return_inverse=True, return_counts=True)
+            # v_binned = np.bincount(inverse, weights=_v) / counts
+            #
+    elif aggregation == "mean_day_frac":
         if use_numba:
             v_binned = [mean_day_frac(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
@@ -272,7 +281,7 @@ def bin_y_of_t(
                 mean_day_frac(_v[vd_bins == bin_no], use_numba=False)
                 for bin_no in np.unique(vd_bins)
             ]
-    elif return_type == "mean_angle":
+    elif aggregation == "mean_angle":
         if use_numba:
             v_binned = [mean_angle_numba(_v[vd_bins == bin_no]) for bin_no in np.unique(vd_bins)]
         else:
