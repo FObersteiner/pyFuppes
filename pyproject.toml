@@ -39,8 +39,8 @@ dev = [
 line-length = 100
 target-version = ["py39", "py310", "py311", "py312"]
 
-[tool.ruff] # https://github.com/charliermarsh/ruff
-lint.ignore = ["E501"]                  # use defaults otherwise
+[tool.ruff]
+lint.ignore = ["E501"]
 lint.extend-select = ["I", "C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
