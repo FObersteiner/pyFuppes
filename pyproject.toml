@@ -49,3 +49,4 @@ target-version = "py310"
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
+addopts = ["--import-mode=importlib"]
