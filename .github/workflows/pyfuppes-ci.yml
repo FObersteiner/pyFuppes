@@ -35,7 +35,7 @@ jobs:
         run: uv run ruff check
 
       - name: Run tests
-        run: uv run pytest tests
+        run: uv run pytest .
 
     # steps:
     #   - uses: actions/checkout@main
