@@ -3,6 +3,7 @@
 import unittest
 
 import numpy as np
+
 from pyfuppes import avgbinmap
 
 

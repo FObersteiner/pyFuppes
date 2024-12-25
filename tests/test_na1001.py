@@ -5,6 +5,7 @@ from io import BytesIO, StringIO
 from pathlib import Path
 
 import polars as pl
+
 from pyfuppes.na1001 import FFI1001 as na1001
 
 try:

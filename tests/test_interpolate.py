@@ -6,6 +6,7 @@ import pandas as pd
 import polars as pl
 from pandas import testing as pdtest
 from polars.testing import assert_series_equal
+
 from pyfuppes import interpolate
 
 

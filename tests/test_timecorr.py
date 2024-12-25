@@ -5,6 +5,7 @@ import unittest
 import numpy as np
 import polars as pl
 from polars.testing import assert_frame_not_equal
+
 from pyfuppes import timecorr
 
 
