@@ -35,7 +35,9 @@ jobs:
         run: uv run ruff check
 
       - name: Run tests
-        run: uv run pytest tests
+        run: |
+          . .venv/bin/activate
+          uv run pytest tests
 
     # steps:
     #   - uses: actions/checkout@main
