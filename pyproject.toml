@@ -1,51 +1,56 @@
-[tool.poetry]
+[project]
+authors = [{ name = "Florian Obersteiner", email = "f.obersteiner@posteo.de" }]
+license = { text = "LGPL3" }
 name = "pyfuppes"
 version = "0.5.1"
 description = "A collection of tools in Python"
-authors = ["Florian Obersteiner <f.obersteiner@posteo.de>"]
-license = "LGPL3"
 readme = "README.md"
+requires-python = "<3.13,>=3.10"
+dependencies = [
+  "geopy>=2.0",
+  "matplotlib>=3.0",
+  "netcdf4>=1.6",
+  "numba>=0.59.0",
+  "numpy>=1.18",
+  "pandas>=2.0",
+  "polars>=1.0",
+  "pysolar>=0.10",
+  "scipy>=1.1",
+  "scikit-learn>=1.4",
+  "tomli>=2.0.1",
+  "xarray>=2022,>=2023,>=2024",
+]
 
-[tool.poetry.dependencies]
-python = ">= 3.10, < 3.13"
-geopy = ">= 2.0"
-matplotlib = ">= 3.0"
-netcdf4 = ">= 1.6"
-numba = ">= 0.59.0"                  # needed for Python 3.12
-numpy = ">= 1.18"
-pandas = ">= 2.0"
-polars = ">= 1.0"
-pysolar = ">= 0.10"
-scipy = ">= 1.1"
-scikit-learn = ">= 1.4"              # lof filter
-tomli = ">= 2.0.1"
-xarray = ">= 2022, >= 2023, >= 2024"
+[dependency-groups]
+dev = [
+  "pre-commit>=3.3.3",
+  "pytest>=7.0",
+  "black>=24.3",
+  "flake8>=6.0",
+  "ruff>=0.0.254",
+  "jupyter-core>=4.0",
+  "sphinx-autoapi>=2.0",
+  "sphinx-rtd-theme>=1.0",
+  "myst-nb>=0.17",
+]
 
-[tool.poetry.dev-dependencies]
-pytest = ">= 7.0"
-black = ">= 24.3"
-flake8 = ">= 6.0"
-ruff = ">= 0.0.254"
-jupyter_core = ">= 4.0"
-sphinx-autoapi = ">= 2.0"
-sphinx-rtd-theme = ">= 1.0"
-myst-nb = ">= 0.17"
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = ">= 3.3.3"
 
 [tool.black]
 line-length = 100
 target-version = ["py39", "py310", "py311", "py312"]
 
-[tool.ruff] # https://github.com/charliermarsh/ruff
-lint.ignore = ["E501"]                  # use defaults otherwise
+[tool.ruff]
+lint.ignore = ["E501"]
 lint.extend-select = ["I", "C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
 # "SIM" : code simplifications
 target-version = "py39"
 
+[tool.pytest.ini_options]
+addopts = ["--import-mode=importlib"]
+pythonpath = ["."]
+
 [build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'
