@@ -9,6 +9,7 @@ from itertools import chain
 from typing import Iterator, Optional, Union
 
 import tomli as toml_r
+
 from pyfuppes.misc import insensitive_pattern, to_list_of_Path
 from pyfuppes.txt2dict import txt_2_dict
 
