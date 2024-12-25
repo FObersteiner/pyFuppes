@@ -13,8 +13,11 @@ Types of changes
 
 ## Unreleased
 
+## v0.5.2 (xxxx-xx-xx)
+
 ### Changed
 
+- move from pyenv / poetry to uv
 - avgbinmap.bin_y_of_t, keyword 'return_type' renamed to 'aggregation'
 
 ## v0.5.1 (2024-09-06)

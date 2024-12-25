@@ -1,0 +1,70 @@
+name: pyfuppes-tests
+
+on:
+  push:
+    tags:
+      - "v*"
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    strategy:
+      fail-fast: true
+      matrix:
+        python-version: ["3.10", "3.11", "3.12"]
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    runs-on: ${{matrix.os}}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv and set the Python version
+        uses: astral-sh/setup-uv@v4
+        with:
+          python-version: ${{ matrix.python-version }}
+          enable-cache: true
+          cache-dependency-glob: "uv.lock" # invalidate cache if lockfile changes
+
+      - name: Install the project
+        run: uv sync --all-extras --dev
+
+      - name: Run black formatting
+        run: uv run black . --color --diff --check
+
+      - name: Run ruff ckecks
+        run: uv run ruff ckeck
+
+      - name: Run tests
+        run: uv run pytest tests
+
+    # steps:
+    #   - uses: actions/checkout@main
+    #   - name: Set up Python ${{ matrix.python-version }}
+    #     uses: actions/setup-python@main
+    #     with:
+    #       python-version: ${{ matrix.python-version }}
+    #   - name: Install Poetry # windows won't work since it does not offer poetry
+    #     uses: snok/install-poetry@main
+    #   - name: Install dependencies
+    #     shell: bash
+    #     working-directory: ./pyfuppes
+    #     run: |
+    #       poetry install --no-interaction --no-ansi -vv
+    #   - name: Lint with flake8
+    #     #shell: bash
+    #     #working-directory: ./pyfuppes
+    #     run: |
+    #       # stop the build if there are Python syntax errors or undefined names
+    #       poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+    #       # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+    #       poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    #   - name: Run Black8 formatting
+    #     #shell: bash
+    #     #working-directory: ./pyfuppes
+    #     run: |
+    #       poetry run black . --color --diff --check
+    #   - name: Test with pytest
+    #     #shell: bash
+    #     #working-directory: ./pyfuppes
+    #     run: |
+    #       poetry run pytest .
