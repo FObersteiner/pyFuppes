@@ -45,7 +45,7 @@ lint.extend-select = ["I", "C4", "SIM"]
 # "C4" : comprehensions
 # "TCH" : type checking optimizations
 # "SIM" : code simplifications
-target-version = "py312"
+target-version = "py39"
 
 [tool.pytest.ini_options]
 addopts = ["--import-mode=importlib"]
