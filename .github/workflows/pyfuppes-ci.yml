@@ -1,4 +1,4 @@
-name: pyfuppes-tests
+name: pyfuppes-ci
 
 on:
   push:
