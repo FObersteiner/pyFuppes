@@ -48,5 +48,9 @@ lint.extend-select = ["I", "C4", "SIM"]
 target-version = "py310"
 
 [tool.pytest.ini_options]
-pythonpath = ["."]
 addopts = ["--import-mode=importlib"]
+pythonpath = ["."]
+
+[build-system]
+requires = ['setuptools']
+build-backend = 'setuptools.build_meta'

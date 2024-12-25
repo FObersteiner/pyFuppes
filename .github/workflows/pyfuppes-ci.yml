@@ -22,8 +22,8 @@ jobs:
         uses: astral-sh/setup-uv@v4
         with:
           python-version: ${{ matrix.python-version }}
-          enable-cache: false
-          # cache-dependency-glob: "uv.lock" # invalidate cache if lockfile changes
+          enable-cache: true
+          cache-dependency-glob: "uv.lock" # invalidate cache if lockfile changes
 
       - name: Install the project
         run: uv sync --all-extras --dev
@@ -35,7 +35,7 @@ jobs:
         run: uv run ruff check
 
       - name: Run tests
-        run: uv run pytest .
+        run: uv run -m pytest
 
     # steps:
     #   - uses: actions/checkout@main
