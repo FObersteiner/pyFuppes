@@ -6,6 +6,10 @@ version = "0.5.3"
 description = "A collection of tools in Python"
 readme = "README.md"
 requires-python = "<3.13,>=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
 dependencies = [
   "geopy>=2.0",
   "matplotlib>=3.0",
@@ -19,6 +23,10 @@ dependencies = [
   "scikit-learn>=1.4",
   "xarray>=2022,>=2023,>=2024",
 ]
+
+[project.urls]
+Homepage = "https://github.com/FObersteiner/pyFuppes"
+Issues = "https://github.com/FObersteiner/pyFuppes/issues"
 
 [dependency-groups]
 dev = [
@@ -50,6 +58,11 @@ target-version = "py39"
 addopts = ["--import-mode=importlib"]
 pythonpath = ["."]
 
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+
 [build-system]
-requires = ['setuptools']
+requires = ['setuptools>=61.0']
 build-backend = 'setuptools.build_meta'
