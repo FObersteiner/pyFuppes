@@ -13,21 +13,28 @@ Types of changes
 
 ## Unreleased
 
-## v0.5.2 (2025-01-04, re-release)
+## 2025-01-05, v0.5.3
+
+### Removed
+
+- v25 sub-module since V25 tools are only used by FAIROpro atm, i.e. they are better situated there
+- signalsteps sub-module since unused
+
+## 2025-01-04, v0.5.2 (re-release)
 
 ### Changed
 
 - move from pyenv / poetry to uv
 - avgbinmap.bin_y_of_t, keyword 'return_type' renamed to 'aggregation'
 
-## v0.5.1 (2024-09-06)
+## 2024-09-06, v0.5.1
 
 - geo: distance from geopy wrapper now returns array. Total distance can easily be calculated as its sum.
 - txt_2_dict: fix 'preserve_empty' to actually remove surrounding delimiters
 - v25_config: add H2O config (commented out)
 - misc: simplify clean_path, add PCOLOR class
 
-## v0.5.0 (2024-07-29)
+## 2024-07-29, v0.5.0
 
 - drop Python 3.9 support
 - add tests:

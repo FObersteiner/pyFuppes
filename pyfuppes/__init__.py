@@ -10,11 +10,9 @@ from pyfuppes import (
     na1001,
     numberstring,
     plottools,
-    signalsteps,
     timeconversion,
     timecorr,
     txt2dict,
-    v25,
 )
 
 __version__ = metadata.version("pyfuppes")
@@ -29,9 +27,7 @@ __all__ = (
     "na1001",
     "numberstring",
     "plottools",
-    "signalsteps",
     "timeconversion",
     "timecorr",
     "txt2dict",
-    "v25",
 )

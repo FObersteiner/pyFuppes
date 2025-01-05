@@ -2,7 +2,7 @@
 authors = [{ name = "Florian Obersteiner", email = "f.obersteiner@posteo.de" }]
 license = { text = "LGPL3" }
 name = "pyfuppes"
-version = "0.5.2"
+version = "0.5.3"
 description = "A collection of tools in Python"
 readme = "README.md"
 requires-python = "<3.13,>=3.10"
@@ -17,7 +17,6 @@ dependencies = [
   "pysolar>=0.10",
   "scipy>=1.1",
   "scikit-learn>=1.4",
-  "tomli>=2.0.1",
   "xarray>=2022,>=2023,>=2024",
 ]
 
