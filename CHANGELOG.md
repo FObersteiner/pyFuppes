@@ -13,6 +13,10 @@ Types of changes
 
 ## [Unreleased]
 
+## 2025-01-07, v0.6.0
+
+Publication on the pypi.
+
 ## 2025-01-05, v0.5.3
 
 ### Removed
