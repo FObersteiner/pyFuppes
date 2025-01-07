@@ -7,7 +7,7 @@ A collection of tools in Python, mostly revolving around time series data analys
 
 ## Installation
 
-- from the pypi: `pip install pyfuppes`:
+- from the pypi: `pip install pyfuppes`
 
 - (fork and) clone the repo, then run `pip install .` in the repo's directory (add `-e` for editable mode)
 
