@@ -6,6 +6,10 @@ version = "0.5.3"
 description = "A collection of tools in Python"
 readme = "README.md"
 requires-python = "<3.13,>=3.10"
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "Operating System :: OS Independent",
+]
 dependencies = [
   "geopy>=2.0",
   "matplotlib>=3.0",
@@ -20,6 +24,7 @@ dependencies = [
   "xarray>=2022,>=2023,>=2024",
 ]
 
+
 [dependency-groups]
 dev = [
   "pre-commit>=3.3.3",
@@ -33,6 +38,11 @@ dev = [
   "myst-nb>=0.17",
 ]
 
+[project.urls]
+Homepage = "https://github.com/FObersteiner/pyFuppes"
+Issues = "https://github.com/FObersteiner/pyFuppes/issues"
+Changelog = "https://github.com/FObersteiner/pyFuppes/blob/master/CHANGELOG.md"
+Documentation = "https://pyfuppes.readthedocs.io/en/latest"
 
 [tool.black]
 line-length = 100
@@ -50,6 +60,15 @@ target-version = "py39"
 addopts = ["--import-mode=importlib"]
 pythonpath = ["."]
 
+# TESTING:
+# [[tool.uv.index]]
+# name = "testpypi"
+# url = "https://test.pypi.org/simple/"
+# publish-url = "https://test.pypi.org/legacy/"
+
+[tool.setuptools]
+license-files = [] # 2025-01-05: see uv issue #9513
+
 [build-system]
-requires = ['setuptools']
-build-backend = 'setuptools.build_meta'
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
