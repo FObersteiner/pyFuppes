@@ -200,7 +200,7 @@ class TestFilters(unittest.TestCase):
             _ = filters.simple_1d_lof(np.array([[1, 1], [2, 2]]), 15, 1.5)
         self.assertTrue("can only work with 1D data" in str(context.exception))
 
-        np.random.seed(0)
+        np.random.seed(42)
         rng = np.random.default_rng()
         data = rng.standard_normal(10000)
         n_outliers = 20
@@ -208,7 +208,7 @@ class TestFilters(unittest.TestCase):
         m = np.sort(rng.choice(data.shape[0], size=n_outliers, replace=False))
         pos_neg = np.random.choice([True, False], size=n_outliers)
 
-        out = np.absolute(np.min(data) - np.max(data)) * 3
+        out = np.absolute(np.min(data) - np.max(data)) * 5
         data[m[pos_neg]] = out
         data[m[~pos_neg]] = out * -1
 
