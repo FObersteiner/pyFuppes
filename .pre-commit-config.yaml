@@ -6,14 +6,26 @@ repos:
       - id: check-toml
       - id: end-of-file-fixer
       - id: trailing-whitespace
+  #
+  - repo: https://github.com/astral-sh/uv-pre-commit
+    rev: 0.6.6
+    hooks:
+      - id: uv-sync
+      - id: uv-lock
+        args: [-U]
+      - id: pip-compile
+        args: [pyproject.toml, -o, requirements.txt]
+  #
   - repo: https://github.com/psf/black
-    rev: 24.10.0
+    rev: 25.1.0
     hooks:
       - id: black
+  #
   - repo: https://github.com/charliermarsh/ruff-pre-commit
-    rev: "v0.8.4"
+    rev: "v0.11.0"
     hooks:
       - id: ruff
+  #
   - repo: local
     hooks:
       - id: pytest
